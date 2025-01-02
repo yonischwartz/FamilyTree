@@ -1,0 +1,11 @@
+[versions]
+compose = "1.5.0"
+kotlin = "1.9.0"
+
+[libraries]
+composeUi = { module = "androidx.compose.ui:ui", version.ref = "compose" }
+composeMaterial = { module = "androidx.compose.material:material", version.ref = "compose" }
+
+[plugins]
+androidApplication = { id = "com.android.application", version = "8.1.0" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
