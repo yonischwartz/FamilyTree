@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import com.example.familytree.ui.theme.FamilyTreeTheme
 import com.example.familytree.ui.theme.FamilyTreeScreen
 
-
+// test hellofdggfd
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
