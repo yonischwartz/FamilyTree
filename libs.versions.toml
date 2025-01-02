@@ -8,6 +8,7 @@ googleServices = "4.4.2"
 composeUi = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 composeMaterial = { module = "androidx.compose.material:material", version.ref = "compose" }
 firebaseFirestore = { module = "com.google.firebase:firebase-firestore-ktx", version.ref = "firebase" }
+gson = { module = "com.google.code.gson:gson", version = "2.11.0" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version = "8.1.4" }

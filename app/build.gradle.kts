@@ -22,7 +22,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.0"
+        kotlinCompilerExtensionVersion = "2.0.0"
     }
 
     kotlinOptions {
@@ -34,6 +34,7 @@ dependencies {
     implementation(libs.composeUi)
     implementation(libs.composeMaterial)
     implementation(libs.firebaseFirestore)
+    implementation(libs.gson)
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("androidx.activity:activity-compose:1.9.3")
