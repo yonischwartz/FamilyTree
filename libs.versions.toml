@@ -1,11 +1,15 @@
 [versions]
-compose = "1.5.0"
-kotlin = "1.9.0"
+compose = "1.7.6"
+kotlin = "2.0.0"
+firebase = "25.1.1"
+googleServices = "4.4.2"
 
 [libraries]
 composeUi = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 composeMaterial = { module = "androidx.compose.material:material", version.ref = "compose" }
+firebaseFirestore = { module = "com.google.firebase:firebase-firestore-ktx", version.ref = "firebase" }
 
 [plugins]
-androidApplication = { id = "com.android.application", version = "8.1.0" }
+androidApplication = { id = "com.android.application", version = "8.1.4" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
