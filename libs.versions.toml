@@ -6,6 +6,7 @@ googleServices = "4.4.2"
 junit = "4.13.2"
 androidxJunit = "1.2.1"
 espressoCore = "3.6.1"
+uiToolingPreviewAndroid = "1.7.6"
 
 [libraries]
 composeUi = { module = "androidx.compose.ui:ui", version.ref = "compose" }
@@ -14,7 +15,8 @@ firebaseFirestore = { module = "com.google.firebase:firebase-firestore-ktx", ver
 gson = { module = "com.google.code.gson:gson", version = "2.11.0" }
 junit = { module = "junit:junit", version.ref = "junit" }
 androidxJunit = { module = "androidx.test.ext:junit", version.ref = "androidxJunit" }
-espressoCore = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }  # Correct reference to espressoCore version
+espressoCore = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
+uiToolingPreviewAndroid = { group = "androidx.compose.ui", name = "ui-tooling-preview-android", version.ref = "uiToolingPreviewAndroid" }  # Correct reference to espressoCore version
 
 [plugins]
 androidApplication = { id = "com.android.application", version = "8.1.4" }
