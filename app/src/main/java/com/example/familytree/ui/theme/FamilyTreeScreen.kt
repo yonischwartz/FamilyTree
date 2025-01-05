@@ -10,8 +10,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.text.style.TextDirection
 import com.example.familytree.data.dataManagement.*
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalLayoutDirection
 
 @Composable
 fun FamilyTreeScreen(modifier: Modifier = Modifier) {
@@ -55,75 +58,82 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
             }
         }
     ) { innerPadding ->
-        Column(
-            modifier = modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Search Bar
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                label = { Text("חפש לפי שם") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                textStyle = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Right)
-            )
-
-            // LazyColumn with placeholder content
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+            Column(
+                modifier = modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                item {
+                // Search Bar
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text("חפש לפי שם") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Right, textDirection = TextDirection.Rtl)
+                )
+
+                // LazyColumn with placeholder content
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    item {
+                        Text(
+                            text = "אין בני משפחה להצגה.",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Right, textDirection = TextDirection.Rtl),
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                }
+
+                // Button to open the dialog for adding a new member
+                Button(
+                    onClick = { showDialog = true },
+                    modifier = Modifier.padding(16.dp)
+                ) {
                     Text(
-                        text = "אין בני משפחה להצגה.",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.Right
+                        text = "הוסף בן משפחה חדש",
+                        style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)
                     )
                 }
-            }
 
-            // Button to open the dialog for adding a new member
-            Button(
-                onClick = { showDialog = true },
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text("הוסף בן משפחה חדש")
-            }
-
-            Button(
-                onClick = { showMemberList = true },
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text("הצג את כל בני המשפחה")
-            }
-
-            // Show the dialog if showDialog is true
-            if (showDialog) {
-                familyTreeData?.let { fm ->
-                    NewMemberDialog(
-                        familyTreeData = fm,
-                        onDismiss = { showDialog = false }
+                Button(
+                    onClick = { showMemberList = true },
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "הצג את כל בני המשפחה",
+                        style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)
                     )
                 }
-            }
 
-            if (showMemberList) {
-                familyTreeData?.let { fm ->
-                    MemberListDialog(
-                        familyTreeData = fm,
-                        onDismiss = { showMemberList = false }
-                    )
+                // Show the dialog if showDialog is true
+                if (showDialog) {
+                    familyTreeData?.let { fm ->
+                        NewMemberDialog(
+                            familyTreeData = fm,
+                            onDismiss = { showDialog = false }
+                        )
+                    }
+                }
+
+                if (showMemberList) {
+                    familyTreeData?.let { fm ->
+                        MemberListDialog(
+                            familyTreeData = fm,
+                            onDismiss = { showMemberList = false }
+                        )
+                    }
                 }
             }
         }
