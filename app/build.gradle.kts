@@ -31,6 +31,7 @@ android {
 }
 
 dependencies {
+
     implementation(libs.composeUi)
     implementation(libs.composeMaterial)
     implementation(libs.firebaseFirestore)
@@ -40,4 +41,10 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.9.3")
     implementation("androidx.compose.ui:ui:1.7.6")
     implementation("androidx.compose.material3:material3:1.3.1")
+
+    // Test dependencies
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidxJunit)
+    androidTestImplementation(libs.espressoCore)
 }
+

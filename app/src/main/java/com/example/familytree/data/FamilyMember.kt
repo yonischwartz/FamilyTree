@@ -7,16 +7,16 @@ package com.example.familytree.data
  * @property lastName The last name of the family member.
  * @property gender The gender of the family member, represented as a Boolean.
  *                  `true` for male, `false` for female.
- * @property ID The unique identifier for the family member, automatically assigned
- *               using the ID generator from the `MemberDataBase` singleton.
+ * @property documentId
  */
 open class FamilyMember(
-    private val firstName: String, // Family member's first name
-    private val lastName: String,  // Family member's last name
-    val gender: Boolean    // Family member's gender (true = male, false = female)
+    private val firstName: String = "",
+    private val lastName: String = "",
+    private val gender: Boolean = true
 ) {
-    // Unique identifier for the family member
-    val ID: Int = MemberMapByID.getInstance().getNewID()
+    // A unique identifier for the family member. It is initialized as an empty string by default.
+    // When the object is added to Firebase, Firestore automatically assigns it a unique ID.
+    var documentId: String = ""
 
     /**
      * Returns the full name of the family member, combining the first and last name.
@@ -28,32 +28,30 @@ open class FamilyMember(
     }
 
     /**
-     * Converts the FamilyMember object to a Map<String, Any> for storage in Firestore.
+     * Retrieves the first name of the family member.
      *
-     * @return A Map representation of the FamilyMember object.
+     * @return The first name as a string.
      */
-    fun toMap(): Map<String, Any> {
-        return mapOf(
-            "firstName" to firstName,
-            "lastName" to lastName,
-            "gender" to gender,
-            "ID" to ID
-        )
+    fun getFirstName(): String {
+        return firstName
     }
 
     /**
-     * Creates a FamilyMember object from a Map<String, Any> retrieved from Firestore.
+     * Retrieves the gender of the family member.
      *
-     * @param map The Map representation of the FamilyMember object.
-     * @return A new FamilyMember object created from the provided Map.
+     * @return The gender.
      */
-    companion object {
-        fun fromMap(map: Map<String, Any>): FamilyMember {
-            return FamilyMember(
-                map["firstName"] as String,
-                map["lastName"] as String,
-                map["gender"] as Boolean
-            )
-        }
+    fun getGender(): Boolean {
+        return gender;
     }
+
+    /**
+     * Retrieves the last name of the family member.
+     *
+     * @return The last name as a string.
+     */
+    fun getLastName(): String {
+        return lastName
+    }
+
 }

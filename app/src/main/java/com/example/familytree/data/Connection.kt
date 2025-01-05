@@ -22,5 +22,5 @@ package com.example.familytree.data
  */
 data class Connection(
     val member: FamilyMember,
-    val relationship: Realations
+    val relationship: Relations
 )

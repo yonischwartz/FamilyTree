@@ -1,18 +1,17 @@
 package com.example.familytree.ui.theme
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.unit.dp
 import com.example.familytree.data.FamilyMember
-import com.example.familytree.data.FirebaseManager
+import com.example.familytree.data.dataManagement.*
 
 @Composable
 fun NewMemberDialog(
-    firebaseManager: FirebaseManager,
+    familyTreeData: FamilyTreeData,
     onDismiss: () -> Unit
 ) {
     var firstName by remember { mutableStateOf("") }
@@ -57,12 +56,12 @@ fun NewMemberDialog(
                         Text("ביטול")
                     }
                     Button(onClick = {
-                        askUserForDetailsOfNewMember(
-                            firebaseManager = firebaseManager,
+                        val newMember = FamilyMember(
                             firstName = firstName,
                             lastName = lastName,
-                            gender = gender
+                            gender = (gender == "Male")
                         )
+                        familyTreeData.addNewMemberToTree(newMember)
                         onDismiss()
                     }) {
                         Text("הוסף")
@@ -71,19 +70,4 @@ fun NewMemberDialog(
             }
         }
     }
-}
-
-fun askUserForDetailsOfNewMember(
-    firebaseManager: FirebaseManager,
-    firstName: String,
-    lastName: String,
-    gender: String
-) {
-    val newMember = FamilyMember(
-        firstName = firstName,
-        lastName = lastName,
-        gender = (gender == "Male")
-    )
-
-    firebaseManager.addNewMemberToTree(newMember)
 }

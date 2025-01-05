@@ -1,7 +1,7 @@
 package com.example.familytree.data.exceptions
 
 import com.example.familytree.data.FamilyMember
-import com.example.familytree.data.Realations
+import com.example.familytree.data.Relations
 
 /**
  * Exception thrown when a family member is assigned a relationship
@@ -34,7 +34,7 @@ class InvalidRelationshipException : Exception {
      * @param familyMember the family member for whom the invalid relationship was attempted.
      * @param relation     the conflicting or duplicate relationship that caused the error.
      */
-    constructor(familyMember: FamilyMember, relation: Realations) : super(
+    constructor(familyMember: FamilyMember, relation: Relations) : super(
         "Invalid relationship for member ${familyMember.getFullName()}: Cannot add relationship '$relation' because it conflicts with an existing relationship."
     )
 }

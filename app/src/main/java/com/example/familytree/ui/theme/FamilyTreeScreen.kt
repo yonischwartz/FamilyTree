@@ -10,25 +10,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.familytree.data.*
+import com.example.familytree.data.dataManagement.*
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun FamilyTreeScreen(modifier: Modifier = Modifier) {
     // Try-catch for initialization errors
-    val firebaseManager = try {
-        FirebaseManager(MemberMapByID.getInstance(), FamilyConnections.getInstance())
+    val familyTreeData = try {
+        FamilyTreeData()
     } catch (e: Exception) {
-        Log.e("FamilyTreeScreen", "Error initializing FirebaseManager", e)
+        Log.e("FamilyTreeScreen", "Error initializing FamilyTreeData", e)
         null
     }
 
-    if (firebaseManager == null) {
+    // Call loadDataFromFirebase when the screen is opened
+    LaunchedEffect(Unit) {
+        familyTreeData?.loadDataFromFirebase()
+    }
+
+    if (familyTreeData == null) {
         // Handle error or display an error message
-        Log.e("FamilyTreeScreen", "FirebaseManager initialization failed")
+        Log.e("FamilyTreeScreen", "FamilyTreeData initialization failed")
     }
 
     var searchQuery by remember { mutableStateOf("") }
-    var showDialog by remember { mutableStateOf(false) }  // State to show/hide dialog
+    var showDialog by remember { mutableStateOf(false) }
+    var showMemberList by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -59,7 +66,7 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                label = { Text("חפש לפי שם") }, // Translated to "Search by Name"
+                label = { Text("חפש לפי שם") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
@@ -75,7 +82,7 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
             ) {
                 item {
                     Text(
-                        text = "אין בני משפחה להצגה.", // Translated to "No family members to display."
+                        text = "אין בני משפחה להצגה.",
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
@@ -91,15 +98,31 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                 onClick = { showDialog = true },
                 modifier = Modifier.padding(16.dp)
             ) {
-                Text("הוסף בן משפחה חדש") // Translated to "Add New Family Member"
+                Text("הוסף בן משפחה חדש")
+            }
+
+            Button(
+                onClick = { showMemberList = true },
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text("הצג את כל בני המשפחה")
             }
 
             // Show the dialog if showDialog is true
             if (showDialog) {
-                firebaseManager?.let { fm ->
+                familyTreeData?.let { fm ->
                     NewMemberDialog(
-                        firebaseManager = fm,
+                        familyTreeData = fm,
                         onDismiss = { showDialog = false }
+                    )
+                }
+            }
+
+            if (showMemberList) {
+                familyTreeData?.let { fm ->
+                    MemberListDialog(
+                        familyTreeData = fm,
+                        onDismiss = { showMemberList = false }
                     )
                 }
             }
