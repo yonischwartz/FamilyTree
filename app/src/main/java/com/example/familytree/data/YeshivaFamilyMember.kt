@@ -1,21 +1,28 @@
 package com.example.familytree.data
 
 /**
- * Represents a family member who is or was associated with the yeshiva,
- * including students, rabbis, and staff.
+ * Represents a family member associated with a yeshiva,
+ * which can include students, rabbis, and staff members.
  *
- * @property machzor The year the family member joined the yeshiva.
- *                   Default is 0 if the member didn't join or isn't a student.
+ * @param firstName The first name of the family member.
+ * @param lastName The last name of the family member.
+ * @param gender The gender of the family member (true for male, false for female).
+ * @param machzor The machzor (academic cycle) the student belongs to, or 0 for non-students.
+ * @param rabbi A boolean indicating whether the person is a rabbi.
  */
-open class YeshivaFamilyMember(
+class YeshivaFamilyMember(
     firstName: String,
     lastName: String,
-    gender: Boolean,     // Family member's gender (true = male, false = female)
-    val machzor: Int
+    gender: Boolean,
+    private val machzor: Int = 0,  // Default to 0 for non-students
+    private val rabbi: Boolean
 ) : FamilyMember(firstName, lastName, gender) {
+
     /**
-     * Secondary constructor for cases where the member doesn't have a machzor,
-     * such as a rabbi who wasn't a student in the yeshiva.
+     * Secondary constructor for creating a YeshivaFamilyMember with no machzor,
+     * useful for rabbis or staff who did not study at the yeshiva.
      */
-    constructor(firstName: String, lastName: String, gender: Boolean) : this(firstName, lastName, gender, 0)
+    constructor(firstName: String, lastName: String, gender: Boolean, rabbi: Boolean) : this(
+        firstName, lastName, gender, 0, rabbi
+    )
 }

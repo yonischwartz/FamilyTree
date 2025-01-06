@@ -73,7 +73,7 @@ fun NewMemberDialog(
                                 lastName = lastName,
                                 gender = (gender == "Male")
                             )
-                            familyTreeData.addNewMemberToTree(newMember)
+                            familyTreeData.addNewFamilyMemberToTree(newMember)
                             onDismiss()
                         }) {
                             Text("הוסף")

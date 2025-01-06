@@ -3,12 +3,15 @@ package com.example.familytree.data.dataManagement
 import com.example.familytree.data.Connection
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.Relations
+import com.example.familytree.data.YeshivaFamilyMember
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.firestore.FirebaseFirestoreSettings
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.SetOptions
 
+/**
+ * FamilyTreeData is responsible for managing family tree data,
+ * including interacting with Firebase to load and store family members
+ * and relationships. It handles data using member map, and adjacency list.
+ */
 class FamilyTreeData {
 
     // Member Map
@@ -38,7 +41,6 @@ class FamilyTreeData {
      * and checking gender-based connections.
      */
     init {
-
         relationshipGenderMap[Relations.FATHER] = true  // FATHER should be male
         relationshipGenderMap[Relations.MOTHER] = false  // MOTHER should be female
         relationshipGenderMap[Relations.SON] = true  // SON should be male
@@ -64,13 +66,26 @@ class FamilyTreeData {
         fetchFamilyConnections(db, idMap, adjacencyList)
     }
 
-    fun addNewMemberToTree(familyMember: FamilyMember) {
+    /**
+     * Adds a new family member to the tree (including both yeshiva and non-yeshiva members)
+     * and saves it in Firebase.
+     * The member is added to the "memberMap" collection in Firestore,
+     * and a corresponding document for family connections is created.
+     *
+     * @param familyMember The family member object to be added.
+     */
+    fun addNewFamilyMemberToTree(familyMember: FamilyMember) {
+        var familyMemberToBeAdded = familyMember
+
+        if (familyMember is YeshivaFamilyMember) {
+            familyMemberToBeAdded = (familyMember as? YeshivaFamilyMember)!!
+        }
 
         // Save member to Firebase
-        db.collection("memberMap").add(familyMember)
+        db.collection("memberMap").add(familyMemberToBeAdded)
             .addOnSuccessListener { documentReference ->
                 // Set the document ID in the FamilyMember object
-                familyMember.documentId = documentReference.id
+                familyMemberToBeAdded.documentId = documentReference.id
 
                 // Update the document with the documentId field
                 db.collection("memberMap").document(documentReference.id)
@@ -92,13 +107,11 @@ class FamilyTreeData {
             .addOnFailureListener { e -> println("Error adding member: $e") }
 
         // Add member to IDMap
-        idMap[familyMember.documentId] = familyMember
+        idMap[familyMemberToBeAdded.documentId] = familyMember
 
         // Add member to AdjacencyList
-        adjacencyList[familyMember.documentId] = mutableListOf()
-
+        adjacencyList[familyMemberToBeAdded.documentId] = mutableListOf()
     }
-
 
     /**
      * Retrieves all family members from the ID map.
@@ -166,5 +179,16 @@ class FamilyTreeData {
      */
     fun getConnectionsForMember(memberId: String): List<Connection>? {
         return adjacencyList[memberId]
+    }
+
+    /**
+     * Searches for family members whose full name matches or contains the provided search term.
+     *
+     * @param searchTerm The string representing either a full name or a substring of a name to search for.
+     * @return A list of FamilyMember objects whose names match or contain the search term.
+     */
+    fun searchForMember(searchTerm: String): List<FamilyMember> {
+        val searchLower = searchTerm.lowercase()
+        return idMap.values.filter { it.getFullName().lowercase().contains(searchLower) }
     }
 }
