@@ -3,7 +3,6 @@ package com.example.familytree.data.dataManagement
 import com.example.familytree.data.Connection
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.Relations
-import com.example.familytree.data.YeshivaFamilyMember
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -75,17 +74,12 @@ class FamilyTreeData {
      * @param familyMember The family member object to be added.
      */
     fun addNewFamilyMemberToTree(familyMember: FamilyMember) {
-        var familyMemberToBeAdded = familyMember
-
-        if (familyMember is YeshivaFamilyMember) {
-            familyMemberToBeAdded = (familyMember as? YeshivaFamilyMember)!!
-        }
 
         // Save member to Firebase
-        db.collection("memberMap").add(familyMemberToBeAdded)
+        db.collection("memberMap").add(familyMember)
             .addOnSuccessListener { documentReference ->
                 // Set the document ID in the FamilyMember object
-                familyMemberToBeAdded.documentId = documentReference.id
+                familyMember.documentId = documentReference.id
 
                 // Update the document with the documentId field
                 db.collection("memberMap").document(documentReference.id)
@@ -107,10 +101,10 @@ class FamilyTreeData {
             .addOnFailureListener { e -> println("Error adding member: $e") }
 
         // Add member to IDMap
-        idMap[familyMemberToBeAdded.documentId] = familyMember
+        idMap[familyMember.documentId] = familyMember
 
         // Add member to AdjacencyList
-        adjacencyList[familyMemberToBeAdded.documentId] = mutableListOf()
+        adjacencyList[familyMember.documentId] = mutableListOf()
     }
 
     /**

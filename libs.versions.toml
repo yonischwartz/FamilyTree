@@ -7,6 +7,9 @@ junit = "4.13.2"
 androidxJunit = "1.2.1"
 espressoCore = "3.6.1"
 uiToolingPreviewAndroid = "1.7.6"
+jewishCalendar = "1.27"
+zmanim = "2.5.0"
+material3 = "1.1.0"
 
 [libraries]
 composeUi = { module = "androidx.compose.ui:ui", version.ref = "compose" }
@@ -17,6 +20,7 @@ junit = { module = "junit:junit", version.ref = "junit" }
 androidxJunit = { module = "androidx.test.ext:junit", version.ref = "androidxJunit" }
 espressoCore = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
 uiToolingPreviewAndroid = { group = "androidx.compose.ui", name = "ui-tooling-preview-android", version.ref = "uiToolingPreviewAndroid" }  # Correct reference to espressoCore version
+jewishDate = { module = "com.kosherjava:zmanim", version.ref = "zmanim" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version = "8.1.4" }

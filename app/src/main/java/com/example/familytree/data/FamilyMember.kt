@@ -1,18 +1,25 @@
 package com.example.familytree.data
 
 /**
- * Represents a family member with their personal details and a unique ID.
+ * Represents a family member with personal details and identifiers.
+ * This class is designed to handle both yeshiva family members and non-yeshiva family members.
  *
- * @property firstName The first name of the family member.
- * @property lastName The last name of the family member.
- * @property gender The gender of the family member, represented as a Boolean.
- *                  `true` for male, `false` for female.
- * @property documentId
+ * @property firstName The first name of the family member (default is an empty string).
+ * @property lastName The last name of the family member (default is an empty string).
+ * @property gender The gender of the family member, where true typically represents male and false female (default is true).
+ * @property machzor The machzor of the family member
+ *                   For yeshiva members who did not study in the yeshiva (e.g., staff), machzor is set to 0.
+ *                   For non-yeshiva members, machzor is null.
+ * @property isRabbi Indicates if the family member is a rabbi (nullable, default is null).
+ *                 For yeshiva members who are rabbis, this is set to true, while for non-yeshiva members, rabbi is null.
  */
-open class FamilyMember(
+
+class FamilyMember(
     private val firstName: String = "",
     private val lastName: String = "",
-    private val gender: Boolean = true
+    private val gender: Boolean = true,
+    private val machzor: Int? = null,  // machzor is 0 for non-student yeshiva members
+    private val isRabbi: Boolean? = null
 ) {
     // A unique identifier for the family member. It is initialized as an empty string by default.
     // When the object is added to Firebase, Firestore automatically assigns it a unique ID.
@@ -39,10 +46,10 @@ open class FamilyMember(
     /**
      * Retrieves the gender of the family member.
      *
-     * @return The gender.
+     * @return The gender as a boolean.
      */
     fun getGender(): Boolean {
-        return gender;
+        return gender
     }
 
     /**
@@ -54,4 +61,22 @@ open class FamilyMember(
         return lastName
     }
 
+    /**
+     * Retrieves the machzor (class year) of the family member.
+     * Note: machzor is 0 for non-student yeshiva members (e.g., staff or rabbis).
+     *
+     * @return The machzor as an Int, or null if not set.
+     */
+    fun getMachzor(): Int? {
+        return machzor
+    }
+
+    /**
+     * Checks if the family member is a rabbi.
+     *
+     * @return True if the rabbi field is true, false if it is false, or null if not set.
+     */
+    fun getIsRabbi(): Boolean? {
+        return isRabbi
+    }
 }
