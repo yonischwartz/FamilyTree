@@ -13,7 +13,11 @@ import com.example.familytree.data.MemberType
  * @param onAddMember Callback to handle the addition of a new [FamilyMember] to the tree.
  */
 @Composable
-fun AddFamilyMemberDialog(onDismiss: () -> Unit, onAddMember: (FamilyMember) -> Unit) {
+fun AddFamilyMemberDialog(
+    onDismiss: () -> Unit,
+    onAddMember: (FamilyMember) -> Unit,
+    existingMembers: List<FamilyMember>
+) {
     // State variables to capture user input.
     var selectedMemberType by remember { mutableStateOf<MemberType?>(null) }
     var firstName by remember { mutableStateOf("") }
@@ -68,6 +72,7 @@ fun AddFamilyMemberDialog(onDismiss: () -> Unit, onAddMember: (FamilyMember) -> 
                     machzor = machzor,
                     isRabbi = isRabbi,
                     gender = gender,
+                    existingMembers = existingMembers,
                     onAddMember = onAddMember,
                     onDismiss = onDismiss
                 )

@@ -44,7 +44,7 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
     // State variables for UI components
     var searchQuery by remember { mutableStateOf("") }
     var searchResults by remember { mutableStateOf<List<FamilyMember>>(emptyList()) }
-    var showDialog by remember { mutableStateOf(false) }
+    var showAddMemberDialog by remember { mutableStateOf(false) }
     var showMemberList by remember { mutableStateOf(false) }
 
     // Scaffold provides a consistent visual structure with a top bar
@@ -91,7 +91,7 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         // Button to add a new family member
-                        AddMemberButton(onAddMember = { showDialog = true })
+                        AddMemberButton(onAddMember = { showAddMemberDialog = true })
                         Spacer(modifier = Modifier.height(16.dp))
                         YbmLogo() // Display the logo
                         Spacer(modifier = Modifier.height(16.dp))
@@ -100,16 +100,17 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                     }
 
                     // Dialog for adding a new family member (Yeshiva or Non-Yeshiva)
-                    if (showDialog) {
+                    if (showAddMemberDialog) {
                         familyTreeData?.let { fm ->
                             AddFamilyMemberDialog(
-                                onDismiss = { showDialog = false },
+                                onDismiss = { showAddMemberDialog = false },
                                 onAddMember = { member ->
-                                    // Add the new member to the family tree
                                     fm.addNewFamilyMemberToTree(member)
-                                    showDialog = false
-                                }
+                                    showAddMemberDialog = false
+                                },
+                                existingMembers = fm.getAllMembers()
                             )
+
                         }
                     }
 

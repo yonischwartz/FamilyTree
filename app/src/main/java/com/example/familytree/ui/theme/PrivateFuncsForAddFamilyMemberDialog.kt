@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 
 
+
 /**
  * Displays the title of the dialog.
  *
@@ -242,30 +243,39 @@ internal fun MachzorInput(machzor: Int?,
 }
 
 /**
- * Displays the confirm button and handles member addition.
+ * Displays a button to confirm adding a new family member and handles potential duplicates.
+ * If a member with the same first name, last name, and machzor exists, prompts the user
+ * to confirm or reject using the existing member.
  *
  * @param firstName The first name input.
  * @param lastName The last name input.
- * @param memberType The selected member type.
- * @param machzor The machzor input.
- * @param isRabbi The rabbi status.
- * @param gender The gender input.
- * @param onAddMember Callback to add a member.
- * @param onDismiss Callback to dismiss the dialog.
+ * @param memberType The selected member type (Yeshiva or NonYeshiva).
+ * @param machzor The machzor input (nullable).
+ * @param isRabbi Indicates if the member is a rabbi (for Yeshiva members).
+ * @param gender The gender input (true for male, false for female).
+ * @param existingMembers A list of existing family members to check for duplicates.
+ * @param onAddMember Callback function to add a new family member.
+ * @param onDismiss Callback function to dismiss the add member dialog.
  */
 @Composable
 internal fun ConfirmButton(
     firstName: String, lastName: String, memberType: MemberType?, machzor: Int?,
     isRabbi: Boolean, gender: Boolean,
+    existingMembers: List<FamilyMember>,
     onAddMember: (FamilyMember) -> Unit, onDismiss: () -> Unit
 ) {
+    var showDialog by remember { mutableStateOf(false) }
+    var matchedMember by remember { mutableStateOf<FamilyMember?>(null) }
+
     Button(
         onClick = {
-            if (firstName.isNotBlank() && lastName.isNotBlank()) {
+            val matched = findMatchingMember(firstName, lastName, machzor, existingMembers)
+            if (matched != null) {
+                matchedMember = matched
+                showDialog = true
+            } else if (firstName.isNotBlank() && lastName.isNotBlank()) {
                 val familyMember = when (memberType) {
-                    MemberType.Yeshiva -> FamilyMember(
-                        firstName, lastName, gender, machzor, isRabbi
-                    )
+                    MemberType.Yeshiva -> FamilyMember(firstName, lastName, gender, machzor, isRabbi)
                     MemberType.NonYeshiva -> FamilyMember(firstName, lastName, gender)
                     else -> throw IllegalArgumentException("Invalid member type")
                 }
@@ -275,5 +285,83 @@ internal fun ConfirmButton(
         }
     ) {
         Text("הוסף בן משפחה")
+    }
+
+    // Show duplicate member dialog if needed
+    if (showDialog && matchedMember != null) {
+        DuplicateMemberDialog(
+            matchedMember = matchedMember!!,
+            onConfirm = {
+                matchedMember?.let {
+                    onAddMember(it)
+                    onDismiss()
+                }
+                showDialog = false
+            },
+            onDismiss = {
+                // Add the new member again if user chooses to add a new one
+                if (firstName.isNotBlank() && lastName.isNotBlank()) {
+                    val familyMember = when (memberType) {
+                        MemberType.Yeshiva -> FamilyMember(firstName, lastName, gender, machzor, isRabbi)
+                        MemberType.NonYeshiva -> FamilyMember(firstName, lastName, gender)
+                        else -> throw IllegalArgumentException("Invalid member type")
+                    }
+                    onAddMember(familyMember)
+                }
+                showDialog = false
+            }
+        )
+    }
+}
+
+/**
+ * Displays a dialog to confirm if the user meant to select an existing family member.
+ * Prompts the user to confirm or reject using the existing member.
+ *
+ * @param matchedMember The matched family member to display.
+ * @param onConfirm Callback function to confirm the use of the existing member.
+ * @param onDismiss Callback function to dismiss the dialog without taking action.
+ */
+@Composable
+fun DuplicateMemberDialog(
+    matchedMember: FamilyMember,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Button(onClick = onConfirm) {
+                    Text("כן, זה הוא")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(onClick = onDismiss) {
+                    Text("לא, הוסף משתמש חדש")
+                }
+            }
+        },
+        dismissButton = {},
+        text = { Text("כבר קיים בן משפחה בשם ${matchedMember.getFullName()}. האם זו הכוונה?") }
+    )
+}
+
+/**
+ * Finds a matching family member in the provided list based on the first name, last name, and machzor.
+ *
+ * @param firstName The first name of the family member to search for.
+ * @param lastName The last name of the family member to search for.
+ * @param machzor The machzor of the family member to search for, or null if machzor is not applicable.
+ * @param members A list of existing family members to search within.
+ * @return The first matching family member if found, or null if no match is found.
+ */
+fun findMatchingMember(
+    firstName: String, lastName: String, machzor: Int?, members: List<FamilyMember>
+): FamilyMember? {
+    return members.find {
+        it.getFirstName() == firstName && it.getLastName() == lastName && it.getMachzor() == machzor
     }
 }

@@ -9,15 +9,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="added image to home screen, fixed all sorts of things. need to handle adding new yeshiva family member">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/AddFamilyMemberDialog.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/MachzorMap.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/NonYeshivaMemberDetailDialog.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/PrivateFuncsForAddFamilyMemberDialog.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/YeshivaMemberDetailDialog.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.9/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.9/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.9/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.9/checksums/md5-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.9/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.9/checksums/sha1-checksums.bin" afterDir="false" />
+    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="MachzorInput works">
       <change beforePath="$PROJECT_DIR$/.gradle/8.9/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.9/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.9/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.9/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.9/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.9/fileHashes/fileHashes.bin" afterDir="false" />
@@ -26,16 +18,13 @@
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/FamilyMember.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/FamilyMember.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/YeshivaFamilyMember.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/FamilyTreeData.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/FamilyTreeData.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/AddFamilyMemberForm.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/AddFamilyMemberForm.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/AddMemberTypeDialog.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/MemberListDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/MemberListDialog.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/NewMemberDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/NewMemberDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/AddFamilyMemberDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/AddFamilyMemberDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/AddFamilyMemberForm.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/NewMemberDialog.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/PrivateFuncsForAddFamilyMemberDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/PrivateFuncsForAddFamilyMemberDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/Theme.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/Theme.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/Type.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/Type.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/homeScreen/FamilyTreeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/homeScreen/FamilyTreeScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/libs.versions.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,7 +103,7 @@
   }
 }</component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="_Designer_Tab" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
@@ -256,7 +245,15 @@
       <option name="project" value="LOCAL" />
       <updated>1736195112135</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="MachzorInput works">
+      <option name="closed" value="true" />
+      <created>1736356754883</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1736356754883</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -274,7 +271,8 @@
     <MESSAGE value="add gitignore file" />
     <MESSAGE value="update" />
     <MESSAGE value="added image to home screen, fixed all sorts of things. need to handle adding new yeshiva family member" />
-    <option name="LAST_COMMIT_MESSAGE" value="added image to home screen, fixed all sorts of things. need to handle adding new yeshiva family member" />
+    <MESSAGE value="MachzorInput works" />
+    <option name="LAST_COMMIT_MESSAGE" value="MachzorInput works" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>
