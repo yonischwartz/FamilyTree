@@ -42,12 +42,10 @@ fun AddFamilyMemberDialog(
                         MemberType.Yeshiva -> YeshivaMemberForm(
                             firstName = firstName,
                             lastName = lastName,
-                            gender = gender,
                             machzor = machzor,
                             isRabbi = isRabbi,
                             onFirstNameChange = { firstName = it },
                             onLastNameChange = { lastName = it },
-                            onGenderChange = { gender = it },
                             onMachzorChange = { machzor = it },
                             onIsRabbiChange = { isRabbi = it }
                         )

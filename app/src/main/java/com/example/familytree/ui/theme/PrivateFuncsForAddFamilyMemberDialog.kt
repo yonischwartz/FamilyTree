@@ -38,18 +38,30 @@ internal fun AddMemberDialogTitle(selectedMemberType: MemberType?) {
  */
 @Composable
 internal fun MemberTypeSelection(onMemberTypeSelected: (MemberType) -> Unit) {
-    Button(
-        modifier = Modifier.fillMaxWidth(),
+    MemberTypeButton(
+        label = "בן משפחה מהישיבה",
         onClick = { onMemberTypeSelected(MemberType.Yeshiva) }
-    ) {
-        Text("בן משפחה מהישיבה")
-    }
+    )
     Spacer(modifier = Modifier.height(8.dp))
+    MemberTypeButton(
+        label = "בן משפחה שאינו מהישיבה",
+        onClick = { onMemberTypeSelected(MemberType.NonYeshiva) }
+    )
+}
+
+/**
+ * Represents a button for selecting a member type.
+ *
+ * @param label The text to display on the button.
+ * @param onClick Callback invoked when the button is clicked.
+ */
+@Composable
+private fun MemberTypeButton(label: String, onClick: () -> Unit) {
     Button(
         modifier = Modifier.fillMaxWidth(),
-        onClick = { onMemberTypeSelected(MemberType.NonYeshiva) }
+        onClick = onClick
     ) {
-        Text("בן משפחה שאינו מהישיבה")
+        Text(label)
     }
 }
 
@@ -58,24 +70,20 @@ internal fun MemberTypeSelection(onMemberTypeSelected: (MemberType) -> Unit) {
  *
  * @param firstName The first name input.
  * @param lastName The last name input.
- * @param gender The gender input.
  * @param machzor The machzor input.
  * @param isRabbi The rabbi status.
  * @param onFirstNameChange Callback for updating the first name.
  * @param onLastNameChange Callback for updating the last name.
- * @param onGenderChange Callback for updating the gender.
  * @param onMachzorChange Callback for updating the machzor.
  * @param onIsRabbiChange Callback for updating the rabbi status.
  */
 @Composable
 internal fun YeshivaMemberForm(
-    firstName: String, lastName: String, gender: Boolean, machzor: Int?, isRabbi: Boolean,
+    firstName: String, lastName: String, machzor: Int?, isRabbi: Boolean,
     onFirstNameChange: (String) -> Unit, onLastNameChange: (String) -> Unit,
-    onGenderChange: (Boolean) -> Unit, onMachzorChange: (Int?) -> Unit,
-    onIsRabbiChange: (Boolean) -> Unit
+    onMachzorChange: (Int?) -> Unit, onIsRabbiChange: (Boolean) -> Unit
 ) {
     MemberNameFields(firstName, lastName, onFirstNameChange, onLastNameChange)
-    GenderSelection(gender, onGenderChange)
     MachzorInput(
         machzor = machzor,
         onMachzorChange = onMachzorChange,

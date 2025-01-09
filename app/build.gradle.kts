@@ -47,6 +47,7 @@ dependencies {
     implementation ("androidx.compose.ui:ui:1.7.6")
     implementation("androidx.compose.material:material-icons-core:1.7.6")
     implementation("androidx.compose.material:material-icons-extended:1.7.6")
+    implementation("androidx.compose.material3:material3:1.3.1")
 
     // Test dependencies
     testImplementation(libs.junit)
