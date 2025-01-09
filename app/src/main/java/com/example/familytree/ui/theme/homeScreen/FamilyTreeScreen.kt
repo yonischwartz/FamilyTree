@@ -1,6 +1,8 @@
 package com.example.familytree.ui.theme.homeScreen
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -11,9 +13,9 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalLayoutDirection
 import com.example.familytree.data.FamilyMember
-import com.example.familytree.data.dataManagement.*
+import com.example.familytree.data.dataManagement.FamilyTreeData
 import com.example.familytree.ui.theme.MemberListDialog
-import com.example.familytree.ui.theme.AddFamilyMemberDialog  // Updated import
+import com.example.familytree.ui.theme.AddFamilyMemberDialog
 
 /**
  * Composable function that displays the main screen for the family tree application.
@@ -22,23 +24,16 @@ import com.example.familytree.ui.theme.AddFamilyMemberDialog  // Updated import
  *
  * @param modifier Modifier for customizing the layout.
  */
+@RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun FamilyTreeScreen(modifier: Modifier = Modifier) {
-    // Initialize FamilyTreeData with error handling
-    val familyTreeData = try {
-        FamilyTreeData()
-    } catch (e: Exception) {
-        Log.e("FamilyTreeScreen", "Error initializing FamilyTreeData", e)
-        null
-    }
-
     // Load family tree data from Firebase when the screen is first composed
     LaunchedEffect(Unit) {
-        familyTreeData?.loadDataFromFirebase()
-    }
-
-    if (familyTreeData == null) {
-        Log.e("FamilyTreeScreen", "FamilyTreeData initialization failed")
+        try {
+            FamilyTreeData.loadDataFromFirebase()
+        } catch (e: Exception) {
+            Log.e("FamilyTreeScreen", "Error loading data from Firebase", e)
+        }
     }
 
     // State variables for UI components
@@ -69,16 +64,14 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                         searchQuery,
                         onQueryChange = { searchQuery = it },
                         onSearch = {
-                            familyTreeData?.let {
-                                searchResults = it.searchForMember(searchQuery)
-                            }
+                            searchResults = FamilyTreeData.searchForMember(searchQuery)
                         }
                     )
 
                     // Show search results in a dialog if not empty
                     if (searchResults.isNotEmpty()) {
                         MemberListDialog(
-                            familyMembers = searchResults,
+                            initialFamilyMembers = searchResults,
                             onDismiss = { searchResults = emptyList() }
                         )
                     }
@@ -99,29 +92,24 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                         ShowMembersButton(onShowMembers = { showMemberList = true })
                     }
 
-                    // Dialog for adding a new family member (Yeshiva or Non-Yeshiva)
+                    // Dialog for adding a new family member
                     if (showAddMemberDialog) {
-                        familyTreeData?.let { fm ->
-                            AddFamilyMemberDialog(
-                                onDismiss = { showAddMemberDialog = false },
-                                onAddMember = { member ->
-                                    fm.addNewFamilyMemberToTree(member)
-                                    showAddMemberDialog = false
-                                },
-                                existingMembers = fm.getAllMembers()
-                            )
-
-                        }
+                        AddFamilyMemberDialog(
+                            onDismiss = { showAddMemberDialog = false },
+                            onAddMember = { member ->
+                                FamilyTreeData.addNewFamilyMemberToTree(member)
+                                showAddMemberDialog = false
+                            },
+                            existingMembers = FamilyTreeData.getAllMembers()
+                        )
                     }
 
                     // Dialog to display the list of all family members
                     if (showMemberList) {
-                        familyTreeData?.let { fm ->
-                            MemberListDialog(
-                                familyMembers = fm.getAllMembers(),
-                                onDismiss = { showMemberList = false }
-                            )
-                        }
+                        MemberListDialog(
+                            initialFamilyMembers = FamilyTreeData.getAllMembers(),
+                            onDismiss = { showMemberList = false }
+                        )
                     }
                 }
             }

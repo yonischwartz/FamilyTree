@@ -1,5 +1,7 @@
 package com.example.familytree.data.dataManagement
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.example.familytree.data.Connection
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.Relations
@@ -11,7 +13,7 @@ import com.google.firebase.ktx.Firebase
  * including interacting with Firebase to load and store family members
  * and relationships. It handles data using member map, and adjacency list.
  */
-class FamilyTreeData {
+object FamilyTreeData {
 
     // Member Map
     private val idMap: MutableMap<String, FamilyMember> = mutableMapOf()
@@ -50,8 +52,8 @@ class FamilyTreeData {
         relationshipGenderMap[Relations.GRANDDAUGHTER] = false  // GRANDDAUGHTER should be female
     }
 
-    // Firebase Instance
-    private val db = Firebase.firestore
+    // Firebase Firestore instance
+    private val db by lazy { Firebase.firestore }
 
     // functions
 
@@ -185,4 +187,40 @@ class FamilyTreeData {
         val searchLower = searchTerm.lowercase()
         return idMap.values.filter { it.getFullName().lowercase().contains(searchLower) }
     }
+
+    /**
+     * Deletes a family member from the family tree, including all their connections.
+     * The member is deleted from the ID map, adjacency list, and Firebase.
+     *
+     * @param memberId The unique identifier of the family member to be deleted.
+     * @return True if the member was successfully deleted, false if the member was not found.
+     */
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun deleteFamilyMember(memberId: String): Boolean {
+
+        // Delete connections from adjacency list
+        adjacencyList.remove(memberId)
+
+        // Delete the member from other members' connection lists
+        adjacencyList.forEach { (_, connections) ->
+            connections.removeIf { it.member.documentId == memberId }
+        }
+
+        // Delete the member from the ID map
+        idMap.remove(memberId)
+
+        // Delete member and connections from Firebase
+        db.collection("memberMap").document(memberId)
+            .delete()
+            .addOnSuccessListener { println("Member deleted from Firebase successfully!") }
+            .addOnFailureListener { e -> println("Error deleting member from Firebase: $e") }
+
+        db.collection("familyConnections").document(memberId)
+            .delete()
+            .addOnSuccessListener { println("Connections deleted from Firebase successfully!") }
+            .addOnFailureListener { e -> println("Error deleting connections from Firebase: $e") }
+
+        return true
+    }
 }
+
