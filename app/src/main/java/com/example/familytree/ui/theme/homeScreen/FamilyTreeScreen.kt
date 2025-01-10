@@ -100,7 +100,7 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                                 FamilyTreeData.addNewFamilyMemberToTree(member)
                                 showAddMemberDialog = false
                             },
-                            existingMembers = FamilyTreeData.getAllMembers()
+                            existingMembers = FamilyTreeData.getAllMembers(),
                         )
                     }
 
