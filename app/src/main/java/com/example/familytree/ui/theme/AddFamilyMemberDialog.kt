@@ -1,10 +1,13 @@
 package com.example.familytree.ui.theme
 
+import android.content.Context
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.MemberType
 import com.example.familytree.data.Relations
@@ -22,6 +25,7 @@ fun AddFamilyMemberDialog(
     onAddMember: (FamilyMember) -> Unit,
     existingMembers: List<FamilyMember>
 ) {
+
     // State variables to capture user input.
     var selectedMemberType by remember { mutableStateOf<MemberType?>(null) }
     var firstName by remember { mutableStateOf("") }
@@ -29,6 +33,7 @@ fun AddFamilyMemberDialog(
     var gender by remember { mutableStateOf(true) } // true for male, false for female
     var machzor by remember { mutableStateOf<Int?>(null) }
     var isRabbi by remember { mutableStateOf(false) }
+
 
     if (existingMembers.isEmpty()) {
         AddFirstMemberToTree(

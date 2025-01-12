@@ -553,16 +553,16 @@ private fun HowAreTheyRelated(
 private fun Relations.displayName(): String {
     return when (this) {
         Relations.MARRIAGE -> "נשוי ל"
-        Relations.FATHER -> "אבא של"
-        Relations.MOTHER -> "אמא של"
-        Relations.SON -> "בן של"
-        Relations.DAUGHTER -> "בת של"
-        Relations.GRANDMOTHER -> "סבתא של"
-        Relations.GRANDFATHER -> "סבא של"
-        Relations.GRANDSON -> "נכד של"
-        Relations.GRANDDAUGHTER -> "נכדה של"
-        Relations.COUSINS -> "בן דוד / בת דודה של"
-        Relations.SIBLINGS -> "אח / אחות של"
+        Relations.FATHER -> "אבא של "
+        Relations.MOTHER -> "אמא של "
+        Relations.SON -> "בן של "
+        Relations.DAUGHTER -> "בת של "
+        Relations.GRANDMOTHER -> "סבתא של "
+        Relations.GRANDFATHER -> "סבא של "
+        Relations.GRANDSON -> "נכד של "
+        Relations.GRANDDAUGHTER -> "נכדה של "
+        Relations.COUSINS -> "בן דוד / בת דודה של "
+        Relations.SIBLINGS -> "אח / אחות של "
     }
 }
 
@@ -681,12 +681,18 @@ fun AddNewMemberAndRelateToExistingMember(
     var selectedRelation: Relations? by remember { mutableStateOf(null) }
 
     when (step) {
-        1 -> ChooseMemberToRelateTo(
+        1 -> {
+            ChooseMemberToRelateTo(
             members = existingMembers,
             onMemberSelected = { selectedMember = it },
             onNext = { step = 2 }
-        )
+            )
+        }
         2 -> {
+
+            val context = LocalContext.current
+            Toast.makeText(context, "עקיבא פרגר!", Toast.LENGTH_SHORT).show()
+
             selectedMember?.let { member ->
                 HowAreTheyRelated(
                     existingMember = member,
