@@ -1,6 +1,7 @@
 package com.example.familytree.ui.theme
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.familytree.data.dataManagement.FamilyTreeData
 import com.example.familytree.data.FamilyMember
@@ -26,8 +27,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import android.widget.Toast
-import androidx.compose.runtime.mutableIntStateOf
-
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.Color
 
 /**
  * Displays the title of the dialog.
@@ -277,10 +278,15 @@ private fun MachzorInput(machzor: Int?,
  */
 @Composable
 internal fun ConfirmAddingNewMemberButton(
-    firstName: String, lastName: String, memberType: MemberType?, machzor: Int?,
-    isRabbi: Boolean, gender: Boolean,
+    firstName: String,
+    lastName: String,
+    memberType: MemberType?,
+    machzor: Int?,
+    isRabbi: Boolean,
+    gender: Boolean,
     existingMembers: List<FamilyMember>,
-    onAddMember: (FamilyMember) -> Unit, onDismiss: () -> Unit
+    onAddMember: (FamilyMember) -> Unit,
+    onDismiss: () -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var matchedMember by remember { mutableStateOf<FamilyMember?>(null) }
@@ -317,7 +323,7 @@ internal fun ConfirmAddingNewMemberButton(
                 showDialog = false
             },
             onDismiss = {
-                // Add the new member again if user chooses to add a new one
+                // Add the new member with the same name if user chooses to add him after all
                 if (firstName.isNotBlank() && lastName.isNotBlank()) {
                     val familyMember = when (memberType) {
                         MemberType.Yeshiva -> FamilyMember(firstName, lastName, gender, machzor, isRabbi)
@@ -384,6 +390,88 @@ private fun findMatchingMember(
     }
 }
 
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun ChooseMemberToRelateTo(
+//    members: List<FamilyMember>,
+//    onMemberSelected: (FamilyMember) -> Unit,
+//) {
+//
+//    // State to store the selected family member
+//    var selectedMember by remember { mutableStateOf<FamilyMember?>(null) }
+//
+//    // Main column layout for the composable
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(16.dp),
+//        verticalArrangement = Arrangement.Center,
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//
+//        // Display the instructional text
+//        Text(
+//            text = "בני משפחה חדשים נדרשים להיות קשורים לבן משפחה קיים בעץ.",
+//            fontSize = 18.sp,
+//            modifier = Modifier.padding(bottom = 16.dp)
+//        )
+//
+//        // Prompt text for selecting a family member to relate to
+//        Text(
+//            text = "לאיזה בן משפחה בעץ, מקושר בן המשפחה שאתה רוצה להוסיף?",
+//            fontSize = 16.sp,
+//            modifier = Modifier.padding(bottom = 16.dp)
+//        )
+//
+//        // Dropdown menu for selecting a family member
+//        var expanded by remember { mutableStateOf(false) }
+//        Box(modifier = Modifier.fillMaxWidth()) {
+//            TextButton(
+//                onClick = { expanded = true },
+//                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                // Display the name of the selected member or placeholder if none selected
+//                Text(text = selectedMember?.getFullName() ?: "בחר בן משפחה", fontSize = 16.sp)
+//            }
+//            // Dropdown menu with member options
+//            DropdownMenu(
+//                expanded = expanded,
+//                onDismissRequest = { expanded = false }
+//            ) {
+//                members.forEach { member ->
+//                    // Each dropdown item displays a member's name
+//                    DropdownMenuItem(onClick = {
+//                        selectedMember = member
+//                        expanded = false
+//                    }, text = {
+//                        Text(text = member.getFullName())
+//                    })
+//                }
+//            }
+//        }
+//
+//        Spacer(modifier = Modifier.height(24.dp))
+//
+//        // Button that confirms the selection and invokes the callback with the selected family member.
+//        Button(
+//            onClick = {
+//                selectedMember?.let {
+//                    // Trigger the callbacks with the selected member and proceed
+//                    onMemberSelected(it)
+//                }
+//            },
+//            enabled = selectedMember != null, // Enable button only if a member is selected
+//            modifier = Modifier.align(Alignment.End)
+//        ) {
+//            Text(text = "המשך")
+//        }
+//    }
+//
+//
+//
+//
+//}
+
 /**
  * Composable function that allows the user to select a family member from a list to relate to
  * when adding a new family member. It displays a dropdown menu with the list of family members,
@@ -392,163 +480,184 @@ private fun findMatchingMember(
  * @param members List of family members to display in the dropdown menu.
  * @param onMemberSelected Callback function that is triggered when a family member is selected.
  *        It returns the selected `FamilyMember` object.
- * @param onNext Callback function that is triggered when the "המשך" (Next) button is clicked,
- *        typically to proceed to the next step in the process.
  */
 @Composable
-private fun ChooseMemberToRelateTo(
+fun ChooseMemberToRelateTo(
     members: List<FamilyMember>,
     onMemberSelected: (FamilyMember) -> Unit,
-    onNext: () -> Unit
 ) {
-    // State to store the selected family member
     var selectedMember by remember { mutableStateOf<FamilyMember?>(null) }
+    var expanded by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(true) }
 
-    // Main column layout for the composable
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        // Display the instructional text
-        Text(
-            text = "בני משפחה חדשים נדרשים להיות קשורים לבן משפחה קיים בעץ.",
-            fontSize = 18.sp,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        // Prompt text for selecting a family member to relate to
-        Text(
-            text = "לאיזה בן משפחה בעץ, מקושר בן המשפחה שאתה רוצה להוסיף?",
-            fontSize = 16.sp,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        // Dropdown menu for selecting a family member
-        var expanded by remember { mutableStateOf(false) }
-        Box(modifier = Modifier.fillMaxWidth()) {
-            TextButton(
-                onClick = { expanded = true },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                // Display the name of the selected member or placeholder if none selected
-                Text(text = selectedMember?.getFullName() ?: "בחר בן משפחה", fontSize = 16.sp)
-            }
-            // Dropdown menu with member options
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                members.forEach { member ->
-                    // Each dropdown item displays a member's name
-                    DropdownMenuItem(onClick = {
-                        selectedMember = member
-                        expanded = false
-                    }, text = {
-                        Text(text = member.getFullName())
-                    })
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Button to continue after selecting a family member
-        Button(
-            onClick = {
-                selectedMember?.let {
-                    // Trigger the callbacks with the selected member and proceed
-                    onMemberSelected(it)
-                    onNext()
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = {
+                Text(text = "בני משפחה חדשים נדרשים להיות קשורים לבן משפחה קיים בעץ.")
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "לאיזה בן משפחה בעץ, מקושר בן המשפחה שאתה רוצה להוסיף?",
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        TextButton(
+                            onClick = { expanded = true },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(text = selectedMember?.getFullName() ?: "בחר בן משפחה", fontSize = 16.sp)
+                        }
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            members.forEach { member ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        selectedMember = member
+                                        expanded = false
+                                    },
+                                    text = {
+                                        Text(text = member.getFullName())
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
             },
-            enabled = selectedMember != null, // Enable button only if a member is selected
-            modifier = Modifier.align(Alignment.End)
-        ) {
-            Text(text = "המשך")
-        }
+            confirmButton = {
+                Button(
+                    onClick = {
+                        selectedMember?.let {
+                            onMemberSelected(it)
+                            showDialog = false
+                        }
+                    },
+                    enabled = selectedMember != null
+                ) {
+                    Text(text = "המשך")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text(text = "בטל")
+                }
+            }
+        )
     }
 }
 
 /**
  * A composable function that displays a user interface for selecting the relation
- * between an existing family member and a new family member to be added.
+ * between an existing family member and a new family member to be added using an AlertDialog.
  *
- * @param existingMember The `FamilyMember` object representing the existing family member.
+ * @param existingMember The FamilyMember object representing the existing family member.
  * @param onRelationSelected A callback function that is invoked with the selected relation
  * when the user clicks the "המשך" (Next) button.
  */
-    @Composable
+@Composable
 private fun HowAreTheyRelated(
     existingMember: FamilyMember,
     onRelationSelected: (Relations) -> Unit
 ) {
-    // Holds the currently selected relation, initialized to null.
     var selectedRelation by remember { mutableStateOf<Relations?>(null) }
+    var expanded by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(true) }
 
-    // Generates a list of relation options formatted as dropdown choices.
-    val relationOptions = Relations.entries.map { relation ->
-        "בן המשפחה שאני רוצה להוסיף, הוא ${relation.displayName()} ${existingMember.getFullName()}"
-    }
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = {
+                Text(text = "כיצד ${existingMember.getFullName()} קשור לבן המשפחה החדש?")
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // Displays the question prompting the user to choose how the new member is related.
+                    Text(
+                        text = "בן המשפחה שאני רוצה להוסיף הוא",
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        // Displays the question prompting the user to choose how the new member is related.
-        Text(
-            text = "כיצד ${existingMember.getFullName()} קשור לחבר המשפחה החדש?",
-            style = MaterialTheme.typography.headlineSmall
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Manages dropdown menu expansion state.
-        var expanded by remember { mutableStateOf(false) }
-
-        Box {
-            // Button that opens or closes the dropdown menu.
-            OutlinedButton(onClick = { expanded = !expanded }) {
-                Text(text = selectedRelation?.displayName() ?: "בחר קשר משפחתי")
-            }
-
-            // Dropdown menu listing all relation options.
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                Relations.entries.forEach { relation ->
-                    DropdownMenuItem(
-                        onClick = {
-                            selectedRelation = relation
-                            expanded = false
-                        },
-                        text = {
-                            Text(text = relation.displayName())
+                    // Row for the button and selected relation to be on the same line
+                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        OutlinedButton(
+                            onClick = { expanded = !expanded },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(text = "בחר קשר משפחתי")
                         }
+
+                        // Displays the selected relation
+                        selectedRelation?.let {
+                            Text(text = it.displayName(), fontSize = 16.sp)
+                        }
+                    }
+
+                    // Dropdown menu listing all relation options.
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        Relations.entries.forEach { relation ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    selectedRelation = relation
+                                    expanded = false
+                                },
+                                text = {
+                                    Text(text = relation.displayName())
+                                }
+                            )
+                        }
+                    }
+                    Text(
+                        text = existingMember.getFullName(),
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Button that confirms the selection and invokes the callback with the selected relation.
-        Button(
-            onClick = {
-                selectedRelation?.let(onRelationSelected)
             },
-            enabled = selectedRelation != null
-        ) {
-            Text(text = "המשך")
-        }
+            confirmButton = {
+                Button(
+                    onClick = {
+                        selectedRelation?.let {
+                            onRelationSelected(it)
+                            showDialog = false
+                        }
+                    },
+                    enabled = selectedRelation != null
+                ) {
+                    Text(text = "המשך")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text(text = "בטל")
+                }
+            }
+        )
     }
 }
-
-
 
 /**
  * Provides Hebrew-friendly display names for Relations enum.
  * This function returns a string that represents the relationship between two family members.
  *
- * @return A string representing the relationship in Hebrew, such as "אבא של" for FATHER or "נכד של" for GRANDSON.
+ * @return A string representing the relationship in Hebrew, such as "אבא של " for FATHER or "נכד של " for GRANDSON.
  */
 private fun Relations.displayName(): String {
     return when (this) {
@@ -567,43 +676,27 @@ private fun Relations.displayName(): String {
 }
 
 /**
- * A composable function that displays a dialog to add the first family member to the tree.
+ * A composable function that displays a dialog a family member to the tree.
  * This dialog allows users to input details about the family member and add them to the database.
  *
  * @param onDismiss A lambda function triggered when the dialog is dismissed.
  * @param onAddMember A lambda function that takes a [FamilyMember] object and adds it to the database.
  * @param existingMembers A list of [FamilyMember] objects representing current members in the tree.
- * @param selectedMemberType The type of member being added (Yeshiva or NonYeshiva).
- * @param onMemberTypeChange A lambda function triggered when the member type changes.
- * @param firstName A string representing the first name of the family member.
- * @param onFirstNameChange A lambda function triggered when the first name changes.
- * @param lastName A string representing the last name of the family member.
- * @param onLastNameChange A lambda function triggered when the last name changes.
- * @param gender A boolean representing the gender of the family member. Always set to true (male).
- * @param onGenderChange A lambda function triggered when the gender value changes. Included for completeness but not used.
- * @param machzor An optional integer representing the machzor (graduating class) of the member, if applicable.
- * @param onMachzorChange A lambda function triggered when the machzor value changes.
- * @param isRabbi A boolean indicating if the member is a rabbi.
- * @param onIsRabbiChange A lambda function triggered when the isRabbi status changes.
  */
 @Composable
-internal fun AddFirstMemberToTree(
+internal fun AddNewMemberToTree(
     onDismiss: () -> Unit,
     onAddMember: (FamilyMember) -> Unit,
-    existingMembers: List<FamilyMember>,
-    selectedMemberType: MemberType?,
-    onMemberTypeChange: (MemberType) -> Unit,
-    firstName: String,
-    onFirstNameChange: (String) -> Unit,
-    lastName: String,
-    onLastNameChange: (String) -> Unit,
-    gender: Boolean,
-    onGenderChange: (Boolean) -> Unit,
-    machzor: Int?,
-    onMachzorChange: (Int?) -> Unit,
-    isRabbi: Boolean,
-    onIsRabbiChange: (Boolean) -> Unit
+    existingMembers: List<FamilyMember>
 ) {
+
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var gender by remember { mutableStateOf(true) } // true for male, false for female
+    var machzor by remember { mutableStateOf<Int?>(null) }
+    var isRabbi by remember { mutableStateOf(false) }
+    var selectedMemberType by remember { mutableStateOf<MemberType?>(null) }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { AddMemberDialogTitle(selectedMemberType) },
@@ -611,7 +704,7 @@ internal fun AddFirstMemberToTree(
             Column {
                 // Display member type selection if none is chosen.
                 if (selectedMemberType == null) {
-                    MemberTypeSelection(onMemberTypeSelected = onMemberTypeChange)
+                    MemberTypeSelection(onMemberTypeSelected = { selectedMemberType = it })
                 }
 
                 // Show the appropriate form based on the selected member type.
@@ -622,18 +715,18 @@ internal fun AddFirstMemberToTree(
                             lastName = lastName,
                             machzor = machzor,
                             isRabbi = isRabbi,
-                            onFirstNameChange = onFirstNameChange,
-                            onLastNameChange = onLastNameChange,
-                            onMachzorChange = onMachzorChange,
-                            onIsRabbiChange = onIsRabbiChange
+                            onFirstNameChange = { firstName = it },
+                            onLastNameChange = { lastName = it },
+                            onMachzorChange = { machzor = it },
+                            onIsRabbiChange = { isRabbi = it }
                         )
                         MemberType.NonYeshiva -> NonYeshivaMemberForm(
                             firstName = firstName,
                             lastName = lastName,
                             gender = gender,
-                            onFirstNameChange = onFirstNameChange,
-                            onLastNameChange = onLastNameChange,
-                            onGenderChange = onGenderChange
+                            onFirstNameChange = { firstName = it },
+                            onLastNameChange = { lastName = it },
+                            onGenderChange = { gender = it }
                         )
                     }
                 }
@@ -663,97 +756,70 @@ fun AddNewMemberAndRelateToExistingMember(
     onDismiss: () -> Unit,
     onAddMember: (FamilyMember) -> Unit,
     existingMembers: List<FamilyMember>,
-    selectedMemberType: MemberType?,
-    onMemberTypeChange: (MemberType) -> Unit,
-    firstName: String,
-    onFirstNameChange: (String) -> Unit,
-    lastName: String,
-    onLastNameChange: (String) -> Unit,
-    gender: Boolean,
-    onGenderChange: (Boolean) -> Unit,
-    machzor: Int?,
-    onMachzorChange: (Int?) -> Unit,
-    isRabbi: Boolean,
-    onIsRabbiChange: (Boolean) -> Unit
 ) {
-    var step by remember { mutableIntStateOf(1) }
-    var selectedMember: FamilyMember? by remember { mutableStateOf(null) }
+    var existingMember: FamilyMember? by remember { mutableStateOf(null) }
+    var newMember: FamilyMember? by remember { mutableStateOf(null) }
     var selectedRelation: Relations? by remember { mutableStateOf(null) }
+    var wasNewMemberAddedToDatabase: Boolean by remember { mutableStateOf(false) }
 
-    when (step) {
-        1 -> {
-            ChooseMemberToRelateTo(
+    if (existingMember == null) {
+    // User didn't select a member yet
+
+        ChooseMemberToRelateTo(
             members = existingMembers,
-            onMemberSelected = { selectedMember = it },
-            onNext = { step = 2 }
+            onMemberSelected = { existingMember = it },
+        )
+
+    }
+    else if (selectedRelation == null) {
+    // User selected a member, but didn't select a relation yet
+
+        HowAreTheyRelated(
+            existingMember = existingMember!!,
+            onRelationSelected = { selectedRelation = it }
+        )
+    } else if (newMember == null) {
+    // User selected a member and a relation, but didn't add the new member yet
+
+        AddNewMemberToTree(
+
+            onDismiss = onDismiss,
+            onAddMember = { familyMember ->
+                            newMember = familyMember
+                            onAddMember(familyMember)
+                            wasNewMemberAddedToDatabase = true
+                          },
+            existingMembers = existingMembers,
+        )
+    } else if (wasNewMemberAddedToDatabase) {
+    // User selected a member, a relation, and added the new member
+    // Now we can try adding the relation between the new member, and the one the user chose.
+
+        try {
+        // If the user added the new member with a valid connection, this will succeed
+
+            FamilyTreeData.addConnectionToAdjacencyList(
+            existingMember!!,
+            newMember!!,
+            selectedRelation!!
             )
-        }
-        2 -> {
 
-            val context = LocalContext.current
-            Toast.makeText(context, "עקיבא פרגר!", Toast.LENGTH_SHORT).show()
-
-            selectedMember?.let { member ->
-                HowAreTheyRelated(
-                    existingMember = member,
-                    onRelationSelected = {
-                        selectedRelation = it
-                        step = 3
-                    }
-                )
-            }
-        }
-        // hi
-        3 -> {
-            AlertDialog(
-                onDismissRequest = onDismiss,
-                title = { AddMemberDialogTitle(selectedMemberType) },
-                text = {
-                    selectedMemberType?.let {
-                        when (it) {
-                            MemberType.Yeshiva -> YeshivaMemberForm(
-                                firstName = firstName,
-                                lastName = lastName,
-                                machzor = machzor,
-                                isRabbi = isRabbi,
-                                onFirstNameChange = onFirstNameChange,
-                                onLastNameChange = onLastNameChange,
-                                onMachzorChange = onMachzorChange,
-                                onIsRabbiChange = onIsRabbiChange
-                            )
-                            MemberType.NonYeshiva -> NonYeshivaMemberForm(
-                                firstName = firstName,
-                                lastName = lastName,
-                                gender = gender,
-                                onFirstNameChange = onFirstNameChange,
-                                onLastNameChange = onLastNameChange,
-                                onGenderChange = onGenderChange
-                            )
-                        }
-                    }
-                },
-                confirmButton = {
-                    Button(onClick = {
-                        val newMember = FamilyMember(/* Construct with input values */)
-                        onAddMember(newMember)
-                        try {
-                            FamilyTreeData.addConnectionToAdjacencyList(
-                                memberOne = selectedMember!!,
-                                memberTwo = newMember,
-                                relation = selectedRelation!!
-                            )
-                        } catch (e: Exception) {
-                            FamilyTreeData.deleteFamilyMember(newMember.documentId)
-                            //TODO: add here a message that explains why the new member couldn't be added
-                        }
-                        onDismiss()
-                    }) {
-                        Text("הוסף")
-                    }
-                }
-
-            )
+        } catch (e: Exception) {
+        // Otherwise it will throw an exception, and we will delete the new member
+            FamilyTreeData.deleteFamilyMember(newMember!!.documentId)
         }
     }
 }
+
+
+//var showToast by remember { mutableStateOf(true) }
+//val context = LocalContext.current
+//if (showToast) {
+//    LaunchedEffect(Unit) {
+//        Toast.makeText(context, "עקיבא פרגר!", Toast.LENGTH_SHORT).show()
+//        showToast = false
+//    }
+//}
+//
+//Log.d("FamilyTreeApp", "com.example.familytree               D  עקיבא פרגר!")
 
