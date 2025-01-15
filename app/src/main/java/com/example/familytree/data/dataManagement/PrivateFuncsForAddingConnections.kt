@@ -3,7 +3,9 @@ package com.example.familytree.data.dataManagement
 import com.example.familytree.data.Connection
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.Relations
+import com.example.familytree.data.dataManagement.FamilyTreeData.db
 import com.example.familytree.data.exceptions.*
+import com.google.firebase.firestore.SetOptions
 
 /**
  * Helper functions for managing family tree relationships.
@@ -32,10 +34,10 @@ internal fun FamilyTreeData.validateGenderRole(member: FamilyMember, relationshi
  * @throws MemberNotInAdjacencyListException If either member is not present in the adjacency list.
  */
 internal fun FamilyTreeData.validateMembersExist(memberOne: FamilyMember, memberTwo: FamilyMember) {
-    if (!adjacencyList.containsKey(memberOne.documentId)) {
+    if (!idMap.containsKey(memberOne.documentId)) {
         throw MemberNotInAdjacencyListException(memberOne)
     }
-    if (!adjacencyList.containsKey(memberTwo.documentId)) {
+    if (!idMap.containsKey(memberTwo.documentId)) {
         throw MemberNotInAdjacencyListException(memberTwo)
     }
 }
@@ -64,10 +66,12 @@ internal fun FamilyTreeData.validateMarriage(memberOne: FamilyMember, memberTwo:
  * @throws InvalidRelationshipException If the member already has an existing connection of the specified relationship.
  */
 internal fun FamilyTreeData.validateNotMoreThanOneMemberConnection(member: FamilyMember, relationship: Relations) {
-    val connections = adjacencyList[member.documentId] ?: return
-    for (connection in connections) {
-        if (relationship == connection.relationship) {
-            throw InvalidRelationshipException(member, relationship)
+    val connections = idMap[member.documentId]?.getConnections()
+    if (connections != null) {
+        for (connection in connections) {
+            if (relationship == connection.relationship) {
+                throw InvalidRelationshipException(member, relationship)
+            }
         }
     }
 }
@@ -82,8 +86,10 @@ internal fun FamilyTreeData.validateNotMoreThanOneMemberConnection(member: Famil
  */
 internal fun FamilyTreeData.addMarriageConnection(memberOne: FamilyMember, memberTwo: FamilyMember) {
     validateMarriage(memberOne, memberTwo)
-    adjacencyList[memberTwo.documentId]?.add(Connection(memberOne, Relations.MARRIAGE))
-    adjacencyList[memberOne.documentId]?.add(Connection(memberTwo, Relations.MARRIAGE))
+    memberOne.addConnectionToAdjacencyList(Connection(memberTwo, Relations.MARRIAGE))
+    memberTwo.addConnectionToAdjacencyList(Connection(memberOne, Relations.MARRIAGE))
+    updateMemberConnections(memberOne)
+    updateMemberConnections(memberTwo)
 }
 
 /**
@@ -104,8 +110,10 @@ internal fun FamilyTreeData.addParentChildConnection(
     val childRelation = if (child.getGender()) Relations.SON else Relations.DAUGHTER
     validateGenderRole(parent, parentRelation)
     validateNotMoreThanOneMemberConnection(child, parentRelation)
-    adjacencyList[child.documentId]?.add(Connection(parent, parentRelation))
-    adjacencyList[parent.documentId]?.add(Connection(child, childRelation))
+    child.addConnectionToAdjacencyList(Connection(parent, parentRelation))
+    parent.addConnectionToAdjacencyList(Connection(child, childRelation))
+    updateMemberConnections(parent)
+    updateMemberConnections(child)
 }
 
 /**
@@ -126,8 +134,10 @@ internal fun FamilyTreeData.addChildParentConnection(
     val parentRelation = if (parent.getGender()) Relations.FATHER else Relations.MOTHER
     validateGenderRole(child, childRelation)
     validateNotMoreThanOneMemberConnection(child, parentRelation)
-    adjacencyList[child.documentId]?.add(Connection(parent, parentRelation))
-    adjacencyList[parent.documentId]?.add(Connection(child, childRelation))
+    child.addConnectionToAdjacencyList(Connection(parent, parentRelation))
+    parent.addConnectionToAdjacencyList(Connection(child, childRelation))
+    updateMemberConnections(parent)
+    updateMemberConnections(child)
 }
 
 /**
@@ -145,8 +155,10 @@ internal fun FamilyTreeData.addGrandparentGrandchildConnection(
 ) {
     val grandchildRelation = if (grandchild.getGender()) Relations.GRANDSON else Relations.GRANDDAUGHTER
     validateGenderRole(grandparent, grandparentRelation)
-    adjacencyList[grandchild.documentId]?.add(Connection(grandparent, grandparentRelation))
-    adjacencyList[grandparent.documentId]?.add(Connection(grandchild, grandchildRelation))
+    grandchild.addConnectionToAdjacencyList(Connection(grandparent, grandparentRelation))
+    grandparent.addConnectionToAdjacencyList(Connection(grandchild, grandchildRelation))
+    updateMemberConnections(grandparent)
+    updateMemberConnections(grandchild)
 }
 
 /**
@@ -164,8 +176,10 @@ internal fun FamilyTreeData.addGrandchildGrandparentConnection(
 ) {
     val grandparentRelation = if (grandparent.getGender()) Relations.GRANDFATHER else Relations.GRANDMOTHER
     validateGenderRole(grandchild, grandchildRelation)
-    adjacencyList[grandchild.documentId]?.add(Connection(grandparent, grandparentRelation))
-    adjacencyList[grandparent.documentId]?.add(Connection(grandchild, grandchildRelation))
+    grandchild.addConnectionToAdjacencyList(Connection(grandparent, grandparentRelation))
+    grandparent.addConnectionToAdjacencyList(Connection(grandchild, grandchildRelation))
+    updateMemberConnections(grandparent)
+    updateMemberConnections(grandchild)
 }
 
 /**
@@ -176,8 +190,10 @@ internal fun FamilyTreeData.addGrandchildGrandparentConnection(
  * @param memberTwo The second family member.
  */
 internal fun FamilyTreeData.addCousinsConnection(memberOne: FamilyMember, memberTwo: FamilyMember) {
-    adjacencyList[memberOne.documentId]?.add(Connection(memberTwo, Relations.COUSINS))
-    adjacencyList[memberTwo.documentId]?.add(Connection(memberOne, Relations.COUSINS))
+    memberOne.addConnectionToAdjacencyList(Connection(memberTwo, Relations.COUSINS))
+    memberTwo.addConnectionToAdjacencyList(Connection(memberOne, Relations.COUSINS))
+    updateMemberConnections(memberOne)
+    updateMemberConnections(memberTwo)
 }
 
 /**
@@ -188,6 +204,49 @@ internal fun FamilyTreeData.addCousinsConnection(memberOne: FamilyMember, member
  * @param memberTwo The second family member.
  */
 internal fun FamilyTreeData.addSiblingConnection(memberOne: FamilyMember, memberTwo: FamilyMember) {
-    adjacencyList[memberOne.documentId]?.add(Connection(memberTwo, Relations.SIBLINGS))
-    adjacencyList[memberTwo.documentId]?.add(Connection(memberOne, Relations.SIBLINGS))
+    memberOne.addConnectionToAdjacencyList(Connection(memberTwo, Relations.SIBLINGS))
+    memberTwo.addConnectionToAdjacencyList(Connection(memberOne, Relations.SIBLINGS))
+    updateMemberConnections(memberOne)
+    updateMemberConnections(memberTwo)
+}
+
+/**
+ * Updates the adjacency list (connections) of a family member in Firestore.
+ * This method retrieves the connections from the FamilyMember object, converts them
+ * to a format suitable for Firestore storage, and updates the Firestore document
+ * representing the member. It uses a map structure to store the related member's ID
+ * and the relationship type.
+ *
+ * @param member The family member whose connections need to be updated.
+ *
+ * This function performs a merge operation, updating only the connections field
+ * without overwriting other fields in the document.
+ *
+ * Success and failure of the operation are logged to the console.
+ */
+fun updateMemberConnections(member: FamilyMember) {
+    val memberDocumentId = member.documentId
+
+    // Transform connections into a list of maps for Firestore compatibility.
+    val connectionsData = member.getConnections().map { connection ->
+        mapOf(
+            "relatedMemberId" to connection.member.documentId,
+            "fullName" to connection.member.getFullName(),
+            "relationship" to connection.relationship.name
+        )
+    }
+
+    // Create a map for updating only the connections field in Firestore.
+    val memberData = mapOf("connections" to connectionsData)
+
+    // Update Firestore with the new connections data, using a merge to preserve other fields.
+    db.collection("memberMap")
+        .document(memberDocumentId)
+        .set(memberData, SetOptions.merge())
+        .addOnSuccessListener {
+            println("Successfully updated connections for member: $memberDocumentId")
+        }
+        .addOnFailureListener { e ->
+            println("Failed to update connections for member: $memberDocumentId. Error: ${e.message}")
+        }
 }

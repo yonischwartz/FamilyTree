@@ -2,7 +2,6 @@ package com.example.familytree.data.dataManagement
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.familytree.data.Connection
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.Relations
 import com.google.firebase.firestore.ktx.firestore
@@ -16,10 +15,7 @@ import com.google.firebase.ktx.Firebase
 object FamilyTreeData {
 
     // Member Map
-    private val idMap: MutableMap<String, FamilyMember> = mutableMapOf()
-
-    // Adjacency List
-    internal val adjacencyList: MutableMap<String, MutableList<Connection>> = mutableMapOf()
+    internal val idMap: MutableMap<String, FamilyMember> = mutableMapOf()
 
     // Relationship Gender Map
     internal val relationshipGenderMap: MutableMap<Relations, Boolean> = mutableMapOf()
@@ -53,7 +49,7 @@ object FamilyTreeData {
     }
 
     // Firebase Firestore instance
-    private val db by lazy { Firebase.firestore }
+    internal val db by lazy { Firebase.firestore }
 
     // functions
 
@@ -64,7 +60,6 @@ object FamilyTreeData {
      */
     fun loadDataFromFirebase() {
         fetchFamilyMemberData(db, idMap)
-        fetchFamilyConnections(db, idMap, adjacencyList)
     }
 
     /**
@@ -82,10 +77,11 @@ object FamilyTreeData {
             .addOnSuccessListener { documentReference ->
                 // Set the document ID in the FamilyMember object
                 familyMember.documentId = documentReference.id
+                println("DocumentSnapshot added with ID: ${documentReference.id}")
 
-                // Update the document with the documentId field
-                db.collection("memberMap").document(documentReference.id)
-                    .update("documentId", documentReference.id)
+                // Update the firebase documentId field
+                db.collection("memberMap").document(familyMember.documentId)
+                    .update("documentId", familyMember.documentId)
                     .addOnSuccessListener {
                         println("Document ID updated successfully!")
                     }
@@ -93,20 +89,9 @@ object FamilyTreeData {
                         println("Error updating document ID: $e")
                     }
 
-                // Save updated connections to Firebase using the newly generated documentId
-                db.collection("familyConnections").document(documentReference.id)
-                    .set(mapOf("connections" to listOf<Map<String, Any>>()))
-                    .addOnSuccessListener { println("Connections added to Firebase!") }
-                    .addOnFailureListener { e -> println("Error adding connections: $e") }
-
+                // Add member to IDMap
+                idMap[familyMember.documentId] = familyMember
             }
-            .addOnFailureListener { e -> println("Error adding member: $e") }
-
-        // Add member to IDMap
-        idMap[familyMember.documentId] = familyMember
-
-        // Add member to AdjacencyList
-        adjacencyList[familyMember.documentId] = mutableListOf()
     }
 
     /**
@@ -168,16 +153,6 @@ object FamilyTreeData {
     }
 
     /**
-     * Retrieves all connections associated with a given family member.
-     *
-     * @param memberId The unique identifier of the family member.
-     * @return A list of Connection objects representing relationships of the member, or null if no connections exist.
-     */
-    fun getConnectionsForMember(memberId: String): List<Connection>? {
-        return adjacencyList[memberId]
-    }
-
-    /**
      * Searches for family members whose full name matches or contains the provided search term.
      *
      * @param searchTerm The string representing either a full name or a substring of a name to search for.
@@ -192,35 +167,24 @@ object FamilyTreeData {
      * Deletes a family member from the family tree, including all their connections.
      * The member is deleted from the ID map, adjacency list, and Firebase.
      *
-     * @param memberId The unique identifier of the family member to be deleted.
+     * @param memberToBeRemovedId The unique identifier of the family member to be deleted.
      * @return True if the member was successfully deleted, false if the member was not found.
      */
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun deleteFamilyMember(memberId: String): Boolean {
+    fun deleteFamilyMember(memberToBeRemovedId: String) {
 
-        // Delete connections from adjacency list
-        adjacencyList.remove(memberId)
-
-        // Delete the member from other members' connection lists
-        adjacencyList.forEach { (_, connections) ->
-            connections.removeIf { it.member.documentId == memberId }
+        // Delete the member from other members connection lists
+        idMap.forEach { (_, familyMember) ->
+            familyMember.removeConnectionFromAdjacencyList(memberToBeRemovedId)
         }
 
         // Delete the member from the ID map
-        idMap.remove(memberId)
+        idMap.remove(memberToBeRemovedId)
 
         // Delete member and connections from Firebase
-        db.collection("memberMap").document(memberId)
+        db.collection("memberMap").document(memberToBeRemovedId)
             .delete()
             .addOnSuccessListener { println("Member deleted from Firebase successfully!") }
             .addOnFailureListener { e -> println("Error deleting member from Firebase: $e") }
-
-        db.collection("familyConnections").document(memberId)
-            .delete()
-            .addOnSuccessListener { println("Connections deleted from Firebase successfully!") }
-            .addOnFailureListener { e -> println("Error deleting connections from Firebase: $e") }
-
-        return true
     }
 }
 

@@ -13,7 +13,6 @@ package com.example.familytree.data
  * @property isRabbi Indicates if the family member is a rabbi (nullable, default is null).
  *                 For yeshiva members who are rabbis, this is set to true, while for non-yeshiva members, rabbi is null.
  */
-
 class FamilyMember(
     private val firstName: String = "",
     private val lastName: String = "",
@@ -24,6 +23,37 @@ class FamilyMember(
     // A unique identifier for the family member. It is initialized as an empty string by default.
     // When the object is added to Firebase, Firestore automatically assigns it a unique ID.
     var documentId: String = ""
+
+    // Adjacency list to manage relationships.
+    private val adjacencyList: MutableList<Connection> = mutableListOf()
+
+    /**
+     * Retrieves a list of connections for a given family member.
+     */
+    fun getConnections(): MutableList<Connection> {
+        return adjacencyList
+    }
+
+    /**
+     * Adds a connection to the adjacency list.
+     *
+     * @param connection The connection to be added.
+     */
+    fun addConnectionToAdjacencyList(connection: Connection) {
+        adjacencyList.add(connection)
+    }
+
+    /**
+     * Removes a connection from the adjacency list based on a member ID.
+     *
+     * @param memberId The ID of the member whose connection should be removed.
+     */
+    fun removeConnectionFromAdjacencyList(memberId: String) {
+        val connectionToRemove = adjacencyList.find { it.member.documentId == memberId }
+        if (connectionToRemove != null) {
+            adjacencyList.remove(connectionToRemove)
+        }
+    }
 
     /**
      * Returns the full name of the family member, combining the first and last name.

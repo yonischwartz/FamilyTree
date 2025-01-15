@@ -390,88 +390,6 @@ private fun findMatchingMember(
     }
 }
 
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun ChooseMemberToRelateTo(
-//    members: List<FamilyMember>,
-//    onMemberSelected: (FamilyMember) -> Unit,
-//) {
-//
-//    // State to store the selected family member
-//    var selectedMember by remember { mutableStateOf<FamilyMember?>(null) }
-//
-//    // Main column layout for the composable
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(16.dp),
-//        verticalArrangement = Arrangement.Center,
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ) {
-//
-//        // Display the instructional text
-//        Text(
-//            text = "בני משפחה חדשים נדרשים להיות קשורים לבן משפחה קיים בעץ.",
-//            fontSize = 18.sp,
-//            modifier = Modifier.padding(bottom = 16.dp)
-//        )
-//
-//        // Prompt text for selecting a family member to relate to
-//        Text(
-//            text = "לאיזה בן משפחה בעץ, מקושר בן המשפחה שאתה רוצה להוסיף?",
-//            fontSize = 16.sp,
-//            modifier = Modifier.padding(bottom = 16.dp)
-//        )
-//
-//        // Dropdown menu for selecting a family member
-//        var expanded by remember { mutableStateOf(false) }
-//        Box(modifier = Modifier.fillMaxWidth()) {
-//            TextButton(
-//                onClick = { expanded = true },
-//                modifier = Modifier.fillMaxWidth()
-//            ) {
-//                // Display the name of the selected member or placeholder if none selected
-//                Text(text = selectedMember?.getFullName() ?: "בחר בן משפחה", fontSize = 16.sp)
-//            }
-//            // Dropdown menu with member options
-//            DropdownMenu(
-//                expanded = expanded,
-//                onDismissRequest = { expanded = false }
-//            ) {
-//                members.forEach { member ->
-//                    // Each dropdown item displays a member's name
-//                    DropdownMenuItem(onClick = {
-//                        selectedMember = member
-//                        expanded = false
-//                    }, text = {
-//                        Text(text = member.getFullName())
-//                    })
-//                }
-//            }
-//        }
-//
-//        Spacer(modifier = Modifier.height(24.dp))
-//
-//        // Button that confirms the selection and invokes the callback with the selected family member.
-//        Button(
-//            onClick = {
-//                selectedMember?.let {
-//                    // Trigger the callbacks with the selected member and proceed
-//                    onMemberSelected(it)
-//                }
-//            },
-//            enabled = selectedMember != null, // Enable button only if a member is selected
-//            modifier = Modifier.align(Alignment.End)
-//        ) {
-//            Text(text = "המשך")
-//        }
-//    }
-//
-//
-//
-//
-//}
-
 /**
  * Composable function that allows the user to select a family member from a list to relate to
  * when adding a new family member. It displays a dropdown menu with the list of family members,
@@ -480,11 +398,13 @@ private fun findMatchingMember(
  * @param members List of family members to display in the dropdown menu.
  * @param onMemberSelected Callback function that is triggered when a family member is selected.
  *        It returns the selected `FamilyMember` object.
+ * @param onDismiss Callback function triggered when the dialog is dismissed without selection.
  */
 @Composable
 fun ChooseMemberToRelateTo(
     members: List<FamilyMember>,
     onMemberSelected: (FamilyMember) -> Unit,
+    onDismiss: () -> Unit
 ) {
     var selectedMember by remember { mutableStateOf<FamilyMember?>(null) }
     var expanded by remember { mutableStateOf(false) }
@@ -492,7 +412,11 @@ fun ChooseMemberToRelateTo(
 
     if (showDialog) {
         AlertDialog(
-            onDismissRequest = { showDialog = false },
+            // Dismiss the dialog when requested
+            onDismissRequest = {
+                showDialog = false
+                onDismiss()
+           },
             title = {
                 Text(text = "בני משפחה חדשים נדרשים להיות קשורים לבן משפחה קיים בעץ.")
             },
@@ -500,26 +424,30 @@ fun ChooseMemberToRelateTo(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .padding(16.dp),  // Padding around content
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    // Display a prompt for selecting a family member
                     Text(
                         text = "לאיזה בן משפחה בעץ, מקושר בן המשפחה שאתה רוצה להוסיף?",
                         fontSize = 16.sp,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                     Box(modifier = Modifier.fillMaxWidth()) {
+                        // Button to open the dropdown menu
                         TextButton(
                             onClick = { expanded = true },
                             modifier = Modifier.fillMaxWidth()
                         ) {
+                            // Display the selected member's name or a default prompt
                             Text(text = selectedMember?.getFullName() ?: "בחר בן משפחה", fontSize = 16.sp)
                         }
                         DropdownMenu(
                             expanded = expanded,
                             onDismissRequest = { expanded = false }
                         ) {
+                            // Create a dropdown item for each family member
                             members.forEach { member ->
                                 DropdownMenuItem(
                                     onClick = {
@@ -536,6 +464,7 @@ fun ChooseMemberToRelateTo(
                 }
             },
             confirmButton = {
+                // Proceed with the selected member
                 Button(
                     onClick = {
                         selectedMember?.let {
@@ -549,7 +478,13 @@ fun ChooseMemberToRelateTo(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDialog = false }) {
+                // Handle dialog dismissal
+                TextButton(
+                    onClick = {
+                        showDialog = false
+                        onDismiss()
+                    }
+                ) {
                     Text(text = "בטל")
                 }
             }
@@ -568,7 +503,8 @@ fun ChooseMemberToRelateTo(
 @Composable
 private fun HowAreTheyRelated(
     existingMember: FamilyMember,
-    onRelationSelected: (Relations) -> Unit
+    onRelationSelected: (Relations) -> Unit,
+    onDismiss: () -> Unit
 ) {
     var selectedRelation by remember { mutableStateOf<Relations?>(null) }
     var expanded by remember { mutableStateOf(false) }
@@ -576,7 +512,10 @@ private fun HowAreTheyRelated(
 
     if (showDialog) {
         AlertDialog(
-            onDismissRequest = { showDialog = false },
+            onDismissRequest = {
+                showDialog = false
+                onDismiss()
+            },
             title = {
                 Text(text = "כיצד ${existingMember.getFullName()} קשור לבן המשפחה החדש?")
             },
@@ -645,7 +584,10 @@ private fun HowAreTheyRelated(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDialog = false }) {
+                TextButton(onClick = {
+                    showDialog = false
+                    onDismiss()
+                }) {
                     Text(text = "בטל")
                 }
             }
@@ -762,12 +704,23 @@ fun AddNewMemberAndRelateToExistingMember(
     var selectedRelation: Relations? by remember { mutableStateOf(null) }
     var wasNewMemberAddedToDatabase: Boolean by remember { mutableStateOf(false) }
 
+    val resetState: () -> Unit = {
+        existingMember = null
+        newMember = null
+        selectedRelation = null
+        wasNewMemberAddedToDatabase = false
+    }
+
     if (existingMember == null) {
     // User didn't select a member yet
 
         ChooseMemberToRelateTo(
             members = existingMembers,
             onMemberSelected = { existingMember = it },
+            onDismiss = {
+                resetState()
+                onDismiss()
+            }
         )
 
     }
@@ -776,14 +729,21 @@ fun AddNewMemberAndRelateToExistingMember(
 
         HowAreTheyRelated(
             existingMember = existingMember!!,
-            onRelationSelected = { selectedRelation = it }
+            onRelationSelected = { selectedRelation = it },
+            onDismiss = {
+                resetState()
+                onDismiss()
+            }
         )
     } else if (newMember == null) {
     // User selected a member and a relation, but didn't add the new member yet
 
         AddNewMemberToTree(
 
-            onDismiss = onDismiss,
+            onDismiss = {
+                onDismiss()
+                resetState()
+            },
             onAddMember = { familyMember ->
                             newMember = familyMember
                             onAddMember(familyMember)
@@ -810,6 +770,18 @@ fun AddNewMemberAndRelateToExistingMember(
         }
     }
 }
+
+
+//var showToast by remember { mutableStateOf(true) }
+//val context = LocalContext.current
+//if (showToast) {
+//    LaunchedEffect(Unit) {
+//        Toast.makeText(context, "עקיבא פרגר!", Toast.LENGTH_SHORT).show()
+//        showToast = false
+//    }
+//}
+
+
 
 
 //var showToast by remember { mutableStateOf(true) }
