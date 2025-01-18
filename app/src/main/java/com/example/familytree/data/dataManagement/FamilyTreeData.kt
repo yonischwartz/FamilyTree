@@ -1,7 +1,5 @@
 package com.example.familytree.data.dataManagement
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.Relations
 import com.google.firebase.firestore.ktx.firestore
@@ -54,9 +52,8 @@ object FamilyTreeData {
     // functions
 
     /**
-     * Loads family member data and family connections from Firebase Firestore.
+     * Loads family member data and from Firebase Firestore.
      * - Fetches family member information from the "memberMap" collection.
-     * - Fetches family connection data from the "familyConnections" document.
      */
     fun loadDataFromFirebase() {
         fetchFamilyMemberData(db, idMap)
@@ -80,8 +77,8 @@ object FamilyTreeData {
                 println("DocumentSnapshot added with ID: ${documentReference.id}")
 
                 // Update the firebase documentId field
-                db.collection("memberMap").document(familyMember.documentId)
-                    .update("documentId", familyMember.documentId)
+                db.collection("memberMap").document(documentReference.id)
+                    .update("documentId", documentReference.id)
                     .addOnSuccessListener {
                         println("Document ID updated successfully!")
                     }
@@ -93,6 +90,7 @@ object FamilyTreeData {
                 idMap[familyMember.documentId] = familyMember
             }
     }
+
 
     /**
      * Retrieves all family members from the ID map.

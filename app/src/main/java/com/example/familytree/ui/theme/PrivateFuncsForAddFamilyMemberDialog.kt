@@ -1,7 +1,7 @@
 package com.example.familytree.ui.theme
 
 import android.os.Build
-import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.example.familytree.data.dataManagement.FamilyTreeData
 import com.example.familytree.data.FamilyMember
@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -26,9 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
-import android.widget.Toast
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 
 /**
  * Displays the title of the dialog.
@@ -288,7 +286,7 @@ internal fun ConfirmAddingNewMemberButton(
     onAddMember: (FamilyMember) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var showDialog by remember { mutableStateOf(false) }
+    var showSameNameMemberDialog by remember { mutableStateOf(false) }
     var matchedMember by remember { mutableStateOf<FamilyMember?>(null) }
 
     Button(
@@ -296,7 +294,7 @@ internal fun ConfirmAddingNewMemberButton(
             val matched = findMatchingMember(firstName, lastName, machzor, existingMembers)
             if (matched != null) {
                 matchedMember = matched
-                showDialog = true
+                showSameNameMemberDialog = true
             } else if (firstName.isNotBlank() && lastName.isNotBlank()) {
                 val familyMember = when (memberType) {
                     MemberType.Yeshiva -> FamilyMember(firstName, lastName, gender, machzor, isRabbi)
@@ -311,8 +309,8 @@ internal fun ConfirmAddingNewMemberButton(
         Text("הוסף בן משפחה")
     }
 
-    // Show duplicate member dialog if needed
-    if (showDialog && matchedMember != null) {
+    // Show same name member dialog if needed
+    if (showSameNameMemberDialog) {
         DuplicateMemberDialog(
             matchedMember = matchedMember!!,
             onConfirm = {
@@ -320,7 +318,7 @@ internal fun ConfirmAddingNewMemberButton(
                     onAddMember(it)
                     onDismiss()
                 }
-                showDialog = false
+                showSameNameMemberDialog = false
             },
             onDismiss = {
                 // Add the new member with the same name if user chooses to add him after all
@@ -332,11 +330,12 @@ internal fun ConfirmAddingNewMemberButton(
                     }
                     onAddMember(familyMember)
                 }
-                showDialog = false
+                showSameNameMemberDialog = false
             }
         )
     }
 }
+
 
 /**
  * Displays a dialog to confirm if the user meant to select an existing family member.
@@ -702,13 +701,11 @@ fun AddNewMemberAndRelateToExistingMember(
     var existingMember: FamilyMember? by remember { mutableStateOf(null) }
     var newMember: FamilyMember? by remember { mutableStateOf(null) }
     var selectedRelation: Relations? by remember { mutableStateOf(null) }
-    var wasNewMemberAddedToDatabase: Boolean by remember { mutableStateOf(false) }
 
     val resetState: () -> Unit = {
         existingMember = null
         newMember = null
         selectedRelation = null
-        wasNewMemberAddedToDatabase = false
     }
 
     if (existingMember == null) {
@@ -741,19 +738,29 @@ fun AddNewMemberAndRelateToExistingMember(
         AddNewMemberToTree(
 
             onDismiss = {
-                onDismiss()
                 resetState()
+                onDismiss()
             },
             onAddMember = { familyMember ->
                             newMember = familyMember
                             onAddMember(familyMember)
-                            wasNewMemberAddedToDatabase = true
                           },
             existingMembers = existingMembers,
         )
-    } else if (wasNewMemberAddedToDatabase) {
+
+    } else {
     // User selected a member, a relation, and added the new member
     // Now we can try adding the relation between the new member, and the one the user chose.
+
+        var showToast2 by remember { mutableStateOf(true) }
+        val context = LocalContext.current
+        if (showToast2) {
+            LaunchedEffect(Unit) {
+                Toast.makeText(context, "עקיבא פרגר2!", Toast.LENGTH_SHORT).show()
+                showToast2 = false
+            }
+        }
+
 
         try {
         // If the user added the new member with a valid connection, this will succeed

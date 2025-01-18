@@ -106,6 +106,14 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
 
                     // Dialog to display the list of all family members
                     if (showMemberList) {
+
+                        // Update the list from firestore
+                        try {
+                            FamilyTreeData.loadDataFromFirebase()
+                        } catch (e: Exception) {
+                            Log.e("FamilyTreeScreen", "Error updating data from Firebase", e)
+                        }
+
                         MemberListDialog(
                             initialFamilyMembers = FamilyTreeData.getAllMembers(),
                             onDismiss = { showMemberList = false }
