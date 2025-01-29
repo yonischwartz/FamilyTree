@@ -1,38 +1,37 @@
-package com.example.familytree.ui.theme
+package com.example.familytree.ui.theme.dialogs
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import com.example.familytree.data.FamilyMember
+import com.example.familytree.ui.theme.AddNewFamilyMemberToEmptyTree
+import com.example.familytree.ui.theme.AddNewMemberAndRelateToExistingMember
 
 /**
  * A composable function that displays a dialog for adding a family member to the family tree.
  *
  * @param onDismiss Callback to handle dialog dismissal.
- * @param onAddMember Callback to handle the addition of a new [FamilyMember] to the tree.
+ * @param existingMembers A list of existing family members.
  */
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun AddFamilyMemberDialog(
-    onDismiss: () -> Unit,
-    onAddMember: (FamilyMember) -> Unit,
-    existingMembers: List<FamilyMember>
+    existingMembers: List<FamilyMember>,
+    onDismiss: () -> Unit
 ) {
 
     if (existingMembers.isEmpty()) {
         // Add the first family member of the tree
-        AddNewMemberToTree(
-            onDismiss = onDismiss,
-            onAddMember = onAddMember,
+        AddNewFamilyMemberToEmptyTree(
             existingMembers = existingMembers,
+            onDismiss = onDismiss
         )
+
     } else {
+
         AddNewMemberAndRelateToExistingMember(
-            onDismiss = onDismiss,
-            onAddMember = onAddMember,
             existingMembers = existingMembers,
+            onDismiss = onDismiss
         )
     }
 }

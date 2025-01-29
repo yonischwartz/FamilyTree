@@ -1,9 +1,10 @@
 package com.example.familytree.ui.theme
 
-import android.os.Build
+import android.annotation.SuppressLint
+import android.content.Context
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import android.widget.Toast
-import androidx.annotation.RequiresApi
-import com.example.familytree.data.dataManagement.FamilyTreeData
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.MemberType
 import com.example.familytree.data.Relations
@@ -25,20 +26,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
-
-/**
- * Displays the title of the dialog.
- *
- * @param selectedMemberType The currently selected type of family member, or null if none.
- */
-@Composable
-internal fun AddMemberDialogTitle(selectedMemberType: MemberType?) {
-    if (selectedMemberType == null) {
-        Text("בחר סוג בן משפחה", style = MaterialTheme.typography.titleMedium)
-    }
-}
+import androidx.compose.ui.text.style.TextAlign
+import com.example.familytree.data.Connection
+import com.example.familytree.data.dataManagement.FireBaseManager.addConnectionToFirebase
+import com.example.familytree.data.dataManagement.FireBaseManager.addNewFamilyMemberToFirebase
+import com.example.familytree.data.dataManagement.FireBaseManager.validateConnection
+import com.example.familytree.data.exceptions.*
+import com.example.familytree.ui.theme.dialogs.GenderErrorDialog
+import com.example.familytree.ui.theme.dialogs.MoreThanOneConnectionErrorDialog
+import com.example.familytree.ui.theme.dialogs.SameMemberMarriageErrorDialog
 
 /**
  * Provides buttons for selecting the member type.
@@ -74,30 +71,100 @@ private fun MemberTypeButton(label: String, onClick: () -> Unit) {
     }
 }
 
+@Composable
+private fun AskUserForMemberDetailsDialog(
+    selectedMemberType: MemberType?,
+    onFamilyMemberCreation: (FamilyMember) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var newMember by remember { mutableStateOf<FamilyMember?>(null) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("הוסף בן משפחה") },
+        text = {
+            Column(modifier = Modifier.padding(16.dp)) {
+                when (selectedMemberType) {
+                    MemberType.Yeshiva -> {
+                        AskUserForYeshivaMemberDetails { newMember = it }
+                    }
+                    MemberType.NonYeshiva -> {
+                        AskUserForNonYeshivaMemberDetails { newMember = it }
+                    }
+                    else -> Unit
+                }
+            }
+        },
+        // can you make that the user will be able to push the confirmButton only if the new member isn't null?
+        confirmButton = {
+            TextButton(
+                onClick = { newMember?.let(onFamilyMemberCreation) },
+                enabled = newMember != null
+            ) {
+                Text("המשך")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("בטל")
+            }
+        }
+    )
+}
+
 /**
  * Form fields for adding a Yeshiva family member.
  *
- * @param firstName The first name input.
- * @param lastName The last name input.
- * @param machzor The machzor input.
- * @param isRabbi The rabbi status.
- * @param onFirstNameChange Callback for updating the first name.
- * @param onLastNameChange Callback for updating the last name.
- * @param onMachzorChange Callback for updating the machzor.
- * @param onIsRabbiChange Callback for updating the rabbi status.
  */
 @Composable
-internal fun YeshivaMemberForm(
-    firstName: String, lastName: String, machzor: Int?, isRabbi: Boolean,
-    onFirstNameChange: (String) -> Unit, onLastNameChange: (String) -> Unit,
-    onMachzorChange: (Int?) -> Unit, onIsRabbiChange: (Boolean) -> Unit
+internal fun AskUserForYeshivaMemberDetails(
+    onFamilyMemberCreation: (FamilyMember) -> Unit
 ) {
-    MemberNameFields(firstName, lastName, onFirstNameChange, onLastNameChange)
-    MachzorInput(
-        machzor = machzor,
-        onMachzorChange = onMachzorChange,
-    )
-    BooleanSelection("האם בן משפחה זה, רב בישיבה?", isRabbi, onIsRabbiChange)
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var machzor by remember { mutableStateOf<Int?>(null) }
+    var isRabbi by remember { mutableStateOf(false) }
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        MemberFirstNameField(
+            firstName = firstName,
+            onFirstNameChange = { firstName = it }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        MemberLastNameField(
+            lastName = lastName,
+            onLastNameChange = { lastName = it }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        MachzorInput(
+            machzor = machzor,
+            onMachzorChange = { machzor = it }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        BooleanSelection(
+            label = "האם בן משפחה זה, רב בישיבה?",
+            selected = isRabbi,
+            onChange = { isRabbi = it }
+        )
+    }
+
+    if (
+        firstName != "" &&
+        lastName != "" &&
+        machzor != null
+    ) {
+        // Trigger callback with the newly created FamilyMember object
+        onFamilyMemberCreation(
+            FamilyMember(
+                memberType = MemberType.Yeshiva,
+                firstName = firstName,
+                lastName = lastName,
+                gender = true,
+                machzor = machzor,
+                isRabbi = isRabbi
+            )
+        )
+    }
 }
 
 /**
@@ -111,33 +178,78 @@ internal fun YeshivaMemberForm(
  * @param onGenderChange Callback for updating the gender.
  */
 @Composable
-internal fun NonYeshivaMemberForm(
-    firstName: String, lastName: String, gender: Boolean,
-    onFirstNameChange: (String) -> Unit, onLastNameChange: (String) -> Unit,
-    onGenderChange: (Boolean) -> Unit
+internal fun AskUserForNonYeshivaMemberDetails(
+    onFamilyMemberCreation: (FamilyMember) -> Unit
 ) {
-    MemberNameFields(firstName, lastName, onFirstNameChange, onLastNameChange)
-    GenderSelection(gender, onGenderChange)
+
+    var firstName: String by remember { mutableStateOf("") }
+    var lastName: String by remember { mutableStateOf("") }
+    var gender: Boolean by remember { mutableStateOf(true) }
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        MemberFirstNameField(
+            firstName,
+            onFirstNameChange = { firstName = it }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        MemberLastNameField(
+            lastName,
+            onLastNameChange = { lastName = it }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        GenderSelection(
+            gender,
+            onGenderChange = { gender = it }
+        )
+    }
+
+    if (
+        firstName != "" &&
+        lastName != ""
+    ) {
+        // Callback with a new FamilyMember object
+        onFamilyMemberCreation(
+            FamilyMember(
+                memberType = MemberType.NonYeshiva,
+                firstName = firstName,
+                lastName = lastName,
+                gender = gender,
+                machzor = null,
+                isRabbi = null
+            )
+        )
+    }
 }
 
 /**
- * Provides input fields for first and last name.
+ * Provides input field for first name.
  *
  * @param firstName The first name input.
- * @param lastName The last name input.
  * @param onFirstNameChange Callback for updating the first name.
- * @param onLastNameChange Callback for updating the last name.
  */
 @Composable
-private fun MemberNameFields(
-    firstName: String, lastName: String,
-    onFirstNameChange: (String) -> Unit, onLastNameChange: (String) -> Unit
+private fun MemberFirstNameField(
+    firstName: String,
+    onFirstNameChange: (String) -> Unit
 ) {
     TextField(
         value = firstName,
         onValueChange = onFirstNameChange,
         label = { Text("שם פרטי") }
     )
+}
+
+/**
+ * Provides input field for last name.
+ *
+ * @param lastName The last name input.
+ * @param onLastNameChange Callback for updating the last name.
+ */
+@Composable
+private fun MemberLastNameField(
+    lastName: String,
+    onLastNameChange: (String) -> Unit
+) {
     TextField(
         value = lastName,
         onValueChange = onLastNameChange,
@@ -183,21 +295,29 @@ private fun GenderSelection(gender: Boolean, onGenderChange: (Boolean) -> Unit) 
  */
 @Composable
 private fun BooleanSelection(label: String, selected: Boolean, onChange: (Boolean) -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-        Text(label)
-        Column(modifier = Modifier.weight(1f)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+    Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+        Text(label, modifier = Modifier.padding(bottom = 8.dp))
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f).padding(end = 8.dp)
+            ) {
                 RadioButton(
                     selected = selected,
                     onClick = { onChange(true) }
                 )
+                Spacer(modifier = Modifier.width(4.dp))
                 Text("כן")
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
+            ) {
                 RadioButton(
                     selected = !selected,
                     onClick = { onChange(false) }
                 )
+                Spacer(modifier = Modifier.width(4.dp))
                 Text("לא")
             }
         }
@@ -260,84 +380,6 @@ private fun MachzorInput(machzor: Int?,
 }
 
 /**
- * Displays a button to confirm adding a new family member and handles potential duplicates.
- * If a member with the same first name, last name, and machzor exists, prompts the user
- * to confirm or reject using the existing member.
- *
- * @param firstName The first name input.
- * @param lastName The last name input.
- * @param memberType The selected member type (Yeshiva or NonYeshiva).
- * @param machzor The machzor input (nullable).
- * @param isRabbi Indicates if the member is a rabbi (for Yeshiva members).
- * @param gender The gender input (true for male, false for female).
- * @param existingMembers A list of existing family members to check for duplicates.
- * @param onAddMember Callback function to add a new family member.
- * @param onDismiss Callback function to dismiss the add member dialog.
- */
-@Composable
-internal fun ConfirmAddingNewMemberButton(
-    firstName: String,
-    lastName: String,
-    memberType: MemberType?,
-    machzor: Int?,
-    isRabbi: Boolean,
-    gender: Boolean,
-    existingMembers: List<FamilyMember>,
-    onAddMember: (FamilyMember) -> Unit,
-    onDismiss: () -> Unit
-) {
-    var showSameNameMemberDialog by remember { mutableStateOf(false) }
-    var matchedMember by remember { mutableStateOf<FamilyMember?>(null) }
-
-    Button(
-        onClick = {
-            val matched = findMatchingMember(firstName, lastName, machzor, existingMembers)
-            if (matched != null) {
-                matchedMember = matched
-                showSameNameMemberDialog = true
-            } else if (firstName.isNotBlank() && lastName.isNotBlank()) {
-                val familyMember = when (memberType) {
-                    MemberType.Yeshiva -> FamilyMember(firstName, lastName, gender, machzor, isRabbi)
-                    MemberType.NonYeshiva -> FamilyMember(firstName, lastName, gender)
-                    else -> throw IllegalArgumentException("Invalid member type")
-                }
-                onAddMember(familyMember)
-                onDismiss()
-            }
-        }
-    ) {
-        Text("הוסף בן משפחה")
-    }
-
-    // Show same name member dialog if needed
-    if (showSameNameMemberDialog) {
-        DuplicateMemberDialog(
-            matchedMember = matchedMember!!,
-            onConfirm = {
-                matchedMember?.let {
-                    onAddMember(it)
-                    onDismiss()
-                }
-                showSameNameMemberDialog = false
-            },
-            onDismiss = {
-                // Add the new member with the same name if user chooses to add him after all
-                if (firstName.isNotBlank() && lastName.isNotBlank()) {
-                    val familyMember = when (memberType) {
-                        MemberType.Yeshiva -> FamilyMember(firstName, lastName, gender, machzor, isRabbi)
-                        MemberType.NonYeshiva -> FamilyMember(firstName, lastName, gender)
-                        else -> throw IllegalArgumentException("Invalid member type")
-                    }
-                    onAddMember(familyMember)
-                }
-                showSameNameMemberDialog = false
-            }
-        )
-    }
-}
-
-
-/**
  * Displays a dialog to confirm if the user meant to select an existing family member.
  * Prompts the user to confirm or reject using the existing member.
  *
@@ -346,7 +388,7 @@ internal fun ConfirmAddingNewMemberButton(
  * @param onDismiss Callback function to dismiss the dialog without taking action.
  */
 @Composable
-private fun DuplicateMemberDialog(
+private fun SameMemberDialog(
     matchedMember: FamilyMember,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
@@ -368,7 +410,7 @@ private fun DuplicateMemberDialog(
             }
         },
         dismissButton = {},
-        text = { Text("כבר קיים בן משפחה בשם ${matchedMember.getFullName()}. האם זו הכוונה?") }
+        text = { Text("כבר קיים בן משפחה בשם ${matchedMember.getFullName()}. האם התכוונת אליו?") }
     )
 }
 
@@ -394,14 +436,14 @@ private fun findMatchingMember(
  * when adding a new family member. It displays a dropdown menu with the list of family members,
  * and the user can choose an existing family member to connect the new member to.
  *
- * @param members List of family members to display in the dropdown menu.
+ * @param existingMembers List of family members to display in the dropdown menu.
  * @param onMemberSelected Callback function that is triggered when a family member is selected.
  *        It returns the selected `FamilyMember` object.
  * @param onDismiss Callback function triggered when the dialog is dismissed without selection.
  */
 @Composable
 fun ChooseMemberToRelateTo(
-    members: List<FamilyMember>,
+    existingMembers: List<FamilyMember>,
     onMemberSelected: (FamilyMember) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -447,7 +489,7 @@ fun ChooseMemberToRelateTo(
                             onDismissRequest = { expanded = false }
                         ) {
                             // Create a dropdown item for each family member
-                            members.forEach { member ->
+                            existingMembers.forEach { member ->
                                 DropdownMenuItem(
                                     onClick = {
                                         selectedMember = member
@@ -600,7 +642,7 @@ private fun HowAreTheyRelated(
  *
  * @return A string representing the relationship in Hebrew, such as "אבא של " for FATHER or "נכד של " for GRANDSON.
  */
-private fun Relations.displayName(): String {
+internal fun Relations.displayName(): String {
     return when (this) {
         Relations.MARRIAGE -> "נשוי ל"
         Relations.FATHER -> "אבא של "
@@ -617,102 +659,257 @@ private fun Relations.displayName(): String {
 }
 
 /**
- * A composable function that displays a dialog a family member to the tree.
- * This dialog allows users to input details about the family member and add them to the database.
+ * A composable function that displays a dialog for selecting the member type.
  *
+ * @param onMemberTypeSelected A lambda function triggered when a member type is selected.
  * @param onDismiss A lambda function triggered when the dialog is dismissed.
- * @param onAddMember A lambda function that takes a [FamilyMember] object and adds it to the database.
- * @param existingMembers A list of [FamilyMember] objects representing current members in the tree.
  */
 @Composable
-internal fun AddNewMemberToTree(
-    onDismiss: () -> Unit,
-    onAddMember: (FamilyMember) -> Unit,
-    existingMembers: List<FamilyMember>
+private fun MemberTypeSelectionDialog(
+    onMemberTypeSelected: (MemberType) -> Unit,
+    onDismiss: () -> Unit
 ) {
-
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var gender by remember { mutableStateOf(true) } // true for male, false for female
-    var machzor by remember { mutableStateOf<Int?>(null) }
-    var isRabbi by remember { mutableStateOf(false) }
-    var selectedMemberType by remember { mutableStateOf<MemberType?>(null) }
-
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { AddMemberDialogTitle(selectedMemberType) },
+        title = { Text("בחר סוג בן משפחה", textAlign = TextAlign.End) },
         text = {
             Column {
-                // Display member type selection if none is chosen.
-                if (selectedMemberType == null) {
-                    MemberTypeSelection(onMemberTypeSelected = { selectedMemberType = it })
-                }
-
-                // Show the appropriate form based on the selected member type.
-                selectedMemberType?.let { it ->
-                    when (it) {
-                        MemberType.Yeshiva -> YeshivaMemberForm(
-                            firstName = firstName,
-                            lastName = lastName,
-                            machzor = machzor,
-                            isRabbi = isRabbi,
-                            onFirstNameChange = { firstName = it },
-                            onLastNameChange = { lastName = it },
-                            onMachzorChange = { machzor = it },
-                            onIsRabbiChange = { isRabbi = it }
-                        )
-                        MemberType.NonYeshiva -> NonYeshivaMemberForm(
-                            firstName = firstName,
-                            lastName = lastName,
-                            gender = gender,
-                            onFirstNameChange = { firstName = it },
-                            onLastNameChange = { lastName = it },
-                            onGenderChange = { gender = it }
-                        )
-                    }
-                }
+                MemberTypeSelection(onMemberTypeSelected = onMemberTypeSelected)
             }
         },
         confirmButton = {
-            if (selectedMemberType != null) {
-                ConfirmAddingNewMemberButton(
-                    firstName = firstName,
-                    lastName = lastName,
-                    memberType = selectedMemberType,
-                    machzor = machzor,
-                    isRabbi = isRabbi,
-                    gender = gender,
-                    existingMembers = existingMembers,
-                    onAddMember = onAddMember,
-                    onDismiss = onDismiss
-                )
+            Button(onClick = onDismiss) {
+                Text("בטל")
             }
         }
     )
 }
 
-@RequiresApi(Build.VERSION_CODES.N)
+/**
+ * A composable function that displays a series of dialogs to guide the user in creating a new family member
+ *
+ * This function handles a step-by-step process:
+ * 1. The user selects the type of member (Yeshiva or NonYeshiva).
+ * 2. The user enters the details of the family member.
+ *
+ * @param existingMembers A list of existing family members used for validation or reference.
+ * @param onMemberCreation A lambda function invoked when a new family member is successfully created, passing the new FamilyMember object.
+ * @param onDismiss A lambda function that is called to dismiss the dialog when the user cancels the action.
+ */
+@Composable
+internal fun AskUserToCreateNewFamilyMember(
+    onMemberCreation: (FamilyMember) -> Unit,
+    existingMembers: List<FamilyMember>,
+    onDismiss: () -> Unit
+) {
+    // Holds the newly created family member.
+    var newMember: FamilyMember? by remember { mutableStateOf(null) }
+
+    // Holds the selected type of the member (Yeshiva or NonYeshiva).
+    var selectedMemberType: MemberType? by remember { mutableStateOf<MemberType?>(null) }
+
+    // Indicates whether the user has selected a member type.
+    var didUserSelectMemberType: Boolean by remember { mutableStateOf(false) }
+
+    // Indicates whether the user has entered the member's details.
+    var didUserEnterMembersDetails: Boolean by remember { mutableStateOf(false) }
+
+
+    val resetState: () -> Unit = {
+        newMember = null
+        selectedMemberType = null
+        didUserSelectMemberType = false
+        didUserEnterMembersDetails = false
+    }
+
+    // First step: user needs to select member type
+    if (!didUserSelectMemberType) {
+        // Display a dialog for selecting the type of member.
+        MemberTypeSelectionDialog(
+            onMemberTypeSelected = {
+                selectedMemberType = it
+                didUserSelectMemberType = true
+            },
+            onDismiss = {
+                resetState()
+                onDismiss()
+            }
+        )
+    }
+    // Second step: user needs to enter members details
+    else if (!didUserEnterMembersDetails) {
+        // Display a dialog for entering member details based on the selected type.
+        AskUserForMemberDetailsDialog(
+            selectedMemberType,
+            onFamilyMemberCreation = { member ->
+                newMember = member
+                didUserEnterMembersDetails = true
+            },
+            onDismiss = {
+                resetState()
+                onDismiss()
+            }
+        )
+
+        //TODO: Check if there's already a member with this name
+
+    }
+    // Third step: If both steps are complete, crate new member and return it.
+    else {
+        newMember?.let { onMemberCreation(it) }
+    }
+}
+
+/**
+ * Returns the inverse relationship based on the given relation and the genders of both members.
+ *
+ * @param relation The relationship to invert.
+ * @param memberOneIsMale True if the first member is male, false if female.
+ * @param memberTwoIsMale True if the second member is male, false if female.
+ * @return The inverse relationship.
+ */
+private fun getInverseRelation(relation: Relations, memberOneIsMale: Boolean, memberTwoIsMale: Boolean): Relations {
+    return when (relation) {
+        Relations.FATHER -> if (memberOneIsMale) Relations.SON else Relations.DAUGHTER
+        Relations.MOTHER -> if (memberOneIsMale) Relations.SON else Relations.DAUGHTER
+        Relations.SON -> if (memberTwoIsMale) Relations.FATHER else Relations.MOTHER
+        Relations.DAUGHTER -> if (memberTwoIsMale) Relations.FATHER else Relations.MOTHER
+        Relations.GRANDMOTHER -> if (memberOneIsMale) Relations.GRANDSON else Relations.GRANDDAUGHTER
+        Relations.GRANDFATHER -> if (memberOneIsMale) Relations.GRANDSON else Relations.GRANDDAUGHTER
+        Relations.GRANDSON -> if (memberTwoIsMale) Relations.GRANDFATHER else Relations.GRANDMOTHER
+        Relations.GRANDDAUGHTER -> if (memberTwoIsMale) Relations.GRANDFATHER else Relations.GRANDMOTHER
+        Relations.SIBLINGS -> Relations.SIBLINGS
+        Relations.COUSINS -> Relations.COUSINS
+        Relations.MARRIAGE -> Relations.MARRIAGE
+    }
+}
+
+/**
+ * Private suspend function that adds a new family member to the database and updates the relationship
+ * between the new member and the existing member. It creates the necessary connections in both members' adjacency lists.
+ *
+ * @param existingMember The existing family member to whom the new member will be related.
+ * @param newMember The new family member being added.
+ * @param relationFromExistingMemberPerspective The relation of the new member from the perspective of the existing member.
+ * @param onDismiss A callback to dismiss the UI after the operation is completed.
+ * @param context The context used for showing the Toast message if the operation fails.
+ */
+private suspend fun addNewMemberAndConnect(
+    existingMember: FamilyMember,
+    newMember: FamilyMember,
+    relationFromExistingMemberPerspective: Relations,
+    onDismiss: () -> Unit,
+    context: Context
+) {
+    try {
+        // Wait for the new member to be added to the tree
+        addNewFamilyMemberToFirebase(newMember)
+
+        // Get members' IDs
+        val existingMemberId: String = existingMember.documentId.toString()
+        val newMemberId: String = newMember.documentId.toString()
+
+        // Get members' genders
+        val existingMemberGender: Boolean = existingMember.getGender()
+        val newMemberGender: Boolean = newMember.getGender()
+
+        // Determine the relation from the new member's perspective
+        val relationFromNewMemberPerspective =
+            getInverseRelation(relationFromExistingMemberPerspective, existingMemberGender, newMemberGender)
+
+        // Create connections for both the new member and the existing member
+        val connectionForNewMember = Connection(existingMemberId, relationFromNewMemberPerspective)
+        val connectionForExistingMember = Connection(newMemberId, relationFromExistingMemberPerspective)
+
+        // Add connections to the database
+        addConnectionToFirebase(existingMemberId, connectionForExistingMember)
+        addConnectionToFirebase(newMemberId, connectionForNewMember)
+
+        // Dismiss the UI after the operation is completed
+        onDismiss()
+    } catch (e: Exception) {
+        // Show a failure message if the operation fails
+        Toast.makeText(context, "הוספת בן משפחה נכשלה", Toast.LENGTH_LONG).show()
+        onDismiss()
+    }
+}
+
+/**
+ * Composable function for adding a new family member when starting with an empty family tree.
+ * This function provides a UI that prompts the user to create a new family member and adds
+ * the member to the family tree once created.
+ *
+ * @param existingMembers A list of already existing family members to prevent duplicate entries.
+ *                        It is passed to ensure uniqueness of the new member's information.
+ * @param onDismiss A lambda function to handle the dismiss action, allowing the user to close
+ *                  the UI without adding a new family member.
+ */
+@Composable
+internal fun AddNewFamilyMemberToEmptyTree(
+    existingMembers: List<FamilyMember>,
+    onDismiss: () -> Unit
+) {
+    var newMember: FamilyMember? by remember { mutableStateOf(null) }
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    AskUserToCreateNewFamilyMember(
+        onMemberCreation = { newMember = it },
+        existingMembers = existingMembers,
+        onDismiss = onDismiss,
+    )
+
+    if (newMember != null) {
+        newMember?.let { member ->
+            coroutineScope.launch {
+                try {
+                    addNewFamilyMemberToFirebase(member)
+                } catch (e: Exception) {
+                    Toast.makeText(context, "הוספת בן משפחה נכשלה", Toast.LENGTH_LONG).show()
+                }
+                onDismiss()
+            }
+        }
+    }
+}
+
+/**
+ * Composable function for adding a new family member and relating them to an existing member.
+ * This function guides the user through the process of selecting an existing member, choosing
+ * the relationship, creating the new member, and validating the connection before adding the new member.
+ *
+ * @param existingMembers A list of existing family members to choose from when selecting an existing member.
+ * @param onDismiss A callback function to handle dismissing the dialog or UI component when the process is canceled or completed.
+ */
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun AddNewMemberAndRelateToExistingMember(
-    onDismiss: () -> Unit,
-    onAddMember: (FamilyMember) -> Unit,
     existingMembers: List<FamilyMember>,
+    onDismiss: () -> Unit
 ) {
     var existingMember: FamilyMember? by remember { mutableStateOf(null) }
     var newMember: FamilyMember? by remember { mutableStateOf(null) }
-    var selectedRelation: Relations? by remember { mutableStateOf(null) }
+    var relationFromExistingMemberPerspective: Relations? by remember { mutableStateOf(null) }
+    var showGenderErrorDialog by remember { mutableStateOf(false) }
+    var showMoreThanOneMemberErrorDialog by remember { mutableStateOf(false) }
+    var showSameMemberMarriageErrorDialog by remember { mutableStateOf(false) }
+    var isConnectionValid by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
+    // Reset the state variables to their initial values
     val resetState: () -> Unit = {
         existingMember = null
+        relationFromExistingMemberPerspective = null
         newMember = null
-        selectedRelation = null
     }
 
+    // First step: select an existing member in the tree to connect to
     if (existingMember == null) {
-    // User didn't select a member yet
+        // User didn't select a member yet
 
         ChooseMemberToRelateTo(
-            members = existingMembers,
+            existingMembers = existingMembers,
             onMemberSelected = { existingMember = it },
             onDismiss = {
                 resetState()
@@ -721,73 +918,85 @@ fun AddNewMemberAndRelateToExistingMember(
         )
 
     }
-    else if (selectedRelation == null) {
-    // User selected a member, but didn't select a relation yet
+    // Second step: select the relation between the new member, and the existing member
+    else if (relationFromExistingMemberPerspective == null) {
+        // User selected a member, but didn't select a relation yet
 
         HowAreTheyRelated(
             existingMember = existingMember!!,
-            onRelationSelected = { selectedRelation = it },
+            onRelationSelected = { relationFromExistingMemberPerspective = it },
             onDismiss = {
                 resetState()
                 onDismiss()
             }
         )
-    } else if (newMember == null) {
-    // User selected a member and a relation, but didn't add the new member yet
+    }
+    // Third step: create a new FamilyMember object representing the new member
+    else if (newMember == null) {
+        // User selected a member and a relation, but didn't add the new member yet
 
-        AddNewMemberToTree(
-
-            onDismiss = {
-                resetState()
-                onDismiss()
-            },
-            onAddMember = { familyMember ->
-                            newMember = familyMember
-                            onAddMember(familyMember)
-                          },
+        AskUserToCreateNewFamilyMember(
+            onMemberCreation = { newMember = it },
             existingMembers = existingMembers,
-        )
-
-    } else {
-    // User selected a member, a relation, and added the new member
-    // Now we can try adding the relation between the new member, and the one the user chose.
-
-        var showToast2 by remember { mutableStateOf(true) }
-        val context = LocalContext.current
-        if (showToast2) {
-            LaunchedEffect(Unit) {
-                Toast.makeText(context, "עקיבא פרגר2!", Toast.LENGTH_SHORT).show()
-                showToast2 = false
+            onDismiss = {
+                resetState()
+                onDismiss()
             }
+        )
+    }
+    // Fourth step: validate connection
+    else if (!isConnectionValid) {
+        // User selected a member, a relation, and created a new member
+
+        // Make sure the connection the user wants to add is valid
+        try {
+            validateConnection(existingMember!!, newMember!!, relationFromExistingMemberPerspective!!)
+        } catch (e: InvalidGenderRoleException) {
+            showGenderErrorDialog = true
+        } catch (e: InvalidMoreThanOneConnection) {
+            showMoreThanOneMemberErrorDialog = true
+        } catch (e: SameMarriageException) {
+            showSameMemberMarriageErrorDialog = true
+        } catch (e: Exception) {
+            // Handle any other unforeseen exceptions
+            println("An unexpected error occurred: ${e.message}")
         }
 
-
+        // Gender mismatch
+        if (showGenderErrorDialog) {
+            GenderErrorDialog(onDismiss, relationFromExistingMemberPerspective!!, newMember!!, existingMember!!)
+        }
+        // Two fathers, two mothers, or two marriage
+        else if (showMoreThanOneMemberErrorDialog) {
+            MoreThanOneConnectionErrorDialog(onDismiss, relationFromExistingMemberPerspective!!, existingMember!!)
+        }
+        // Same gender marriage
+        else if (showSameMemberMarriageErrorDialog) {
+            SameMemberMarriageErrorDialog(onDismiss)
+        }
+        // connection
+        else {
+            isConnectionValid = true
+        }
+    }
+    // Fifth step: add the new member and update thr connection in both members
+    else {
         try {
-        // If the user added the new member with a valid connection, this will succeed
-
-            FamilyTreeData.addConnectionToAdjacencyList(
-            existingMember!!,
-            newMember!!,
-            selectedRelation!!
-            )
-
+            coroutineScope.launch {
+                addNewMemberAndConnect(
+                    existingMember = existingMember!!,
+                    newMember = newMember!!,
+                    relationFromExistingMemberPerspective = relationFromExistingMemberPerspective!!,
+                    onDismiss = onDismiss,
+                    context = context
+                )
+            }
         } catch (e: Exception) {
-        // Otherwise it will throw an exception, and we will delete the new member
-            FamilyTreeData.deleteFamilyMember(newMember!!.documentId)
+            Toast.makeText(context, "הוספת בן משפחה נכשלה", Toast.LENGTH_LONG).show()
+            onDismiss()
         }
     }
 }
-
-
-//var showToast by remember { mutableStateOf(true) }
-//val context = LocalContext.current
-//if (showToast) {
-//    LaunchedEffect(Unit) {
-//        Toast.makeText(context, "עקיבא פרגר!", Toast.LENGTH_SHORT).show()
-//        showToast = false
-//    }
-//}
-
 
 
 

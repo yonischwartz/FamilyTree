@@ -1,7 +1,6 @@
 package com.example.familytree.ui.theme.homeScreen
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
@@ -11,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.example.familytree.data.FamilyMember
-import com.example.familytree.data.dataManagement.FamilyTreeData
+import com.example.familytree.data.dataManagement.FireBaseManager
 
 /**
  * A Composable function that represents the button for showing all family members.
@@ -59,7 +58,7 @@ fun AddMemberButton(onAddMember: () -> Unit) {
 @Composable
 fun DeleteMemberButton(member: FamilyMember, onDeleted: () -> Unit) {
     Button(onClick = {
-        FamilyTreeData.deleteFamilyMember(member.documentId)
+        member.documentId?.let { FireBaseManager.deleteFamilyMember(it) }
         onDeleted()
     }) {
         Text("הסר")

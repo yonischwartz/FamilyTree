@@ -1,4 +1,4 @@
-package com.example.familytree.ui.theme
+package com.example.familytree.ui.theme.dialogs
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import com.example.familytree.data.FamilyMember
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
+import com.example.familytree.ui.theme.intToMachzor
 
 /**
  * Composable function that displays detailed information about a yeshiva family member.
@@ -33,6 +34,7 @@ fun YeshivaMemberDetailDialog(member: FamilyMember, onDismiss: () -> Unit) {
                     } else {
                         member.getFirstName()
                     }
+                    Text("סוג בן משפחה: ${member.getMemberType()}", style = MaterialTheme.typography.bodyMedium)
                     Text("שם פרטי: $firstNameDisplay", style = MaterialTheme.typography.bodyMedium)
                     Text("שם משפחה: ${member.getLastName()}", style = MaterialTheme.typography.bodyMedium)
                     Text("מין: ${if (member.getGender()) "זכר" else "נקבה"}", style = MaterialTheme.typography.bodyMedium)

@@ -16,7 +16,7 @@ import com.example.familytree.data.Relations
  */
 class InvalidGenderRoleException(
     val member: FamilyMember,
-    val invalidRole: Relations
+    invalidRole: Relations
 ) : Exception(
     "Invalid gender-role assignment: Member '${member.getFullName()}' (gender: ${
         if (member.getGender()) "Male" else "Female"

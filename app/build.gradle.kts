@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.familytree"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.familytree"
@@ -38,9 +38,11 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.uiToolingPreviewAndroid)
     implementation(libs.jewishDate)
-    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation(libs.kotlinxCoroutines)
+    implementation(libs.material3)
+    implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("androidx.activity:activity-compose:1.9.3")
+    implementation("androidx.activity:activity-compose:1.10.0")
     implementation("androidx.compose.ui:ui:1.7.6")
     implementation("androidx.compose.material3:material3:1.3.1")
     implementation("androidx.compose.material3:material3:1.3.1")

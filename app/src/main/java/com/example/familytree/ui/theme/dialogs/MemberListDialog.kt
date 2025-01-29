@@ -1,7 +1,6 @@
-package com.example.familytree.ui.theme
+package com.example.familytree.ui.theme.dialogs
 
 import android.os.Build
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,7 +9,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -21,14 +19,14 @@ import com.example.familytree.ui.theme.homeScreen.DeleteMemberButton
  * Composable function that displays a dialog containing a list of all family members.
  * Each member can be clicked to view detailed information.
  *
- * @param initialFamilyMembers The list of family members to display.
+ * @param existingMembers The list of family members to display.
  * @param onDismiss The action to perform when the dialog is dismissed.
  */
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
-fun MemberListDialog(initialFamilyMembers: List<FamilyMember>, onDismiss: () -> Unit) {
+fun MemberListDialog(existingMembers: List<FamilyMember>, onDismiss: () -> Unit) {
     // Use state-backed mutable list for dynamic updates
-    val memberList = remember { mutableStateListOf(*initialFamilyMembers.toTypedArray()) }
+    val memberList = remember { mutableStateListOf(*existingMembers.toTypedArray()) }
     var selectedMember by remember { mutableStateOf<FamilyMember?>(null) }
 
     // Set right-to-left layout direction for Hebrew content.

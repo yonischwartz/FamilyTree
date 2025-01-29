@@ -1,5 +1,5 @@
 // Package declaration
-package com.example.familytree.ui.theme
+package com.example.familytree.ui.theme.dialogs
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -29,6 +29,7 @@ fun NonYeshivaMemberDetailDialog(member: FamilyMember, onDismiss: () -> Unit) {
             text = {
                 // Column layout stacks member details vertically, making the information clear and readable.
                 Column(modifier = Modifier.padding(8.dp)) {
+                    Text("סוג בן משפחה: ${member.getMemberType()}", style = MaterialTheme.typography.bodyMedium)
                     Text("שם פרטי: ${member.getFirstName()}", style = MaterialTheme.typography.bodyMedium)  // Display first name.
                     Text("שם משפחה: ${member.getLastName()}", style = MaterialTheme.typography.bodyMedium)  // Display last name.
                     Text("מין: ${if (member.getGender()) "זכר" else "נקבה"}", style = MaterialTheme.typography.bodyMedium)  // Display gender based on boolean.
