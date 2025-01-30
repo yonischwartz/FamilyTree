@@ -2,6 +2,7 @@ package com.example.familytree.data.dataManagement
 
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.Relations
+import com.example.familytree.data.dataManagement.FireBaseManager.getConnectionsOfFamilyMemberById
 import com.example.familytree.data.exceptions.InvalidGenderRoleException
 import com.example.familytree.data.exceptions.InvalidMoreThanOneConnection
 import com.example.familytree.data.exceptions.SameMarriageException
@@ -21,31 +22,14 @@ internal fun FireBaseManager.validateGenderRole(member: FamilyMember, relationsh
 }
 
 /**
- * Validates the marriage relationship between two family members.
- * A marriage cannot exist if either member is already married, and the genders must be different.
- *
- * @param memberOne The first family member.
- * @param memberTwo The second family member.
- * @throws SameMarriageException If the genders of the two members are the same.
- * @throws InvalidMoreThanOneConnection If the member already has an existing marriage connection.
- */
-internal fun validateMarriage(memberOne: FamilyMember, memberTwo: FamilyMember) {
-    validateNotMoreThanOneMemberConnection(memberOne, Relations.MARRIAGE)
-    validateNotMoreThanOneMemberConnection(memberTwo, Relations.MARRIAGE)
-    if (memberOne.getGender() == memberTwo.getGender()) {
-        throw SameMarriageException()
-    }
-}
-
-/**
  * Validates that a family member does not already have an existing connection of a specific relationship type.
  *
- * @param member The family member to check for existing connections.
+ * @param memberId The ID of the family member to check for existing connections.
  * @param relationship The type of relationship to check for.
  * @throws InvalidMoreThanOneConnection If the member already has an existing connection of the specified relationship.
  */
-internal fun validateNotMoreThanOneMemberConnection(member: FamilyMember, relationship: Relations) {
-    val connections = member.getConnections()
+internal suspend fun validateNotMoreThanOneMemberConnection(memberId: String, relationship: Relations) {
+    val connections = getConnectionsOfFamilyMemberById(memberId)
     for (connection in connections) {
         if (relationship == connection.relationship) {
             throw InvalidMoreThanOneConnection(relationship)
@@ -54,52 +38,79 @@ internal fun validateNotMoreThanOneMemberConnection(member: FamilyMember, relati
 }
 
 /**
+ * Validates the marriage relationship between two family members.
+ * The validation checks that:
+ * 1. Neither member is already married.
+ * 2. The genders of the two members are different.
+ *
+ * @param memberOneId The ID of the first family member.
+ * @param memberOneGender The gender of the first family member (true for male, false for female).
+ * @param memberTwoId The ID of the second family member.
+ * @param memberTwoGender The gender of the second family member (true for male, false for female).
+ * @throws SameMarriageException If the genders of the two members are the same.
+ * @throws InvalidMoreThanOneConnection If either member already has an existing marriage connection.
+ */
+internal suspend fun validateMarriage(
+    memberOneId: String,
+    memberOneGender: Boolean,
+    memberTwoId: String,
+    memberTwoGender: Boolean
+) {
+    validateNotMoreThanOneMemberConnection(memberOneId, Relations.MARRIAGE)
+    validateNotMoreThanOneMemberConnection(memberTwoId, Relations.MARRIAGE)
+    if (memberOneGender == memberTwoGender) {
+        throw SameMarriageException()
+    }
+}
+
+/**
  * Validates the parent-child connection in the family tree.
  *
  * This function ensures the following:
- * 1. The parent's gender matches the expected role based on the specified relationship (e.g., FATHER or MOTHER).
- * 2. The child does not have more than one parent of the specified relationship type (e.g., no more than one FATHER or MOTHER).
+ * 1. The parent's role matches the expected relationship type (e.g., FATHER).
+ * 2. The child does not already have more than one parent of the specified relationship type.
  *
- * @param child The child family member whose relationship to the parent is being validated.
+ * @param childId The ID of the child family member whose relationship to the parent is being validated.
  * @param parent The parent family member being validated.
- * @param parentRelation The relationship type between the parent and child (must be either FATHER or MOTHER).
+ * @param parentRelation The relationship type between the parent and child (must be FATHER).
  *
- * @throws InvalidGenderRoleException If the parent's gender does not match the specified relationship type.
- * @throws InvalidMoreThanOneConnection If the child already has a parent of the specified relationship type.
+ * @throws InvalidMoreThanOneConnection If the child already has a FATHER in the family tree.
  */
-internal fun FireBaseManager.validateParentChildConnection(
-    child: FamilyMember,
+internal suspend fun FireBaseManager.validateParentChildConnection(
+    childId: String,
     parent: FamilyMember,
     parentRelation: Relations // FATHER or MOTHER
 ) {
     validateGenderRole(parent, parentRelation)
-    validateNotMoreThanOneMemberConnection(child, parentRelation)
+    validateNotMoreThanOneMemberConnection(childId, parentRelation)
 }
 
 /**
  * Validates the child-parent connection in the family tree.
  *
  * This function ensures the following:
- * 1. The child's gender matches the expected role based on the specified relationship (e.g., SON or DAUGHTER).
- * 2. The child does not have more than one parent of the determined relationship type (e.g., no duplicate FATHER or MOTHER).
+ * 1. The child's assigned relationship (SON or DAUGHTER) aligns with their expected gender.
+ * 2. The child does not already have more than one parent of the determined type (FATHER or MOTHER).
  *
- * The parent's role (FATHER or MOTHER) is determined dynamically based on the parent's gender.
+ * The parent's role (FATHER or MOTHER) is determined based on the provided `parentGender` flag.
  *
- * @param child The child family member being validated.
- * @param parent The parent family member whose relationship to the child is being validated.
+ * @param parentGender Boolean indicating whether the parent is male (`true` for FATHER, `false` for MOTHER).
+ * @param child The child family member whose relationship is being validated.
+ * @param childId The unique ID of the child in the database.
  * @param childRelation The relationship type between the child and parent (must be either SON or DAUGHTER).
  *
- * @throws InvalidGenderRoleException If the child's gender does not match the specified relationship type.
+ * @throws InvalidGenderRoleException If the child's gender does not match the specified relationship type (SON or DAUGHTER).
  * @throws InvalidMoreThanOneConnection If the child already has a parent of the determined relationship type (FATHER or MOTHER).
  */
-internal fun FireBaseManager.validateChildParentConnection(
-    parent: FamilyMember,
+internal suspend fun FireBaseManager.validateChildParentConnection(
+    parentGender: Boolean,
     child: FamilyMember,
+    childId: String,
     childRelation: Relations // SON or DAUGHTER
 ) {
-    val parentRelation = if (parent.getGender()) Relations.FATHER else Relations.MOTHER
+    val parentRelation = if (parentGender) Relations.FATHER else Relations.MOTHER
     validateGenderRole(child, childRelation)
-    validateNotMoreThanOneMemberConnection(child, parentRelation)
+    validateNotMoreThanOneMemberConnection(childId, parentRelation)
 }
 
 /**

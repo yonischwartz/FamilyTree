@@ -2,6 +2,7 @@ package com.example.familytree.ui.theme
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import android.widget.Toast
@@ -45,12 +46,12 @@ import com.example.familytree.ui.theme.dialogs.SameMemberMarriageErrorDialog
 @Composable
 internal fun MemberTypeSelection(onMemberTypeSelected: (MemberType) -> Unit) {
     MemberTypeButton(
-        label = "בן משפחה מהישיבה",
+        label = HebrewText.YESHIVA_FAMILY_MEMBER,
         onClick = { onMemberTypeSelected(MemberType.Yeshiva) }
     )
     Spacer(modifier = Modifier.height(8.dp))
     MemberTypeButton(
-        label = "בן משפחה שאינו מהישיבה",
+        label = HebrewText.NON_YESHIVA_FAMILY_MEMBER,
         onClick = { onMemberTypeSelected(MemberType.NonYeshiva) }
     )
 }
@@ -81,7 +82,7 @@ private fun AskUserForMemberDetailsDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("הוסף בן משפחה") },
+        title = { Text(HebrewText.ADD_FAMILY_MEMBER) },
         text = {
             Column(modifier = Modifier.padding(16.dp)) {
                 when (selectedMemberType) {
@@ -101,12 +102,12 @@ private fun AskUserForMemberDetailsDialog(
                 onClick = { newMember?.let(onFamilyMemberCreation) },
                 enabled = newMember != null
             ) {
-                Text("המשך")
+                Text(HebrewText.CONTINUE)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("בטל")
+                Text(HebrewText.CANCEL)
             }
         }
     )
@@ -142,7 +143,7 @@ internal fun AskUserForYeshivaMemberDetails(
         )
         Spacer(modifier = Modifier.height(8.dp))
         BooleanSelection(
-            label = "האם בן משפחה זה, רב בישיבה?",
+            label = HebrewText.IS_THIS_FAMILY_MEMBER_A_RABBI,
             selected = isRabbi,
             onChange = { isRabbi = it }
         )
@@ -235,7 +236,7 @@ private fun MemberFirstNameField(
     TextField(
         value = firstName,
         onValueChange = onFirstNameChange,
-        label = { Text("שם פרטי") }
+        label = { Text(HebrewText.FIRST_NAME) }
     )
 }
 
@@ -253,7 +254,7 @@ private fun MemberLastNameField(
     TextField(
         value = lastName,
         onValueChange = onLastNameChange,
-        label = { Text("שם משפחה") }
+        label = { Text(HebrewText.LAST_NAME) }
     )
 }
 
@@ -266,21 +267,21 @@ private fun MemberLastNameField(
 @Composable
 private fun GenderSelection(gender: Boolean, onGenderChange: (Boolean) -> Unit) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-        Text("מין:")
+        Text(HebrewText.SEX)
         Column(modifier = Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
                     selected = gender,
                     onClick = { onGenderChange(true) }
                 )
-                Text("זכר")
+                Text(HebrewText.MALE)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
                     selected = !gender,
                     onClick = { onGenderChange(false) }
                 )
-                Text("נקבה")
+                Text(HebrewText.FEMALE)
             }
         }
     }
@@ -307,7 +308,7 @@ private fun BooleanSelection(label: String, selected: Boolean, onChange: (Boolea
                     onClick = { onChange(true) }
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("כן")
+                Text(HebrewText.YES)
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -318,7 +319,7 @@ private fun BooleanSelection(label: String, selected: Boolean, onChange: (Boolea
                     onClick = { onChange(false) }
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("לא")
+                Text(HebrewText.NO)
             }
         }
     }
@@ -348,7 +349,7 @@ private fun MachzorInput(machzor: Int?,
         TextField(
             value = intToMachzor[selectedMachzor] ?: "",
             onValueChange = {},
-            label = { Text("מחזור") },
+            label = { Text(HebrewText.MACHZOR) },
             readOnly = true,
             trailingIcon = {
                 Icon(
@@ -459,7 +460,7 @@ fun ChooseMemberToRelateTo(
                 onDismiss()
            },
             title = {
-                Text(text = "בני משפחה חדשים נדרשים להיות קשורים לבן משפחה קיים בעץ.")
+                Text(text = HebrewText.NEW_FAMILY_MEMBERS_MUST_BE_RELATED_TO_AN_EXISTING_MEMBER)
             },
             text = {
                 Column(
@@ -471,7 +472,7 @@ fun ChooseMemberToRelateTo(
                 ) {
                     // Display a prompt for selecting a family member
                     Text(
-                        text = "לאיזה בן משפחה בעץ, מקושר בן המשפחה שאתה רוצה להוסיף?",
+                        text = HebrewText.TO_WHICH_EXISTING_MEMBER_IS_YOUR_NEW_MEMBER_CONNECTED_TO,
                         fontSize = 16.sp,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
@@ -482,7 +483,10 @@ fun ChooseMemberToRelateTo(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             // Display the selected member's name or a default prompt
-                            Text(text = selectedMember?.getFullName() ?: "בחר בן משפחה", fontSize = 16.sp)
+                            Text(
+                                text = selectedMember?.getFullName() ?: HebrewText.CHOOSE_FAMILY_MEMBER,
+                                fontSize = 16.sp
+                            )
                         }
                         DropdownMenu(
                             expanded = expanded,
@@ -515,7 +519,7 @@ fun ChooseMemberToRelateTo(
                     },
                     enabled = selectedMember != null
                 ) {
-                    Text(text = "המשך")
+                    Text(text = HebrewText.CONTINUE)
                 }
             },
             dismissButton = {
@@ -526,7 +530,7 @@ fun ChooseMemberToRelateTo(
                         onDismiss()
                     }
                 ) {
-                    Text(text = "בטל")
+                    Text(text = HebrewText.CANCEL)
                 }
             }
         )
@@ -581,7 +585,7 @@ private fun HowAreTheyRelated(
                             onClick = { expanded = !expanded },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text(text = "בחר קשר משפחתי")
+                            Text(text = HebrewText.CHOOSE_RELATION)
                         }
 
                         // Displays the selected relation
@@ -621,7 +625,7 @@ private fun HowAreTheyRelated(
                     },
                     enabled = selectedRelation != null
                 ) {
-                    Text(text = "המשך")
+                    Text(text = HebrewText.CONTINUE)
                 }
             },
             dismissButton = {
@@ -629,7 +633,7 @@ private fun HowAreTheyRelated(
                     showDialog = false
                     onDismiss()
                 }) {
-                    Text(text = "בטל")
+                    Text(text = HebrewText.CANCEL)
                 }
             }
         )
@@ -644,17 +648,17 @@ private fun HowAreTheyRelated(
  */
 internal fun Relations.displayName(): String {
     return when (this) {
-        Relations.MARRIAGE -> "נשוי ל"
-        Relations.FATHER -> "אבא של "
-        Relations.MOTHER -> "אמא של "
-        Relations.SON -> "בן של "
-        Relations.DAUGHTER -> "בת של "
-        Relations.GRANDMOTHER -> "סבתא של "
-        Relations.GRANDFATHER -> "סבא של "
-        Relations.GRANDSON -> "נכד של "
-        Relations.GRANDDAUGHTER -> "נכדה של "
-        Relations.COUSINS -> "בן דוד / בת דודה של "
-        Relations.SIBLINGS -> "אח / אחות של "
+        Relations.MARRIAGE -> HebrewText.MARRIED_TO
+        Relations.FATHER -> HebrewText.FATHER_OF
+        Relations.MOTHER -> HebrewText.MOTHER_OF
+        Relations.SON -> HebrewText.SON_OF
+        Relations.DAUGHTER -> HebrewText.DAUGHTER_OF
+        Relations.GRANDMOTHER -> HebrewText.GRANDMOTHER_OF
+        Relations.GRANDFATHER -> HebrewText.GRANDFATHER_OF
+        Relations.GRANDSON -> HebrewText.GRANDSON_OF
+        Relations.GRANDDAUGHTER -> HebrewText.GRANDDAUGHTER_OF
+        Relations.COUSINS -> HebrewText.COUSIN_OF
+        Relations.SIBLINGS -> HebrewText.SIBLING_OF
     }
 }
 
@@ -671,7 +675,7 @@ private fun MemberTypeSelectionDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("בחר סוג בן משפחה", textAlign = TextAlign.End) },
+        title = { Text(HebrewText.CHOOSE_FAMILY_MEMBER_TYPE, textAlign = TextAlign.End) },
         text = {
             Column {
                 MemberTypeSelection(onMemberTypeSelected = onMemberTypeSelected)
@@ -679,7 +683,7 @@ private fun MemberTypeSelectionDialog(
         },
         confirmButton = {
             Button(onClick = onDismiss) {
-                Text("בטל")
+                Text(HebrewText.CANCEL)
             }
         }
     )
@@ -829,7 +833,7 @@ private suspend fun addNewMemberAndConnect(
         onDismiss()
     } catch (e: Exception) {
         // Show a failure message if the operation fails
-        Toast.makeText(context, "הוספת בן משפחה נכשלה", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, HebrewText.ERROR_ADDING_MEMBER, Toast.LENGTH_LONG).show()
         onDismiss()
     }
 }
@@ -865,7 +869,7 @@ internal fun AddNewFamilyMemberToEmptyTree(
                 try {
                     addNewFamilyMemberToFirebase(member)
                 } catch (e: Exception) {
-                    Toast.makeText(context, "הוספת בן משפחה נכשלה", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, HebrewText.ERROR_ADDING_MEMBER, Toast.LENGTH_LONG).show()
                 }
                 onDismiss()
             }
@@ -894,106 +898,134 @@ fun AddNewMemberAndRelateToExistingMember(
     var showMoreThanOneMemberErrorDialog by remember { mutableStateOf(false) }
     var showSameMemberMarriageErrorDialog by remember { mutableStateOf(false) }
     var isConnectionValid by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
+    val coroutineValidationScope = rememberCoroutineScope()
+    val coroutineAddMemberScope = rememberCoroutineScope()
     val context = LocalContext.current
 
     // Reset the state variables to their initial values
     val resetState: () -> Unit = {
         existingMember = null
-        relationFromExistingMemberPerspective = null
         newMember = null
+        relationFromExistingMemberPerspective = null
+        showGenderErrorDialog = false
+        showMoreThanOneMemberErrorDialog = false
+        showSameMemberMarriageErrorDialog = false
+        isConnectionValid = false
+    }
+
+    val onDismissAndResetState: () -> Unit = {
+        resetState()
+        onDismiss()
     }
 
     // First step: select an existing member in the tree to connect to
     if (existingMember == null) {
-        // User didn't select a member yet
 
         ChooseMemberToRelateTo(
             existingMembers = existingMembers,
             onMemberSelected = { existingMember = it },
-            onDismiss = {
-                resetState()
-                onDismiss()
-            }
+            onDismiss = onDismissAndResetState
         )
 
     }
+
     // Second step: select the relation between the new member, and the existing member
     else if (relationFromExistingMemberPerspective == null) {
-        // User selected a member, but didn't select a relation yet
 
         HowAreTheyRelated(
             existingMember = existingMember!!,
             onRelationSelected = { relationFromExistingMemberPerspective = it },
-            onDismiss = {
-                resetState()
-                onDismiss()
-            }
+            onDismiss = onDismissAndResetState
         )
     }
+
     // Third step: create a new FamilyMember object representing the new member
     else if (newMember == null) {
-        // User selected a member and a relation, but didn't add the new member yet
 
         AskUserToCreateNewFamilyMember(
             onMemberCreation = { newMember = it },
             existingMembers = existingMembers,
-            onDismiss = {
-                resetState()
-                onDismiss()
-            }
+            onDismiss = onDismissAndResetState
         )
     }
-    // Fourth step: validate connection
-    else if (!isConnectionValid) {
-        // User selected a member, a relation, and created a new member
 
-        // Make sure the connection the user wants to add is valid
-        try {
-            validateConnection(existingMember!!, newMember!!, relationFromExistingMemberPerspective!!)
-        } catch (e: InvalidGenderRoleException) {
-            showGenderErrorDialog = true
-        } catch (e: InvalidMoreThanOneConnection) {
-            showMoreThanOneMemberErrorDialog = true
-        } catch (e: SameMarriageException) {
-            showSameMemberMarriageErrorDialog = true
-        } catch (e: Exception) {
-            // Handle any other unforeseen exceptions
-            println("An unexpected error occurred: ${e.message}")
+    // Fourth step: Make sure the connection the user wants to add is valid
+    else if (!isConnectionValid) {
+
+        coroutineValidationScope.launch {
+
+            try {
+                validateConnection(
+                    existingMember!!,
+                    newMember!!,
+                    relationFromExistingMemberPerspective!!,
+                    onValidation = { isConnectionValid = it }
+                )
+            } catch (e: InvalidGenderRoleException) {
+                showGenderErrorDialog = true
+            } catch (e: InvalidMoreThanOneConnection) {
+                showMoreThanOneMemberErrorDialog = true
+            } catch (e: SameMarriageException) {
+                showSameMemberMarriageErrorDialog = true
+            } catch (e: Exception) {
+
+                // Log the error to Logcat
+                Log.e("AddMemberError", "Error adding member", e)
+
+                // Show a toast message
+                Toast.makeText(context, HebrewText.ERROR_ADDING_MEMBER, Toast.LENGTH_LONG).show()
+
+                // Handle the error by dismissing and resetting state
+                onDismissAndResetState()
+
+            }
         }
 
         // Gender mismatch
         if (showGenderErrorDialog) {
-            GenderErrorDialog(onDismiss, relationFromExistingMemberPerspective!!, newMember!!, existingMember!!)
+            GenderErrorDialog(
+                onDismiss = onDismissAndResetState,
+                relationFromExistingMemberPerspective!!,
+                newMember!!,
+                existingMember!!
+            )
         }
+
         // Two fathers, two mothers, or two marriage
-        else if (showMoreThanOneMemberErrorDialog) {
-            MoreThanOneConnectionErrorDialog(onDismiss, relationFromExistingMemberPerspective!!, existingMember!!)
+        if (showMoreThanOneMemberErrorDialog) {
+            MoreThanOneConnectionErrorDialog(
+                onDismiss = onDismissAndResetState,
+                relationFromExistingMemberPerspective!!,
+                existingMember!!
+            )
         }
+
         // Same gender marriage
-        else if (showSameMemberMarriageErrorDialog) {
-            SameMemberMarriageErrorDialog(onDismiss)
-        }
-        // connection
-        else {
-            isConnectionValid = true
+        if (showSameMemberMarriageErrorDialog) {
+            SameMemberMarriageErrorDialog(onDismiss = onDismissAndResetState)
         }
     }
+
     // Fifth step: add the new member and update thr connection in both members
     else {
+
         try {
-            coroutineScope.launch {
+            coroutineAddMemberScope.launch {
+
                 addNewMemberAndConnect(
                     existingMember = existingMember!!,
                     newMember = newMember!!,
                     relationFromExistingMemberPerspective = relationFromExistingMemberPerspective!!,
-                    onDismiss = onDismiss,
+                    onDismiss = onDismissAndResetState,
                     context = context
                 )
+
+                // Show a toast message
+                Toast.makeText(context, HebrewText.SUCCESSES_ADDING_MEMBER, Toast.LENGTH_LONG).show()
             }
         } catch (e: Exception) {
-            Toast.makeText(context, "הוספת בן משפחה נכשלה", Toast.LENGTH_LONG).show()
-            onDismiss()
+            Toast.makeText(context, HebrewText.ERROR_ADDING_MEMBER, Toast.LENGTH_LONG).show()
+            onDismissAndResetState()
         }
     }
 }

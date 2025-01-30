@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import com.example.familytree.data.FamilyMember
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
+import com.example.familytree.ui.theme.HebrewText
 import com.example.familytree.ui.theme.intToMachzor
 
 /**
@@ -24,26 +25,40 @@ fun YeshivaMemberDetailDialog(member: FamilyMember, onDismiss: () -> Unit) {
         AlertDialog(
             onDismissRequest = onDismiss,  // Handles dialog dismissal when clicking outside the dialog.
             title = {
-                Text("פרטי בן משפחה", style = MaterialTheme.typography.titleMedium)  // Dialog title in Hebrew.
+                Text(HebrewText.FAMILY_MEMBER_DETAILS, style = MaterialTheme.typography.titleMedium)
             },
             text = {
                 Column(modifier = Modifier.padding(8.dp)) {
                     // Add "הרב" before the first name if the member is a rabbi.
                     val firstNameDisplay = if (member.getIsRabbi() == true) {
-                        "הרב ${member.getFirstName()}"
+                        "${HebrewText.RABBI}${member.getFirstName()}"
                     } else {
                         member.getFirstName()
                     }
-                    Text("סוג בן משפחה: ${member.getMemberType()}", style = MaterialTheme.typography.bodyMedium)
-                    Text("שם פרטי: $firstNameDisplay", style = MaterialTheme.typography.bodyMedium)
-                    Text("שם משפחה: ${member.getLastName()}", style = MaterialTheme.typography.bodyMedium)
-                    Text("מין: ${if (member.getGender()) "זכר" else "נקבה"}", style = MaterialTheme.typography.bodyMedium)
-                    Text("מחזור: ${intToMachzor[member.getMachzor()] ?: "לא ידוע"}", style = MaterialTheme.typography.bodyMedium)
+                    // סוג בן משפחה
+                    Text("${HebrewText.FAMILY_MEMBER_TYPE}: ${member.getMemberType()}",
+                        style = MaterialTheme.typography.bodyMedium)
+
+                    // שם פרטי
+                    Text("${HebrewText.FIRST_NAME}: $firstNameDisplay",
+                        style = MaterialTheme.typography.bodyMedium)
+
+                    // שם משפחה
+                    Text("${HebrewText.LAST_NAME}: ${member.getLastName()}",
+                        style = MaterialTheme.typography.bodyMedium)
+
+                    // מין
+                    Text("${HebrewText.SEX}: ${if (member.getGender()) HebrewText.MALE else HebrewText.FEMALE}",
+                        style = MaterialTheme.typography.bodyMedium)
+
+                    // מחזור
+                    Text("${HebrewText.MACHZOR}: ${intToMachzor[member.getMachzor()] ?: HebrewText.UNKNOWN}",
+                        style = MaterialTheme.typography.bodyMedium)
                 }
             },
             confirmButton = {
                 Button(onClick = onDismiss) {
-                    Text("סגור")  // Hebrew text for "Close" button.
+                    Text(HebrewText.CLOSE)
                 }
             }
         )

@@ -20,6 +20,9 @@ import com.example.familytree.data.exceptions.*
  */
 object FireBaseManager {
 
+    // Firebase Firestore instance
+    private val db by lazy { Firebase.firestore }
+
     // Relationship Gender Map
     internal val relationshipGenderMap: MutableMap<Relations, Boolean> = mutableMapOf()
 
@@ -51,10 +54,17 @@ object FireBaseManager {
         relationshipGenderMap[Relations.GRANDDAUGHTER] = false  // GRANDDAUGHTER should be female
     }
 
-    // Firebase Firestore instance
-    private val db by lazy { Firebase.firestore }
-
     // functions
+
+    suspend fun checkFirestoreAccess(): Boolean {
+        return try {
+            // Attempt to fetch a small piece of data or perform any Firestore operation
+            db.collection("members").limit(1).get().await()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
 
     /**
      * Adds a new family member to the family tree and saves it to the Firebase Firestore database atomically.
@@ -189,32 +199,100 @@ object FireBaseManager {
      * - **GRANDSON/GRANDDAUGHTER**: Validates grandchild-grandparent relationships, ensuring gender roles match.
      * - **COUSINS/SIBLINGS**: No validation is required as these relationships don't have strict constraints.
      *
-     * @param memberOne The first family member involved in the relationship.
-     * @param memberTwo The second family member involved in the relationship.
-     * @param relationFromMemberOnePerspective The type of relationship being validated (e.g., MARRIAGE, FATHER, COUSINS).
+     * @param existingMember The first family member involved in the relationship.
+     * @param newMember The second family member involved in the relationship.
+     * @param relationFromExistingMemberPerspective The type of relationship being validated (e.g., MARRIAGE, FATHER, COUSINS).
      *
      * @throws InvalidGenderRoleException If the gender of a family member does not match the expected role for the specified relationship.
      * @throws InvalidMoreThanOneConnection If a relationship constraint (e.g., no duplicate parent or grandparent roles) is violated.
      * @throws SameMarriageException If the genders of the two members are the same.
      */
-    fun validateConnection(
-        memberOne: FamilyMember,
-        memberTwo: FamilyMember,
-        relationFromMemberOnePerspective: Relations
+    suspend fun validateConnection(
+        existingMember: FamilyMember,
+        newMember: FamilyMember,
+        relationFromExistingMemberPerspective: Relations,
+        onValidation: (Boolean) -> Unit
     ) {
-        when (relationFromMemberOnePerspective) {
-            Relations.MARRIAGE -> validateMarriage(memberOne, memberTwo)
-            Relations.FATHER -> validateParentChildConnection(memberOne, memberTwo, Relations.FATHER)
-            Relations.MOTHER -> validateParentChildConnection(memberOne, memberTwo, Relations.MOTHER)
-            Relations.SON -> validateChildParentConnection(memberOne, memberTwo, Relations.SON)
-            Relations.DAUGHTER -> validateChildParentConnection(memberOne, memberTwo, Relations.DAUGHTER)
-            Relations.GRANDMOTHER -> validateGrandparentGrandchildConnection(memberTwo, Relations.GRANDMOTHER)
-            Relations.GRANDFATHER -> validateGrandparentGrandchildConnection(memberTwo, Relations.GRANDFATHER)
-            Relations.GRANDDAUGHTER -> validateGrandchildGrandparentConnection(memberTwo, Relations.GRANDDAUGHTER)
-            Relations.GRANDSON -> validateGrandchildGrandparentConnection(memberTwo, Relations.GRANDSON)
+
+        // Get members' IDs
+        val existingMemberId: String = existingMember.documentId.toString()
+        val newMemberId: String = newMember.documentId.toString()
+
+        // Get members' genders
+        val existingMemberGender: Boolean = existingMember.getGender()
+        val newMemberGender: Boolean = newMember.getGender()
+
+        when (relationFromExistingMemberPerspective) {
+
+            Relations.MARRIAGE ->
+                validateMarriage(
+                    existingMemberId,
+                    existingMemberGender,
+                    newMemberId,
+                    newMemberGender
+                )
+
+            Relations.FATHER ->
+                validateParentChildConnection(
+                    existingMemberId,
+                    newMember,
+                    Relations.FATHER
+                )
+
+            Relations.MOTHER ->
+                validateParentChildConnection(
+                    existingMemberId,
+                    newMember,
+                    Relations.MOTHER
+                )
+
+            Relations.SON ->
+                validateChildParentConnection(
+                    existingMemberGender,
+                    newMember,
+                    newMemberId,
+                    Relations.SON
+                )
+
+            Relations.DAUGHTER ->
+                validateChildParentConnection(
+                    existingMemberGender,
+                    newMember,
+                    newMemberId,
+                    Relations.DAUGHTER
+                )
+
+            Relations.GRANDMOTHER ->
+                validateGrandparentGrandchildConnection(
+                    newMember,
+                    Relations.GRANDMOTHER
+                )
+
+            Relations.GRANDFATHER ->
+                validateGrandparentGrandchildConnection(
+                    newMember,
+                    Relations.GRANDFATHER
+                )
+
+            Relations.GRANDDAUGHTER ->
+                validateGrandchildGrandparentConnection(
+                    newMember,
+                    Relations.GRANDDAUGHTER
+                )
+
+            Relations.GRANDSON ->
+                validateGrandchildGrandparentConnection(
+                    newMember,
+                    Relations.GRANDSON
+                )
+
             Relations.COUSINS -> {} // No validation required for cousins
+
             Relations.SIBLINGS -> {} // No validation required for siblings
-            }
+        }
+
+        // Connection is valid
+        onValidation(true)
     }
 
     /**
@@ -319,6 +397,31 @@ object FireBaseManager {
             .addOnFailureListener { e ->
                 println("Error updating $memberId's connections: $e")
             }
+    }
+
+    /**
+     * Retrieves the connections of a family member from Firestore.
+     *
+     * @param id The ID of the family member whose connections need to be fetched.
+     */
+    @Suppress("UNCHECKED_CAST")
+    suspend fun getConnectionsOfFamilyMemberById(id: String): List<Connection> {
+
+        // Get FamilyMember document from firebase
+        val document = db.collection("memberMap").document(id).get().await()
+
+        // If document doesn't exist return an empty list
+        if (!document.exists()) return emptyList()
+
+        // Get the connections field from the document
+        val connectionsList = document.get("connections") as? List<Map<String, Any>>
+
+        // Objects are saved if the firebase as maps, so we need to converts them back to an object
+        return connectionsList?.mapNotNull { map ->
+            val memberId = map["memberId"] as? String
+            val relationship = (map["relationship"] as? String)?.let { Relations.valueOf(it) }
+            if (memberId != null && relationship != null) Connection(memberId, relationship) else null
+        } ?: emptyList()
     }
 }
 

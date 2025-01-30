@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.platform.LocalLayoutDirection
 import com.example.familytree.data.FamilyMember
+import com.example.familytree.ui.theme.HebrewText
 import com.example.familytree.ui.theme.homeScreen.DeleteMemberButton
 
 /**
@@ -34,7 +35,7 @@ fun MemberListDialog(existingMembers: List<FamilyMember>, onDismiss: () -> Unit)
         AlertDialog(
             onDismissRequest = onDismiss,
             title = {
-                Text("רשימת בני משפחה", style = MaterialTheme.typography.titleMedium)
+                Text(HebrewText.FAMILY_MEMBER_LIST, style = MaterialTheme.typography.titleMedium)
             },
             text = {
                 LazyColumn(modifier = Modifier.fillMaxHeight()) {
@@ -56,7 +57,7 @@ fun MemberListDialog(existingMembers: List<FamilyMember>, onDismiss: () -> Unit)
             },
             confirmButton = {
                 Button(onClick = onDismiss) {
-                    Text("סגור")
+                    Text(HebrewText.CLOSE)
                 }
             }
         )

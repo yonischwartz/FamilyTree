@@ -1,20 +1,26 @@
 package com.example.familytree.ui.theme.homeScreen
 
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.platform.LocalLayoutDirection
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.dataManagement.FireBaseManager
+import com.example.familytree.data.dataManagement.FireBaseManager.checkFirestoreAccess
+import com.example.familytree.ui.theme.HebrewText
 import com.example.familytree.ui.theme.dialogs.MemberListDialog
 import com.example.familytree.ui.theme.dialogs.AddFamilyMemberDialog
-
+import android.content.Context
 
 /**
  * Composable function that displays the main screen for the family tree application.
@@ -26,14 +32,6 @@ import com.example.familytree.ui.theme.dialogs.AddFamilyMemberDialog
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun FamilyTreeScreen(modifier: Modifier = Modifier) {
-    // Load family tree data from Firebase when the screen is first composed
-//    LaunchedEffect(Unit) {
-//        try {
-//            FamilyTreeData.loadDataFromFirebase()
-//        } catch (e: Exception) {
-//            Log.e("FamilyTreeScreen", "Error loading data from Firebase", e)
-//        }
-//    }
 
     // State variables for UI components
     var searchQuery by remember { mutableStateOf("") }
@@ -41,6 +39,15 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
     var showAddMemberDialog by remember { mutableStateOf(false) }
     var showMemberList by remember { mutableStateOf(false) }
     var allMembers by remember { mutableStateOf<List<FamilyMember>>(emptyList()) }
+    var isFirestoreAccessible by remember { mutableStateOf(false) }
+    var isNetworkAvailable by remember { mutableStateOf(false) }
+
+    // Check for network connectivity
+    val context = LocalContext.current
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val networkCapabilities = connectivityManager.activeNetwork ?: return
+    val activeNetwork = connectivityManager.getNetworkCapabilities(networkCapabilities)
+    isNetworkAvailable = activeNetwork?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
 
     // Scaffold provides a consistent visual structure with a top bar
     Scaffold(
@@ -86,8 +93,21 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                         verticalArrangement = Arrangement.SpaceBetween,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+
                         // Button to add a new family member
-                        AddMemberButton(onAddMember = { showAddMemberDialog = true })
+                        AddMemberButton(onAddMember = {
+                            // Only show the dialog if there's internet connection
+                            if (isNetworkAvailable) {
+                                showAddMemberDialog = true
+                            }
+                            else {
+                                Toast.makeText(
+                                    context,
+                                    HebrewText.FAILED_TO_CONNECT_TO_FIREBASE,
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        })
 
                         Spacer(modifier = Modifier.height(16.dp))
 

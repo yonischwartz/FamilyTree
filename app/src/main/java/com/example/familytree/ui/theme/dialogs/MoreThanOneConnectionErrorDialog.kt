@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.Relations
+import com.example.familytree.ui.theme.HebrewText
 
 /**
  * Displays a dialog indicating an error when more than one connection exists between members.
@@ -21,19 +22,23 @@ fun MoreThanOneConnectionErrorDialog(
     AlertDialog(
         onDismissRequest = { onDismiss() },
         title = {
-            Text(text = "Connection Error")
-        },
-        text = {
-            Text(
-                text = "${existingMember.getFullName()} already has a  כ-${relation.name.lowercase()}."
-            )
+            Text(text = HebrewText.ERROR_ADDING_MEMBER)
         },
         confirmButton = {
             Button(onClick = {
                 onDismiss()
             }) {
-                Text("OK")
+                Text(HebrewText.OK)
             }
+        },
+        text = {
+            Text(
+                text =  HebrewText.TO +
+                        "${existingMember.getFullName()} " +
+                        HebrewText.EXISTS_ALREADY_FAMILY_RELATION_OF_TYPE +
+                        "${relation.name.lowercase()}."
+
+            )
         }
     )
 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import com.example.familytree.data.FamilyMember
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
+import com.example.familytree.ui.theme.HebrewText
 
 /**
  * Composable function that displays detailed information about a selected family member.
@@ -24,20 +25,32 @@ fun NonYeshivaMemberDetailDialog(member: FamilyMember, onDismiss: () -> Unit) {
         AlertDialog(
             onDismissRequest = onDismiss,  // Handles dialog dismissal when clicking outside the dialog.
             title = {
-                Text("פרטי בן משפחה", style = MaterialTheme.typography.titleMedium)  // Dialog title in Hebrew.
+                Text(HebrewText.FAMILY_MEMBER_DETAILS, style = MaterialTheme.typography.titleMedium)  // Dialog title in Hebrew.
             },
             text = {
                 // Column layout stacks member details vertically, making the information clear and readable.
                 Column(modifier = Modifier.padding(8.dp)) {
-                    Text("סוג בן משפחה: ${member.getMemberType()}", style = MaterialTheme.typography.bodyMedium)
-                    Text("שם פרטי: ${member.getFirstName()}", style = MaterialTheme.typography.bodyMedium)  // Display first name.
-                    Text("שם משפחה: ${member.getLastName()}", style = MaterialTheme.typography.bodyMedium)  // Display last name.
-                    Text("מין: ${if (member.getGender()) "זכר" else "נקבה"}", style = MaterialTheme.typography.bodyMedium)  // Display gender based on boolean.
+
+                    // סוג בן משפחה
+                    Text("${HebrewText.FAMILY_MEMBER_TYPE}:${member.getMemberType()}",
+                        style = MaterialTheme.typography.bodyMedium)
+
+                    // שם פרטי
+                    Text("${HebrewText.FIRST_NAME}: ${member.getFirstName()}",
+                        style = MaterialTheme.typography.bodyMedium)
+
+                    // שם משפחה
+                    Text("${HebrewText.LAST_NAME}: ${member.getLastName()}",
+                        style = MaterialTheme.typography.bodyMedium)
+
+                    // מין
+                    Text("${HebrewText.SEX}: ${if (member.getGender()) HebrewText.MALE else HebrewText.FEMALE}",
+                        style = MaterialTheme.typography.bodyMedium)
                 }
             },
             confirmButton = {
                 Button(onClick = onDismiss) {
-                    Text("סגור")  // Hebrew text for "Close" button.
+                    Text(HebrewText.CLOSE)
                 }
             }
         )

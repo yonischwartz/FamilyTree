@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.dataManagement.FireBaseManager
+import com.example.familytree.ui.theme.HebrewText
 
 /**
  * A Composable function that represents the button for showing all family members.
@@ -24,7 +25,7 @@ internal fun ShowMembersButton(onShowMembers: () -> Unit) {
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = "הצג את כל בני המשפחה", // Show All Family Members
+            text = HebrewText.SHOW_ALL_FAMILY_MEMBERS,
             style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)
         )
     }
@@ -42,7 +43,7 @@ fun AddMemberButton(onAddMember: () -> Unit) {
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = "הוסף בן משפחה חדש", // Add New Family Member
+            text = HebrewText.ADD_NEW_FAMILY_MEMBER,
             style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)
         )
     }
@@ -61,6 +62,6 @@ fun DeleteMemberButton(member: FamilyMember, onDeleted: () -> Unit) {
         member.documentId?.let { FireBaseManager.deleteFamilyMember(it) }
         onDeleted()
     }) {
-        Text("הסר")
+        Text(HebrewText.REMOVE)
     }
 }
