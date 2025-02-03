@@ -875,6 +875,7 @@ internal fun AddNewFamilyMemberToEmptyTree(
             coroutineScope.launch {
                 try {
                     addNewMemberToLocalMemberMap(member)
+                    Toast.makeText(context, HebrewText.SUCCESS_ADDING_MEMBER, Toast.LENGTH_LONG).show()
                 } catch (e: Exception) {
                     Toast.makeText(context, HebrewText.ERROR_ADDING_MEMBER, Toast.LENGTH_LONG).show()
                 }

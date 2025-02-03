@@ -2,16 +2,26 @@ package com.example.familytree.ui.theme
 
 object HebrewText {
 
-    const val LOAD_MEMBERS_FROM_FIREBASE = "משוך נתונים מה-firebase"
-    const val SUCCESS_LOADING_MEMBER_MAP = "בני משפחה נמשכו בהצלחה מה-firebase"
+    // Errors
+    const val ERROR_SAVING_MEMBERS_IN_FIREBASE = "שגיאה בשמירת עץ המשפחה ב-firebase"
     const val ERROR_LOADING_MEMBER_MAP = "שגיאה בטעינת בני משפחה"
-    const val SHOW_ALL_FAMILY_MEMBERS = "הצג את כל בני המשפחה"
-    const val REMOVE = "הסר"
-    const val ADD_NEW_FAMILY_MEMBER = "הוסף בן משפחה חדש"
-    const val FAILED_TO_CONNECT_TO_FIREBASE = "שגיאה בגישה ל-firebase, אולי כדאי לבדוק חיבור לאינטרנט"
+    const val ERROR_ADDING_MEMBER = "שגיאה בהוספת בן משפחה"
+    const val ERROR_CONNECTING_TO_FIREBASE = "שגיאה בגישה ל-firebase, אולי כדאי לבדוק חיבור לאינטרנט"
+
+    // Successes
+    const val SUCCESS_SAVING_MEMBERS_IN_FIREBASE = "עץ המשפחה נשמר בהצלחה ב-firebase"
+    const val SUCCESS_LOADING_MEMBER_MAP = "בני משפחה נמשכו בהצלחה מה-firebase"
     const val SUCCESS_ADDING_MEMBER = "בן משפחה נוסף בהצלחה"
+
+    // Buttons
+    const val ADD_NEW_FAMILY_MEMBER = "הוסף בן משפחה חדש"
+    const val SHOW_ALL_FAMILY_MEMBERS = "הצג את כל בני המשפחה"
+    const val LOAD_MEMBERS_FROM_FIREBASE = "משוך נתונים מה-firebase"
+    const val SAVE_AND_UPDATE_MEMBERS_TO_FIREBASE = "שמור ועדכן נתונים ב-firebase"
+
+    const val REMOVE = "הסר"
+
     const val TO = "ל"
-    const val ERROR_ADDING_MEMBER = "הוספת בן משפחה נכשלה"
     const val FAMILY_MEMBER_LIST = "רשימת בני משפחה"
     const val UNKNOWN = "לא ידוע"
     const val RABBI = "הרב "

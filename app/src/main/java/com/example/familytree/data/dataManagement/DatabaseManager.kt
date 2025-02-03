@@ -21,7 +21,52 @@ object DatabaseManager {
     // MemberMap instance
     private val memberMap = MemberMap
 
+    // Map that holds the new added members and the updated members
+    private val modifiedAndNewAddedMembers = mutableMapOf<String, FamilyMember>()
+
+    // List that holds the ids of the members the user asked to remove
+    private val deletedMembers = mutableListOf<String>()
+
     // functions
+
+    /**
+     * Saves the locally modified members and deletions to Firebase Firestore.
+     *
+     * This function batches all new, updated, and deleted members into a single Firestore batch operation.
+     * It clears the local modified and deleted member lists upon successful completion.
+     *
+     * @param onComplete A callback function that receives `true` if the operation succeeds, `false` otherwise.
+     */
+    fun saveLocalMapToFirebase(onComplete: (Boolean) -> Unit) {
+
+        // Batch is a way to make sure all the operations in the batch are executed together
+        // either they all succeed or they all fail.
+        val batch = firebase.batch()
+        val membersCollection = firebase.collection("memberMap")
+
+        // Add or update modified members
+        for (member in modifiedAndNewAddedMembers.values) {
+            val memberRef = membersCollection.document(member.getId())
+            batch.set(memberRef, member.toMap())
+        }
+
+        // Remove deleted members
+        for (memberId in deletedMembers) {
+            val memberRef = membersCollection.document(memberId)
+            batch.delete(memberRef)
+        }
+
+        // Commit the batch operation
+        batch.commit().addOnSuccessListener {
+            // Clear local tracking after successful save
+            modifiedAndNewAddedMembers.clear()
+            deletedMembers.clear()
+            onComplete(true)
+        }.addOnFailureListener {
+            // Handle failure
+            onComplete(false)
+        }
+    }
 
     /**
      * Fetches all family members from Firestore and populates the MemberMap.
@@ -103,12 +148,30 @@ object DatabaseManager {
     }
 
     /**
-     * Adds a new family member to the local MemberMap.
+     * Adds a new family member to the local MemberMap and tracks it in modifiedAndNewMembers
+     * for future updates to Firebase.
      *
      * @param member The `FamilyMember` object to be added to the local `MemberMap`.
+     * @return `true` if the member was added successfully, `false` otherwise.
      */
     fun addNewMemberToLocalMemberMap(member: FamilyMember): Boolean {
+
+        // Add member to local memberMap
         memberMap.addMember(member)
+
+        // Add the newly added member to the modifiedAndNewMembers map
+        modifiedAndNewAddedMembers[member.getId()] = member
+
+        // If the new member is connected to other existing members, update them as well
+        for (connection in member.getConnections()) {
+            val existingMemberId = connection.memberId
+            val existingMember = memberMap.getMember(existingMemberId)
+
+            if (existingMember != null) {
+
+                modifiedAndNewAddedMembers[existingMemberId] = existingMember
+            }
+        }
         return true
     }
 
@@ -174,15 +237,19 @@ object DatabaseManager {
     }
 
     /**
-     * Deletes a family member from the local MemberMap.
-     *
-     * This function removes the specified family member, identified by their unique ID,
-     * from the local `MemberMap`. It ensures that the member is no longer stored locally.
+     * Deletes a family member from the local MemberMap, and adds his id to the deletedMembers list
+     * for when the user will want to save his changes to the firebase
      *
      * @param memberToBeRemovedId The ID of the family member to be removed from the `MemberMap`.
      */
     fun deleteMemberFromLocalMemberMap(memberToBeRemovedId: String) {
         memberMap.deleteMember(memberToBeRemovedId)
+
+        // Add the deleted member to the deletedMembers list
+        if (!deletedMembers.contains(memberToBeRemovedId)) {
+            deletedMembers.add(memberToBeRemovedId)
+        }
+
     }
 }
 

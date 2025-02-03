@@ -21,6 +21,7 @@ import com.example.familytree.ui.theme.dialogs.MemberListDialog
 import com.example.familytree.ui.theme.dialogs.AddFamilyMemberDialog
 import android.content.Context
 import com.example.familytree.data.dataManagement.DatabaseManager.loadMembersFromFirebaseIntoLocalMap
+import com.example.familytree.data.dataManagement.DatabaseManager.saveLocalMapToFirebase
 
 /**
  * Composable function that displays the main screen for the family tree application.
@@ -122,6 +123,7 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
 
                         Spacer(modifier = Modifier.height(16.dp))
 
+                        // Button to load data from firebase to local DB
                         HomeScreenButton(
                             onClick = {
                                 loadMembersFromFirebaseIntoLocalMap { success ->
@@ -142,6 +144,31 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                                 }
                             },
                             text = HebrewText.LOAD_MEMBERS_FROM_FIREBASE
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Button to save and update data to firebase
+                        HomeScreenButton(
+                            onClick = {
+                                saveLocalMapToFirebase { success ->
+                                    if (success){
+                                        Toast.makeText(
+                                            context,
+                                            HebrewText.SUCCESS_SAVING_MEMBERS_IN_FIREBASE,
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                    else {
+                                        Toast.makeText(
+                                            context,
+                                            HebrewText.ERROR_SAVING_MEMBERS_IN_FIREBASE,
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }
+                            },
+                            text = HebrewText.SAVE_AND_UPDATE_MEMBERS_TO_FIREBASE
                         )
 
                     }

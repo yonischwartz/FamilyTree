@@ -203,6 +203,13 @@ object MemberMap {
         }
     }
 
+    /**
+     * Clears all family members from the local storage.
+     */
+    fun clearMemberMap() {
+        members.clear()
+    }
+
     // Validation private functions
 
     /**
