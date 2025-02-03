@@ -21,11 +21,11 @@ object DatabaseManager {
     // MemberMap instance
     private val memberMap = MemberMap
 
-    // Map that holds the new added members and the updated members
-    private val modifiedAndNewAddedMembers = mutableMapOf<String, FamilyMember>()
+    // List that holds the ids of the new added members and the updated members
+    private val modifiedAndNewAddedMembersIds = mutableListOf<String>()
 
     // List that holds the ids of the members the user asked to remove
-    private val deletedMembers = mutableListOf<String>()
+    private val deletedMembersIds = mutableListOf<String>()
 
     // functions
 
@@ -45,13 +45,13 @@ object DatabaseManager {
         val membersCollection = firebase.collection("memberMap")
 
         // Add or update modified members
-        for (member in modifiedAndNewAddedMembers.values) {
-            val memberRef = membersCollection.document(member.getId())
-            batch.set(memberRef, member.toMap())
+        for (memberId in modifiedAndNewAddedMembersIds) {
+            val memberRef = membersCollection.document(memberId)
+            memberMap.getMember(memberId)?.let { batch.set(memberRef, it.toMap()) }
         }
 
         // Remove deleted members
-        for (memberId in deletedMembers) {
+        for (memberId in deletedMembersIds) {
             val memberRef = membersCollection.document(memberId)
             batch.delete(memberRef)
         }
@@ -59,8 +59,8 @@ object DatabaseManager {
         // Commit the batch operation
         batch.commit().addOnSuccessListener {
             // Clear local tracking after successful save
-            modifiedAndNewAddedMembers.clear()
-            deletedMembers.clear()
+            modifiedAndNewAddedMembersIds.clear()
+            deletedMembersIds.clear()
             onComplete(true)
         }.addOnFailureListener {
             // Handle failure
@@ -148,8 +148,19 @@ object DatabaseManager {
     }
 
     /**
-     * Adds a new family member to the local MemberMap and tracks it in modifiedAndNewMembers
-     * for future updates to Firebase.
+    * Adds a member ID to the list of members that need to be updated, if not already present.
+    *
+    * @param memberId The ID of the member to add to the list of members that require an update.
+    */
+    fun addMemberIdToListOfNotYetUpdated(memberId: String) {
+        if (!modifiedAndNewAddedMembersIds.contains(memberId)) {
+            modifiedAndNewAddedMembersIds.add(memberId)
+        }
+    }
+
+    /**
+     * Adds a new family member to the local MemberMap and tracks it in
+     * modifiedAndNewAddedMembersIds list for future updates to Firebase.
      *
      * @param member The `FamilyMember` object to be added to the local `MemberMap`.
      * @return `true` if the member was added successfully, `false` otherwise.
@@ -159,19 +170,9 @@ object DatabaseManager {
         // Add member to local memberMap
         memberMap.addMember(member)
 
-        // Add the newly added member to the modifiedAndNewMembers map
-        modifiedAndNewAddedMembers[member.getId()] = member
+        // Add the id of the newly added member to the modifiedAndNewAddedMembersIds list
+        modifiedAndNewAddedMembersIds.add(member.getId())
 
-        // If the new member is connected to other existing members, update them as well
-        for (connection in member.getConnections()) {
-            val existingMemberId = connection.memberId
-            val existingMember = memberMap.getMember(existingMemberId)
-
-            if (existingMember != null) {
-
-                modifiedAndNewAddedMembers[existingMemberId] = existingMember
-            }
-        }
         return true
     }
 
@@ -237,19 +238,30 @@ object DatabaseManager {
     }
 
     /**
-     * Deletes a family member from the local MemberMap, and adds his id to the deletedMembers list
-     * for when the user will want to save his changes to the firebase
+     * Deletes a family member from the local member map and updates the lists of modified members.
      *
-     * @param memberToBeRemovedId The ID of the family member to be removed from the `MemberMap`.
+     * This function performs the following steps:
+     *
+     * 1. Deletes the specified member from the `memberMap` and removes them from all other members' connections.
+     *
+     * 2. Adds the deleted member's ID to the `deletedMembersIds` list if it is not already included.
+     *
+     * 3. Adds the IDs of the members whose connections were updated (from step 1) to the `modifiedAndNewAddedMembersIds` list,
+     *    ensuring the list reflects all members affected by the deletion.
+     *
+     * @param memberToBeRemovedId The ID of the member to remove from the local member map and update connections for.
      */
     fun deleteMemberFromLocalMemberMap(memberToBeRemovedId: String) {
-        memberMap.deleteMember(memberToBeRemovedId)
+        val idsOfMembersThatNeedsToBeUpdated = memberMap.deleteMember(memberToBeRemovedId)
 
-        // Add the deleted member to the deletedMembers list
-        if (!deletedMembers.contains(memberToBeRemovedId)) {
-            deletedMembers.add(memberToBeRemovedId)
+        // Add the deleted member to the deletedMembersIds list
+        if (!deletedMembersIds.contains(memberToBeRemovedId)) {
+            deletedMembersIds.add(memberToBeRemovedId)
         }
 
+        // Update the idsOfMembersThatNeedsToBeUpdated list with the members needed to be updated
+        for (id in idsOfMembersThatNeedsToBeUpdated) {
+            modifiedAndNewAddedMembersIds.add(id)
+        }
     }
 }
-

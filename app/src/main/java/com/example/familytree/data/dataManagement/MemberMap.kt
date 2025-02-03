@@ -84,19 +84,39 @@ object MemberMap {
 
     /**
      * Deletes a family member from the map and removes them from all other members' connections.
-     * @param memberToBeRemovedId The ID of the member to remove.
-     * @return True if the member was successfully deleted, false if the member does not exist.
+     *
+     * This method removes the specified member from the `members` map and ensures that any connections
+     * involving the deleted member are also removed from all other family members' connection lists.
+     * The IDs of members whose connections were modified (i.e., the ones that had a connection to the deleted member)
+     * are returned in a list.
+     *
+     * @param memberToBeRemovedId The ID of the member to remove from the map and the connections.
+     * @return A list of member IDs whose connections were updated. If no connections were modified,
+     *         this list will be empty. If the specified member does not exist in the map, the list will also be empty.
      */
-    fun deleteMember(memberToBeRemovedId: String): Boolean {
+    fun deleteMember(memberToBeRemovedId: String): List<String> {
+        // Create a list to hold the IDs of members whose connections were updated
+        val updatedMembers = mutableListOf<String>()
+
         // Remove the member from the map
-        val removed = members.remove(memberToBeRemovedId) ?: return false
+        members.remove(memberToBeRemovedId)
 
         // Iterate over all remaining members and remove the deleted member from their connections
         for (member in members.values) {
-            member.getConnections().removeAll { it.memberId == memberToBeRemovedId }
+            // Check if the member has a connection to the deleted member
+            val connectionsToRemove = member.getConnections().filter { it.memberId == memberToBeRemovedId }
+
+            if (connectionsToRemove.isNotEmpty()) {
+                // Remove the connections
+                member.getConnections().removeAll { it.memberId == memberToBeRemovedId }
+
+                // Add this member's ID to the list of updated members
+                updatedMembers.add(member.getId())
+            }
         }
 
-        return true
+        // Return the list of member IDs whose connections were updated
+        return updatedMembers
     }
 
     /**

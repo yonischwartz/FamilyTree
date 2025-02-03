@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import com.example.familytree.data.Connection
 import com.example.familytree.data.dataManagement.DatabaseManager.addConnectionToBothMembersInLocalMap
+import com.example.familytree.data.dataManagement.DatabaseManager.addMemberIdToListOfNotYetUpdated
 import com.example.familytree.data.dataManagement.DatabaseManager.addNewMemberToLocalMemberMap
 import com.example.familytree.data.dataManagement.DatabaseManager.validateConnection
 import com.example.familytree.data.exceptions.*
@@ -1012,8 +1013,14 @@ fun AddNewMemberAndRelateToExistingMember(
     // Fifth step: add the new member and update thr connection in both members
     else {
 
+        // Add new member to local map
         val newMemberAdded = addNewMemberToLocalMemberMap(newMember!!)
+
+        // Add connections between two members
         val connectionAdded = addConnectionToBothMembersInLocalMap(existingMember!!, newMember!!, relationFromExistingMemberPerspective!!)
+
+        // Add the id of the existing member to list of ids that need to be updated
+        addMemberIdToListOfNotYetUpdated(existingMember!!.getId())
 
         if (newMemberAdded && connectionAdded) {
             Toast.makeText(context, HebrewText.SUCCESS_ADDING_MEMBER, Toast.LENGTH_LONG).show()
@@ -1025,7 +1032,6 @@ fun AddNewMemberAndRelateToExistingMember(
         onDismissAndResetState()
     }
 }
-
 
 
 //var showToast by remember { mutableStateOf(true) }
