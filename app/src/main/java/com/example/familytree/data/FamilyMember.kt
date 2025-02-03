@@ -1,6 +1,6 @@
 package com.example.familytree.data
 
-import com.google.gson.annotations.Expose
+import java.util.UUID
 
 /**
  * Represents a family member with personal details and identifiers.
@@ -21,14 +21,10 @@ class FamilyMember(
     private val lastName: String = "",
     private val gender: Boolean = true,
     private val machzor: Int? = null,  // machzor is 0 for non-student yeshiva members
-    private val isRabbi: Boolean? = null
+    private val isRabbi: Boolean? = null,
+    private val id: String = UUID.randomUUID().toString(), // Auto-generate unique ID
+    private val connections: MutableList<Connection> = mutableListOf()
 ) {
-    // A unique identifier for the family member. It is initialized as an empty string by default.
-    // When the object is added to Firebase, Firestore automatically assigns it a unique ID.
-    var documentId: String? = null
-
-    // Adjacency list to manage relationships.
-    private val adjacencyList: MutableList<Connection> = mutableListOf()
 
     /**
      * Converts the FamilyMember object to a map for Firebase storage.
@@ -37,14 +33,14 @@ class FamilyMember(
      */
     fun toMap(): Map<String, Any?> {
         return mapOf(
-            "documentId" to documentId,
+            "documentId" to id,
             "memberType" to memberType,
             "firstName" to firstName,
             "lastName" to lastName,
             "gender" to gender,
             "machzor" to machzor,
             "isRabbi" to isRabbi,
-            "connections" to adjacencyList.map { it.toMap() }
+            "connections" to connections.map { it.toMap() }
         )
     }
 
@@ -52,29 +48,17 @@ class FamilyMember(
      * Retrieves a list of connections for a given family member.
      */
     fun getConnections(): MutableList<Connection> {
-        return adjacencyList
+        return connections
     }
 
     /**
-     * Adds a connection to the adjacency list.
+     * Adds a connection to the member's connections.
      *
      * @param connection The connection to be added.
      */
-    fun addConnectionToAdjacencyList(connection: Connection) {
-        adjacencyList.add(connection)
+    fun addConnection(connection: Connection) {
+        connections.add(connection)
     }
-
-    /**
-     * Removes a connection from the adjacency list based on a member ID.
-     *
-     * @param memberId The ID of the member whose connection should be removed.
-     */
-//    fun removeConnectionFromAdjacencyList(memberId: String) {
-//        val connectionToRemove = adjacencyList.find { it.member.documentId == memberId }
-//        if (connectionToRemove != null) {
-//            adjacencyList.remove(connectionToRemove)
-//        }
-//    }
 
     /**
      * Returns the full name of the family member, combining the first and last name.
@@ -138,5 +122,14 @@ class FamilyMember(
      */
     fun getMemberType(): MemberType {
         return memberType
+    }
+
+    /**
+     * Retrieves the id of the family member.
+     *
+     * @return The Family member id
+     */
+    fun getId(): String {
+        return id
     }
 }

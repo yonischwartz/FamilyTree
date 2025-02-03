@@ -2,11 +2,14 @@ package com.example.familytree.ui.theme
 
 object HebrewText {
 
+    const val LOAD_MEMBERS_FROM_FIREBASE = "משוך נתונים מה-firebase"
+    const val SUCCESS_LOADING_MEMBER_MAP = "בני משפחה נמשכו בהצלחה מה-firebase"
+    const val ERROR_LOADING_MEMBER_MAP = "שגיאה בטעינת בני משפחה"
     const val SHOW_ALL_FAMILY_MEMBERS = "הצג את כל בני המשפחה"
     const val REMOVE = "הסר"
     const val ADD_NEW_FAMILY_MEMBER = "הוסף בן משפחה חדש"
     const val FAILED_TO_CONNECT_TO_FIREBASE = "שגיאה בגישה ל-firebase, אולי כדאי לבדוק חיבור לאינטרנט"
-    const val SUCCESSES_ADDING_MEMBER = "בן משפחה נוסף בהצלחה"
+    const val SUCCESS_ADDING_MEMBER = "בן משפחה נוסף בהצלחה"
     const val TO = "ל"
     const val ERROR_ADDING_MEMBER = "הוספת בן משפחה נכשלה"
     const val FAMILY_MEMBER_LIST = "רשימת בני משפחה"

@@ -15,12 +15,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.platform.LocalLayoutDirection
 import com.example.familytree.data.FamilyMember
-import com.example.familytree.data.dataManagement.FireBaseManager
-import com.example.familytree.data.dataManagement.FireBaseManager.checkFirestoreAccess
+import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.theme.HebrewText
 import com.example.familytree.ui.theme.dialogs.MemberListDialog
 import com.example.familytree.ui.theme.dialogs.AddFamilyMemberDialog
 import android.content.Context
+import com.example.familytree.data.dataManagement.DatabaseManager.loadMembersFromFirebaseIntoLocalMap
 
 /**
  * Composable function that displays the main screen for the family tree application.
@@ -37,8 +37,7 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
     var searchQuery by remember { mutableStateOf("") }
     var searchResults by remember { mutableStateOf<List<FamilyMember>>(emptyList()) }
     var showAddMemberDialog by remember { mutableStateOf(false) }
-    var showMemberList by remember { mutableStateOf(false) }
-    var allMembers by remember { mutableStateOf<List<FamilyMember>>(emptyList()) }
+    var showMemberListDialog by remember { mutableStateOf(false) }
     var isFirestoreAccessible by remember { mutableStateOf(false) }
     var isNetworkAvailable by remember { mutableStateOf(false) }
 
@@ -48,6 +47,14 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
     val networkCapabilities = connectivityManager.activeNetwork ?: return
     val activeNetwork = connectivityManager.getNetworkCapabilities(networkCapabilities)
     isNetworkAvailable = activeNetwork?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+
+    LaunchedEffect(Unit) {
+        loadMembersFromFirebaseIntoLocalMap { success ->
+            if (!success) {
+                Toast.makeText(context, HebrewText.ERROR_LOADING_MEMBER_MAP,Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
     // Scaffold provides a consistent visual structure with a top bar
     Scaffold(
@@ -71,7 +78,7 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                         searchQuery,
                         onQueryChange = { searchQuery = it },
                         onSearch = {
-                            searchResults = FireBaseManager.searchForMember(searchQuery)
+                            searchResults = DatabaseManager.searchForMemberInLocalMap(searchQuery)
                         }
                     )
 
@@ -95,19 +102,10 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                     ) {
 
                         // Button to add a new family member
-                        AddMemberButton(onAddMember = {
-                            // Only show the dialog if there's internet connection
-                            if (isNetworkAvailable) {
-                                showAddMemberDialog = true
-                            }
-                            else {
-                                Toast.makeText(
-                                    context,
-                                    HebrewText.FAILED_TO_CONNECT_TO_FIREBASE,
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        })
+                        HomeScreenButton(
+                            onClick = { showAddMemberDialog = true },
+                            HebrewText.ADD_NEW_FAMILY_MEMBER
+                        )
 
                         Spacer(modifier = Modifier.height(16.dp))
 
@@ -117,47 +115,53 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                         Spacer(modifier = Modifier.height(16.dp))
 
                         // Button to show all family members
-                        ShowMembersButton(onShowMembers = { showMemberList = true })
+                        HomeScreenButton(
+                            onClick = { showMemberListDialog = true },
+                            HebrewText.SHOW_ALL_FAMILY_MEMBERS
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        HomeScreenButton(
+                            onClick = {
+                                loadMembersFromFirebaseIntoLocalMap { success ->
+                                    if (success){
+                                        Toast.makeText(
+                                            context,
+                                            HebrewText.SUCCESS_LOADING_MEMBER_MAP,
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                    else {
+                                        Toast.makeText(
+                                            context,
+                                            HebrewText.ERROR_LOADING_MEMBER_MAP,
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }
+                            },
+                            text = HebrewText.LOAD_MEMBERS_FROM_FIREBASE
+                        )
+
                     }
 
                     // Dialog for adding a new family member
                     if (showAddMemberDialog) {
 
-                        // This is needed because without this line the app displays the member list before it is updated
-                        var memberListUpdated by remember { mutableStateOf(false) }
-
-                        // Fetch the updated list of all family members asynchronously whenever the dialog is shown
-                        LaunchedEffect(Unit) {
-                            allMembers = FireBaseManager.getAllMembers()
-                            memberListUpdated = true
-                        }
-
-                        if (memberListUpdated) {
-                            AddFamilyMemberDialog(
-                                existingMembers = allMembers,
-                                onDismiss = { showAddMemberDialog = false }
-                            )
-                        }
+                        AddFamilyMemberDialog(
+                            existingMembers = DatabaseManager.getAllMembers(),
+                            onDismiss = { showAddMemberDialog = false }
+                        )
                     }
 
                     // Dialog to display the list of all family members
-                    if (showMemberList) {
+                    if (showMemberListDialog) {
 
-                        // This is needed because without this line the app displays the member list before it is updated
-                        var memberListUpdated by remember { mutableStateOf(false) }
-
-                        // Fetch the updated list of all family members asynchronously whenever the dialog is shown
-                        LaunchedEffect(Unit) {
-                            allMembers = FireBaseManager.getAllMembers()
-                            memberListUpdated = true
-                        }
-
-                        if (memberListUpdated) {
-                            MemberListDialog(
-                                existingMembers = allMembers,
-                                onDismiss = { showMemberList = false }
-                            )
-                        }
+                        MemberListDialog(
+                            existingMembers = DatabaseManager.getAllMembers(),
+                            onDismiss = { showMemberListDialog = false }
+                        )
                     }
                 }
             }

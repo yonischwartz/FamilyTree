@@ -30,9 +30,9 @@ import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import com.example.familytree.data.Connection
-import com.example.familytree.data.dataManagement.FireBaseManager.addConnectionToFirebase
-import com.example.familytree.data.dataManagement.FireBaseManager.addNewFamilyMemberToFirebase
-import com.example.familytree.data.dataManagement.FireBaseManager.validateConnection
+import com.example.familytree.data.dataManagement.DatabaseManager.addConnectionToBothMembersInLocalMap
+import com.example.familytree.data.dataManagement.DatabaseManager.addNewMemberToLocalMemberMap
+import com.example.familytree.data.dataManagement.DatabaseManager.validateConnection
 import com.example.familytree.data.exceptions.*
 import com.example.familytree.ui.theme.dialogs.GenderErrorDialog
 import com.example.familytree.ui.theme.dialogs.MoreThanOneConnectionErrorDialog
@@ -186,6 +186,7 @@ internal fun AskUserForNonYeshivaMemberDetails(
     var firstName: String by remember { mutableStateOf("") }
     var lastName: String by remember { mutableStateOf("") }
     var gender: Boolean by remember { mutableStateOf(true) }
+    var isRabbi by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.padding(16.dp)) {
         MemberFirstNameField(
@@ -202,6 +203,12 @@ internal fun AskUserForNonYeshivaMemberDetails(
             gender,
             onGenderChange = { gender = it }
         )
+        Spacer(modifier = Modifier.height(8.dp))
+        BooleanSelection(
+            label = HebrewText.IS_THIS_FAMILY_MEMBER_A_RABBI,
+            selected = isRabbi,
+            onChange = { isRabbi = it }
+        )
     }
 
     if (
@@ -215,8 +222,8 @@ internal fun AskUserForNonYeshivaMemberDetails(
                 firstName = firstName,
                 lastName = lastName,
                 gender = gender,
+                isRabbi = isRabbi,
                 machzor = null,
-                isRabbi = null
             )
         )
     }
@@ -726,6 +733,11 @@ internal fun AskUserToCreateNewFamilyMember(
         didUserEnterMembersDetails = false
     }
 
+    val onDismissAndResetState: () -> Unit = {
+        resetState()
+        onDismiss()
+    }
+
     // First step: user needs to select member type
     if (!didUserSelectMemberType) {
         // Display a dialog for selecting the type of member.
@@ -734,12 +746,10 @@ internal fun AskUserToCreateNewFamilyMember(
                 selectedMemberType = it
                 didUserSelectMemberType = true
             },
-            onDismiss = {
-                resetState()
-                onDismiss()
-            }
+            onDismiss = onDismissAndResetState
         )
     }
+
     // Second step: user needs to enter members details
     else if (!didUserEnterMembersDetails) {
         // Display a dialog for entering member details based on the selected type.
@@ -749,10 +759,7 @@ internal fun AskUserToCreateNewFamilyMember(
                 newMember = member
                 didUserEnterMembersDetails = true
             },
-            onDismiss = {
-                resetState()
-                onDismiss()
-            }
+            onDismiss = onDismissAndResetState
         )
 
         //TODO: Check if there's already a member with this name
@@ -807,11 +814,11 @@ private suspend fun addNewMemberAndConnect(
 ) {
     try {
         // Wait for the new member to be added to the tree
-        addNewFamilyMemberToFirebase(newMember)
+        addNewMemberToLocalMemberMap(newMember)
 
         // Get members' IDs
-        val existingMemberId: String = existingMember.documentId.toString()
-        val newMemberId: String = newMember.documentId.toString()
+        val existingMemberId: String = existingMember.getId()
+        val newMemberId: String = newMember.getId()
 
         // Get members' genders
         val existingMemberGender: Boolean = existingMember.getGender()
@@ -826,8 +833,8 @@ private suspend fun addNewMemberAndConnect(
         val connectionForExistingMember = Connection(newMemberId, relationFromExistingMemberPerspective)
 
         // Add connections to the database
-        addConnectionToFirebase(existingMemberId, connectionForExistingMember)
-        addConnectionToFirebase(newMemberId, connectionForNewMember)
+//        addConnectionToLocalMemberMap(existingMemberId, connectionForExistingMember)
+//        addConnectionToLocalMemberMap(newMemberId, connectionForNewMember)
 
         // Dismiss the UI after the operation is completed
         onDismiss()
@@ -867,7 +874,7 @@ internal fun AddNewFamilyMemberToEmptyTree(
         newMember?.let { member ->
             coroutineScope.launch {
                 try {
-                    addNewFamilyMemberToFirebase(member)
+                    addNewMemberToLocalMemberMap(member)
                 } catch (e: Exception) {
                     Toast.makeText(context, HebrewText.ERROR_ADDING_MEMBER, Toast.LENGTH_LONG).show()
                 }
@@ -898,8 +905,6 @@ fun AddNewMemberAndRelateToExistingMember(
     var showMoreThanOneMemberErrorDialog by remember { mutableStateOf(false) }
     var showSameMemberMarriageErrorDialog by remember { mutableStateOf(false) }
     var isConnectionValid by remember { mutableStateOf(false) }
-    val coroutineValidationScope = rememberCoroutineScope()
-    val coroutineAddMemberScope = rememberCoroutineScope()
     val context = LocalContext.current
 
     // Reset the state variables to their initial values
@@ -952,33 +957,30 @@ fun AddNewMemberAndRelateToExistingMember(
     // Fourth step: Make sure the connection the user wants to add is valid
     else if (!isConnectionValid) {
 
-        coroutineValidationScope.launch {
+        try {
+            if (validateConnection(
+                existingMember!!,
+                newMember!!,
+                relationFromExistingMemberPerspective!!
+            )) {isConnectionValid = true}
+        }
+        catch (e: InvalidGenderRoleException) {
+            showGenderErrorDialog = true
+        }
+        catch (e: InvalidMoreThanOneConnection) {
+            showMoreThanOneMemberErrorDialog = true
+        }
+        catch (e: SameMarriageException) {
+            showSameMemberMarriageErrorDialog = true
+        }
+        catch (e: Exception) {
 
-            try {
-                validateConnection(
-                    existingMember!!,
-                    newMember!!,
-                    relationFromExistingMemberPerspective!!,
-                    onValidation = { isConnectionValid = it }
-                )
-            } catch (e: InvalidGenderRoleException) {
-                showGenderErrorDialog = true
-            } catch (e: InvalidMoreThanOneConnection) {
-                showMoreThanOneMemberErrorDialog = true
-            } catch (e: SameMarriageException) {
-                showSameMemberMarriageErrorDialog = true
-            } catch (e: Exception) {
+            // Show a toast message
+            Toast.makeText(context, HebrewText.ERROR_ADDING_MEMBER, Toast.LENGTH_LONG).show()
 
-                // Log the error to Logcat
-                Log.e("AddMemberError", "Error adding member", e)
+            // Handle the error by dismissing and resetting state
+            onDismissAndResetState()
 
-                // Show a toast message
-                Toast.makeText(context, HebrewText.ERROR_ADDING_MEMBER, Toast.LENGTH_LONG).show()
-
-                // Handle the error by dismissing and resetting state
-                onDismissAndResetState()
-
-            }
         }
 
         // Gender mismatch
@@ -1009,24 +1011,17 @@ fun AddNewMemberAndRelateToExistingMember(
     // Fifth step: add the new member and update thr connection in both members
     else {
 
-        try {
-            coroutineAddMemberScope.launch {
+        val newMemberAdded = addNewMemberToLocalMemberMap(newMember!!)
+        val connectionAdded = addConnectionToBothMembersInLocalMap(existingMember!!, newMember!!, relationFromExistingMemberPerspective!!)
 
-                addNewMemberAndConnect(
-                    existingMember = existingMember!!,
-                    newMember = newMember!!,
-                    relationFromExistingMemberPerspective = relationFromExistingMemberPerspective!!,
-                    onDismiss = onDismissAndResetState,
-                    context = context
-                )
-
-                // Show a toast message
-                Toast.makeText(context, HebrewText.SUCCESSES_ADDING_MEMBER, Toast.LENGTH_LONG).show()
-            }
-        } catch (e: Exception) {
-            Toast.makeText(context, HebrewText.ERROR_ADDING_MEMBER, Toast.LENGTH_LONG).show()
-            onDismissAndResetState()
+        if (newMemberAdded && connectionAdded) {
+            Toast.makeText(context, HebrewText.SUCCESS_ADDING_MEMBER, Toast.LENGTH_LONG).show()
         }
+        else {
+            Toast.makeText(context, HebrewText.ERROR_ADDING_MEMBER, Toast.LENGTH_LONG).show()
+        }
+
+        onDismissAndResetState()
     }
 }
 

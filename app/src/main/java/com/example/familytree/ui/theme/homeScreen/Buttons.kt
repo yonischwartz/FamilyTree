@@ -10,40 +10,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.example.familytree.data.FamilyMember
-import com.example.familytree.data.dataManagement.FireBaseManager
+import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.theme.HebrewText
 
 /**
- * A Composable function that represents the button for showing all family members.
+ * A Composable function that represents an home screen button.
  *
- * @param onShowMembers A lambda function to handle the action when the button is clicked.
+ * @param onClick A lambda function to handle the action when the button is clicked.
+ * @param text A text to display on the button.
  */
 @Composable
-internal fun ShowMembersButton(onShowMembers: () -> Unit) {
+internal fun HomeScreenButton(onClick: () -> Unit, text: String) {
     Button(
-        onClick = onShowMembers,
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = HebrewText.SHOW_ALL_FAMILY_MEMBERS,
-            style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)
-        )
-    }
-}
-
-/**
- * A Composable function that represents the button for adding a new family member.
- *
- * @param onAddMember A lambda function to handle the action when the button is clicked.
- */
-@Composable
-fun AddMemberButton(onAddMember: () -> Unit) {
-    Button(
-        onClick = onAddMember,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(
-            text = HebrewText.ADD_NEW_FAMILY_MEMBER,
+            text = text,
             style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)
         )
     }
@@ -59,7 +42,7 @@ fun AddMemberButton(onAddMember: () -> Unit) {
 @Composable
 fun DeleteMemberButton(member: FamilyMember, onDeleted: () -> Unit) {
     Button(onClick = {
-        member.documentId?.let { FireBaseManager.deleteFamilyMember(it) }
+        member.getId().let { DatabaseManager.deleteMemberFromLocalMemberMap(it) }
         onDeleted()
     }) {
         Text(HebrewText.REMOVE)
