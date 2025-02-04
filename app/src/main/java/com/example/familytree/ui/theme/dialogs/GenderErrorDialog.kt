@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.Relations
 import com.example.familytree.ui.theme.HebrewText
-import com.example.familytree.ui.theme.displayName
 
 /**
  * Composable function to display a dialog for gender role errors.
@@ -32,7 +31,8 @@ fun GenderErrorDialog(
         },
         text = {
             Text(
-                text = HebrewText.CAN_NOT_ADD + "${newMember.getFullName()} ${HebrewText.AS}${relation.displayName()}" +
+                text = HebrewText.CAN_NOT_ADD + newMember.getFullName() +
+                        "${HebrewText.AS}${relation.displayAsConnections()}" +
                         "${existingMember.getFullName()}, " +
                         "${HebrewText.BECAUSE}${genderWord} ${genderDescription}."
             )

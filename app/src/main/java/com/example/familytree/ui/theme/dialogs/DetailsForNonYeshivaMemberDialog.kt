@@ -1,3 +1,4 @@
+// Package declaration
 package com.example.familytree.ui.theme.dialogs
 
 import androidx.compose.material3.*
@@ -10,37 +11,32 @@ import com.example.familytree.data.FamilyMember
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
 import com.example.familytree.ui.theme.HebrewText
-import com.example.familytree.ui.theme.intToMachzor
 
 /**
- * Composable function that displays detailed information about a yeshiva family member.
+ * Composable function that displays detailed information about a selected family member.
  *
- * @param member The yeshiva family member whose details are shown.
+ * @param member The family member whose details are shown.
  * @param onDismiss The action to perform when the detail dialog is dismissed.
  */
 @Composable
-fun YeshivaMemberDetailDialog(member: FamilyMember, onDismiss: () -> Unit) {
+fun DetailsForNonYeshivaMemberDialog(member: FamilyMember, onDismiss: () -> Unit) {
     // Set right-to-left layout direction for Hebrew content.
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         AlertDialog(
             onDismissRequest = onDismiss,  // Handles dialog dismissal when clicking outside the dialog.
             title = {
-                Text(HebrewText.FAMILY_MEMBER_DETAILS, style = MaterialTheme.typography.titleMedium)
+                Text(HebrewText.FAMILY_MEMBER_DETAILS, style = MaterialTheme.typography.titleMedium)  // Dialog title in Hebrew.
             },
             text = {
+                // Column layout stacks member details vertically, making the information clear and readable.
                 Column(modifier = Modifier.padding(8.dp)) {
-                    // Add "הרב" before the first name if the member is a rabbi.
-                    val firstNameDisplay = if (member.getIsRabbi() == true) {
-                        "${HebrewText.RABBI}${member.getFirstName()}"
-                    } else {
-                        member.getFirstName()
-                    }
+
                     // סוג בן משפחה
-                    Text("${HebrewText.FAMILY_MEMBER_TYPE}: ${member.getMemberType()}",
+                    Text("${HebrewText.FAMILY_MEMBER_TYPE}:${member.getMemberType()}",
                         style = MaterialTheme.typography.bodyMedium)
 
                     // שם פרטי
-                    Text("${HebrewText.FIRST_NAME}: $firstNameDisplay",
+                    Text("${HebrewText.FIRST_NAME}: ${member.getFirstName()}",
                         style = MaterialTheme.typography.bodyMedium)
 
                     // שם משפחה
@@ -49,10 +45,6 @@ fun YeshivaMemberDetailDialog(member: FamilyMember, onDismiss: () -> Unit) {
 
                     // מין
                     Text("${HebrewText.SEX}: ${if (member.getGender()) HebrewText.MALE else HebrewText.FEMALE}",
-                        style = MaterialTheme.typography.bodyMedium)
-
-                    // מחזור
-                    Text("${HebrewText.MACHZOR}: ${intToMachzor[member.getMachzor()] ?: HebrewText.UNKNOWN}",
                         style = MaterialTheme.typography.bodyMedium)
                 }
             },

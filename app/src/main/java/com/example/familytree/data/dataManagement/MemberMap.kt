@@ -230,7 +230,29 @@ object MemberMap {
         members.clear()
     }
 
-    // Validation private functions
+    private fun findPossibleConnections(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember,
+        relationFromMemberOnePerspective: Relations
+    ) {
+
+        when (relationFromMemberOnePerspective) {
+
+            Relations.MARRIAGE -> Unit
+            Relations.FATHER -> Unit
+            Relations.MOTHER -> Unit
+            Relations.SON -> Unit
+            Relations.DAUGHTER -> Unit
+            Relations.GRANDMOTHER -> Unit
+            Relations.GRANDFATHER -> Unit
+            Relations.GRANDDAUGHTER -> Unit
+            Relations.GRANDSON -> Unit
+            Relations.SIBLINGS -> Unit
+            Relations.COUSINS -> Unit
+        }
+    }
+
+    // private functions for validation
 
     /**
      * Validates the gender role of a family member based on the expected gender for the specified relationship.
@@ -355,7 +377,7 @@ object MemberMap {
         validateGenderRole(grandchild, grandchildRelation)
     }
 
-    // Adding member private functions
+    // Private functions for adding member
 
     /**
      * Adds a mutual connection between two family members to their respective connection lists.
@@ -432,5 +454,40 @@ object MemberMap {
 
         // Add grandchild connection to parent
         addConnectionToSingleMember(grandparent.getId(), Connection(grandchild.getId(), childConnection))
+    }
+
+    // Private functions for finding possible connections
+
+    private fun findPossibleConnectionsForMarriageConnection(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember,
+    ): List<Connection> {
+
+        val possibleConnectionsTwo = mutableListOf<Connection>()
+
+        for (connection in memberOne.getConnections()) {
+
+            // If memberOne and memberTwo are married, they might have mutual children
+            if (connection.relationship == Relations.SON ||
+                connection.relationship == Relations.DAUGHTER) {
+
+                // Check if memberTwo already has this connection
+                if (!memberTwo.getConnections().contains(connection)) {
+                    possibleConnectionsTwo.add(connection)
+                }
+            }
+
+            // If memberOne and memberTwo are married, they might have mutual grandchildren
+            if (connection.relationship == Relations.GRANDSON ||
+                connection.relationship == Relations.GRANDDAUGHTER) {
+
+                // Check if memberTwo already has this connection
+                if (!memberTwo.getConnections().contains(connection)) {
+                    possibleConnectionsTwo.add(connection)
+                }
+            }
+        }
+
+        return possibleConnectionsTwo
     }
 }

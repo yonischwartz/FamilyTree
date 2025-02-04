@@ -1,8 +1,6 @@
 package com.example.familytree.ui.theme
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import android.widget.Toast
@@ -12,7 +10,6 @@ import com.example.familytree.data.Relations
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -22,97 +19,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.*
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import com.example.familytree.data.Connection
 import com.example.familytree.data.dataManagement.DatabaseManager.addConnectionToBothMembersInLocalMap
 import com.example.familytree.data.dataManagement.DatabaseManager.addMemberIdToListOfNotYetUpdated
 import com.example.familytree.data.dataManagement.DatabaseManager.addNewMemberToLocalMemberMap
 import com.example.familytree.data.dataManagement.DatabaseManager.validateConnection
 import com.example.familytree.data.exceptions.*
-import com.example.familytree.ui.theme.dialogs.GenderErrorDialog
-import com.example.familytree.ui.theme.dialogs.MoreThanOneConnectionErrorDialog
-import com.example.familytree.ui.theme.dialogs.SameMemberMarriageErrorDialog
-
-/**
- * Provides buttons for selecting the member type.
- *
- * @param onMemberTypeSelected Callback invoked when a member type is selected.
- */
-@Composable
-internal fun MemberTypeSelection(onMemberTypeSelected: (MemberType) -> Unit) {
-    MemberTypeButton(
-        label = HebrewText.YESHIVA_FAMILY_MEMBER,
-        onClick = { onMemberTypeSelected(MemberType.Yeshiva) }
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-    MemberTypeButton(
-        label = HebrewText.NON_YESHIVA_FAMILY_MEMBER,
-        onClick = { onMemberTypeSelected(MemberType.NonYeshiva) }
-    )
-}
-
-/**
- * Represents a button for selecting a member type.
- *
- * @param label The text to display on the button.
- * @param onClick Callback invoked when the button is clicked.
- */
-@Composable
-private fun MemberTypeButton(label: String, onClick: () -> Unit) {
-    Button(
-        modifier = Modifier.fillMaxWidth(),
-        onClick = onClick
-    ) {
-        Text(label)
-    }
-}
-
-@Composable
-private fun AskUserForMemberDetailsDialog(
-    selectedMemberType: MemberType?,
-    onFamilyMemberCreation: (FamilyMember) -> Unit,
-    onDismiss: () -> Unit
-) {
-    var newMember by remember { mutableStateOf<FamilyMember?>(null) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(HebrewText.ADD_FAMILY_MEMBER) },
-        text = {
-            Column(modifier = Modifier.padding(16.dp)) {
-                when (selectedMemberType) {
-                    MemberType.Yeshiva -> {
-                        AskUserForYeshivaMemberDetails { newMember = it }
-                    }
-                    MemberType.NonYeshiva -> {
-                        AskUserForNonYeshivaMemberDetails { newMember = it }
-                    }
-                    else -> Unit
-                }
-            }
-        },
-        // can you make that the user will be able to push the confirmButton only if the new member isn't null?
-        confirmButton = {
-            TextButton(
-                onClick = { newMember?.let(onFamilyMemberCreation) },
-                enabled = newMember != null
-            ) {
-                Text(HebrewText.CONTINUE)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(HebrewText.CANCEL)
-            }
-        }
-    )
-}
+import com.example.familytree.ui.theme.dialogs.*
 
 /**
  * Form fields for adding a Yeshiva family member.
@@ -389,41 +307,6 @@ private fun MachzorInput(machzor: Int?,
 }
 
 /**
- * Displays a dialog to confirm if the user meant to select an existing family member.
- * Prompts the user to confirm or reject using the existing member.
- *
- * @param matchedMember The matched family member to display.
- * @param onConfirm Callback function to confirm the use of the existing member.
- * @param onDismiss Callback function to dismiss the dialog without taking action.
- */
-@Composable
-private fun SameMemberDialog(
-    matchedMember: FamilyMember,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Button(onClick = onConfirm) {
-                    Text("כן, זה הוא")
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(onClick = onDismiss) {
-                    Text("לא, הוסף משתמש חדש")
-                }
-            }
-        },
-        dismissButton = {},
-        text = { Text("כבר קיים בן משפחה בשם ${matchedMember.getFullName()}. האם התכוונת אליו?") }
-    )
-}
-
-/**
  * Finds a matching family member in the provided list based on the first name, last name, and machzor.
  *
  * @param firstName The first name of the family member to search for.
@@ -441,263 +324,6 @@ private fun findMatchingMember(
 }
 
 /**
- * Composable function that allows the user to select a family member from a list to relate to
- * when adding a new family member. It displays a dropdown menu with the list of family members,
- * and the user can choose an existing family member to connect the new member to.
- *
- * @param existingMembers List of family members to display in the dropdown menu.
- * @param onMemberSelected Callback function that is triggered when a family member is selected.
- *        It returns the selected `FamilyMember` object.
- * @param onDismiss Callback function triggered when the dialog is dismissed without selection.
- */
-@Composable
-fun ChooseMemberToRelateTo(
-    existingMembers: List<FamilyMember>,
-    onMemberSelected: (FamilyMember) -> Unit,
-    onDismiss: () -> Unit
-) {
-    var selectedMember by remember { mutableStateOf<FamilyMember?>(null) }
-    var expanded by remember { mutableStateOf(false) }
-    var showDialog by remember { mutableStateOf(true) }
-
-    if (showDialog) {
-        AlertDialog(
-            // Dismiss the dialog when requested
-            onDismissRequest = {
-                showDialog = false
-                onDismiss()
-           },
-            title = {
-                Text(text = HebrewText.NEW_FAMILY_MEMBERS_MUST_BE_RELATED_TO_AN_EXISTING_MEMBER)
-            },
-            text = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),  // Padding around content
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Display a prompt for selecting a family member
-                    Text(
-                        text = HebrewText.TO_WHICH_EXISTING_MEMBER_IS_YOUR_NEW_MEMBER_CONNECTED_TO,
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        // Button to open the dropdown menu
-                        TextButton(
-                            onClick = { expanded = true },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            // Display the selected member's name or a default prompt
-                            Text(
-                                text = selectedMember?.getFullName() ?: HebrewText.CHOOSE_FAMILY_MEMBER,
-                                fontSize = 16.sp
-                            )
-                        }
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            // Create a dropdown item for each family member
-                            existingMembers.forEach { member ->
-                                DropdownMenuItem(
-                                    onClick = {
-                                        selectedMember = member
-                                        expanded = false
-                                    },
-                                    text = {
-                                        Text(text = member.getFullName())
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                // Proceed with the selected member
-                Button(
-                    onClick = {
-                        selectedMember?.let {
-                            onMemberSelected(it)
-                            showDialog = false
-                        }
-                    },
-                    enabled = selectedMember != null
-                ) {
-                    Text(text = HebrewText.CONTINUE)
-                }
-            },
-            dismissButton = {
-                // Handle dialog dismissal
-                TextButton(
-                    onClick = {
-                        showDialog = false
-                        onDismiss()
-                    }
-                ) {
-                    Text(text = HebrewText.CANCEL)
-                }
-            }
-        )
-    }
-}
-
-/**
- * A composable function that displays a user interface for selecting the relation
- * between an existing family member and a new family member to be added using an AlertDialog.
- *
- * @param existingMember The FamilyMember object representing the existing family member.
- * @param onRelationSelected A callback function that is invoked with the selected relation
- * when the user clicks the "המשך" (Next) button.
- */
-@Composable
-private fun HowAreTheyRelated(
-    existingMember: FamilyMember,
-    onRelationSelected: (Relations) -> Unit,
-    onDismiss: () -> Unit
-) {
-    var selectedRelation by remember { mutableStateOf<Relations?>(null) }
-    var expanded by remember { mutableStateOf(false) }
-    var showDialog by remember { mutableStateOf(true) }
-
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = {
-                showDialog = false
-                onDismiss()
-            },
-            title = {
-                Text(text = "כיצד ${existingMember.getFullName()} קשור לבן המשפחה החדש?")
-            },
-            text = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Displays the question prompting the user to choose how the new member is related.
-                    Text(
-                        text = "בן המשפחה שאני רוצה להוסיף הוא",
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-
-                    // Row for the button and selected relation to be on the same line
-                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        OutlinedButton(
-                            onClick = { expanded = !expanded },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(text = HebrewText.CHOOSE_RELATION)
-                        }
-
-                        // Displays the selected relation
-                        selectedRelation?.let {
-                            Text(text = it.displayName(), fontSize = 16.sp)
-                        }
-                    }
-
-                    // Dropdown menu listing all relation options.
-                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                        Relations.entries.forEach { relation ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    selectedRelation = relation
-                                    expanded = false
-                                },
-                                text = {
-                                    Text(text = relation.displayName())
-                                }
-                            )
-                        }
-                    }
-                    Text(
-                        text = existingMember.getFullName(),
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        selectedRelation?.let {
-                            onRelationSelected(it)
-                            showDialog = false
-                        }
-                    },
-                    enabled = selectedRelation != null
-                ) {
-                    Text(text = HebrewText.CONTINUE)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDialog = false
-                    onDismiss()
-                }) {
-                    Text(text = HebrewText.CANCEL)
-                }
-            }
-        )
-    }
-}
-
-/**
- * Provides Hebrew-friendly display names for Relations enum.
- * This function returns a string that represents the relationship between two family members.
- *
- * @return A string representing the relationship in Hebrew, such as "אבא של " for FATHER or "נכד של " for GRANDSON.
- */
-internal fun Relations.displayName(): String {
-    return when (this) {
-        Relations.MARRIAGE -> HebrewText.MARRIED_TO
-        Relations.FATHER -> HebrewText.FATHER_OF
-        Relations.MOTHER -> HebrewText.MOTHER_OF
-        Relations.SON -> HebrewText.SON_OF
-        Relations.DAUGHTER -> HebrewText.DAUGHTER_OF
-        Relations.GRANDMOTHER -> HebrewText.GRANDMOTHER_OF
-        Relations.GRANDFATHER -> HebrewText.GRANDFATHER_OF
-        Relations.GRANDSON -> HebrewText.GRANDSON_OF
-        Relations.GRANDDAUGHTER -> HebrewText.GRANDDAUGHTER_OF
-        Relations.COUSINS -> HebrewText.COUSIN_OF
-        Relations.SIBLINGS -> HebrewText.SIBLING_OF
-    }
-}
-
-/**
- * A composable function that displays a dialog for selecting the member type.
- *
- * @param onMemberTypeSelected A lambda function triggered when a member type is selected.
- * @param onDismiss A lambda function triggered when the dialog is dismissed.
- */
-@Composable
-private fun MemberTypeSelectionDialog(
-    onMemberTypeSelected: (MemberType) -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(HebrewText.CHOOSE_FAMILY_MEMBER_TYPE, textAlign = TextAlign.End) },
-        text = {
-            Column {
-                MemberTypeSelection(onMemberTypeSelected = onMemberTypeSelected)
-            }
-        },
-        confirmButton = {
-            Button(onClick = onDismiss) {
-                Text(HebrewText.CANCEL)
-            }
-        }
-    )
-}
-
-/**
  * A composable function that displays a series of dialogs to guide the user in creating a new family member
  *
  * This function handles a step-by-step process:
@@ -712,20 +338,27 @@ private fun MemberTypeSelectionDialog(
 internal fun AskUserToCreateNewFamilyMember(
     onMemberCreation: (FamilyMember) -> Unit,
     existingMembers: List<FamilyMember>,
+    memberToRelateTo: FamilyMember? = null,
+    relation: Relations? = null,
     onDismiss: () -> Unit
 ) {
-    // Holds the newly created family member.
+
     var newMember: FamilyMember? by remember { mutableStateOf(null) }
-
-    // Holds the selected type of the member (Yeshiva or NonYeshiva).
     var selectedMemberType: MemberType? by remember { mutableStateOf<MemberType?>(null) }
-
-    // Indicates whether the user has selected a member type.
     var didUserSelectMemberType: Boolean by remember { mutableStateOf(false) }
-
-    // Indicates whether the user has entered the member's details.
     var didUserEnterMembersDetails: Boolean by remember { mutableStateOf(false) }
 
+    // If it's a marriage relation, gender will determine weather it's a wife or a husband
+    val gender = memberToRelateTo?.getGender()
+
+    // Headline for AskUserForMemberDetailsDialog
+    val headLine = if (memberToRelateTo == null || relation == null) {
+        HebrewText.ADD_FAMILY_MEMBER
+    } else {
+        HebrewText.ENTER_DETAILS_FOR + " " +
+                relation.displayAsConnections(!gender!!) +
+                memberToRelateTo.getFullName()
+    }
 
     val resetState: () -> Unit = {
         newMember = null
@@ -755,7 +388,8 @@ internal fun AskUserToCreateNewFamilyMember(
     else if (!didUserEnterMembersDetails) {
         // Display a dialog for entering member details based on the selected type.
         AskUserForMemberDetailsDialog(
-            selectedMemberType,
+            headLine = headLine,
+            selectedMemberType = selectedMemberType,
             onFamilyMemberCreation = { member ->
                 newMember = member
                 didUserEnterMembersDetails = true
@@ -766,6 +400,7 @@ internal fun AskUserToCreateNewFamilyMember(
         //TODO: Check if there's already a member with this name
 
     }
+
     // Third step: If both steps are complete, crate new member and return it.
     else {
         newMember?.let { onMemberCreation(it) }
@@ -894,7 +529,6 @@ internal fun AddNewFamilyMemberToEmptyTree(
  * @param existingMembers A list of existing family members to choose from when selecting an existing member.
  * @param onDismiss A callback function to handle dismissing the dialog or UI component when the process is canceled or completed.
  */
-@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun AddNewMemberAndRelateToExistingMember(
     existingMembers: List<FamilyMember>,
@@ -903,6 +537,7 @@ fun AddNewMemberAndRelateToExistingMember(
     var existingMember: FamilyMember? by remember { mutableStateOf(null) }
     var newMember: FamilyMember? by remember { mutableStateOf(null) }
     var relationFromExistingMemberPerspective: Relations? by remember { mutableStateOf(null) }
+    var wasUserInformed by remember { mutableStateOf(false) }
     var showGenderErrorDialog by remember { mutableStateOf(false) }
     var showMoreThanOneMemberErrorDialog by remember { mutableStateOf(false) }
     var showSameMemberMarriageErrorDialog by remember { mutableStateOf(false) }
@@ -914,6 +549,7 @@ fun AddNewMemberAndRelateToExistingMember(
         existingMember = null
         newMember = null
         relationFromExistingMemberPerspective = null
+        wasUserInformed = false
         showGenderErrorDialog = false
         showMoreThanOneMemberErrorDialog = false
         showSameMemberMarriageErrorDialog = false
@@ -925,38 +561,49 @@ fun AddNewMemberAndRelateToExistingMember(
         onDismiss()
     }
 
-    // First step: select an existing member in the tree to connect to
-    if (existingMember == null) {
-
-        ChooseMemberToRelateTo(
-            existingMembers = existingMembers,
-            onMemberSelected = { existingMember = it },
+    // First step: inform user he must relate to an existing member
+    if (!wasUserInformed) {
+        NewMemberMustBeRelatedDialog(
+            onConfirm = {wasUserInformed = true},
             onDismiss = onDismissAndResetState
         )
-
     }
 
-    // Second step: select the relation between the new member, and the existing member
+    // Second step: select an existing member in the tree to connect to
+    else if (existingMember == null) {
+
+        ChooseMemberToRelateToDialog(
+            existingMembers = existingMembers,
+            onMemberSelected = { existingMember = it },
+            onPrevious = {wasUserInformed = false},
+            onDismiss = onDismissAndResetState
+        )
+    }
+
+    // Third step: select the relation between the new member, and the existing member
     else if (relationFromExistingMemberPerspective == null) {
 
         HowAreTheyRelated(
             existingMember = existingMember!!,
             onRelationSelected = { relationFromExistingMemberPerspective = it },
+            onPrevious = { existingMember = null },
             onDismiss = onDismissAndResetState
         )
     }
 
-    // Third step: create a new FamilyMember object representing the new member
+    // Forth step: create a new FamilyMember object representing the new member
     else if (newMember == null) {
 
         AskUserToCreateNewFamilyMember(
             onMemberCreation = { newMember = it },
             existingMembers = existingMembers,
+            memberToRelateTo = existingMember!!,
+            relation = relationFromExistingMemberPerspective,
             onDismiss = onDismissAndResetState
         )
     }
 
-    // Fourth step: Make sure the connection the user wants to add is valid
+    // Fifth step: Make sure the connection the user wants to add is valid
     else if (!isConnectionValid) {
 
         try {
@@ -1010,7 +657,7 @@ fun AddNewMemberAndRelateToExistingMember(
         }
     }
 
-    // Fifth step: add the new member and update thr connection in both members
+    // Sixth step: add the new member and update thr connection in both members
     else {
 
         // Add new member to local map

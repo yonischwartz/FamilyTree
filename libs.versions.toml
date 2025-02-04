@@ -10,6 +10,7 @@ uiToolingPreviewAndroid = "1.7.6"
 jewishCalendar = "1.27"
 zmanim = "2.5.0"
 material3 = "1.3.1"
+coreKtx = "1.13.0"
 
 [libraries]
 composeUi = { module = "androidx.compose.ui:ui", version.ref = "compose" }
@@ -23,6 +24,7 @@ uiToolingPreviewAndroid = { group = "androidx.compose.ui", name = "ui-tooling-pr
 jewishDate = { module = "com.kosherjava:zmanim", version.ref = "zmanim" }
 kotlinxCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version = "1.7.3" }
 material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+coreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 
 
 

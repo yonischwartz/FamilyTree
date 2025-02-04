@@ -13,8 +13,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.platform.LocalLayoutDirection
 import com.example.familytree.data.FamilyMember
+import com.example.familytree.data.dataManagement.DatabaseManager.deleteMemberFromLocalMemberMap
 import com.example.familytree.ui.theme.HebrewText
-import com.example.familytree.ui.theme.homeScreen.DeleteMemberButton
+import com.example.familytree.ui.theme.ShowDetailsForMember
+import com.example.familytree.ui.theme.SmallDialogButton
 
 /**
  * Composable function that displays a dialog containing a list of all family members.
@@ -48,7 +50,8 @@ fun MemberListDialog(existingMembers: List<FamilyMember>, onDismiss: () -> Unit)
                                     .weight(1f)
                                     .clickable { selectedMember = member }
                             )
-                            DeleteMemberButton(member = member) {
+                            SmallDialogButton(text = HebrewText.REMOVE) {
+                                deleteMemberFromLocalMemberMap(member.getId())
                                 memberList.remove(member)
                             }
                         }
@@ -63,15 +66,9 @@ fun MemberListDialog(existingMembers: List<FamilyMember>, onDismiss: () -> Unit)
         )
     }
 
-    // Display appropriate dialog based on member type.
+    // Display appropriate detail dialog based on member type.
     selectedMember?.let { member ->
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            if (member.getMachzor() != null) {
-                YeshivaMemberDetailDialog(member = member, onDismiss = { selectedMember = null })
-            } else {
-                NonYeshivaMemberDetailDialog(member = member, onDismiss = { selectedMember = null })
-            }
-        }
+        ShowDetailsForMember(member = member, onDismiss = { selectedMember = null })
     }
 }
 

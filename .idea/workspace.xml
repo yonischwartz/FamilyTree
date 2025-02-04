@@ -9,13 +9,33 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="upload successfully all members with their connections to firebase">
+    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="upload successfully all members with their connections to firebase 2.0">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/ConnectTwoMembers.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/ShowDetailsForMember.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/AddConnectionDialog.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/AskUserForMemberDetailsDialog.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/ChooseMemberToConnectTo.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/ChooseMemberToRelateToDialog.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/HowAreTheyRelated.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/MemberTypeSelectionDialog.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/NewMemberMustBeRelatedDialog.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/SameMemberDialog.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/DatabaseManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/DatabaseManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/Relations.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/Relations.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/MemberMap.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/MemberMap.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/HebrewText.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/HebrewText.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/PrivateFuncsForAddFamilyMemberDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/PrivateFuncsForAddFamilyMemberDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/GenderErrorDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/GenderErrorDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/MemberListDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/MemberListDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/NonYeshivaMemberDetailDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/DetailsForNonYeshivaMemberDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/YeshivaMemberDetailDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/DetailsForYeshivaMemberDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/homeScreen/Buttons.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/Buttons.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/homeScreen/FamilyTreeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/homeScreen/FamilyTreeScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/homeScreen/FamilyTreeTopBar.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/homeScreen/FamilyTreeTopBar.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/libs.versions.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,8 +94,8 @@
       <list>
         <option value="Kotlin Enum" />
         <option value="Kotlin Class" />
-        <option value="Kotlin File" />
         <option value="Kotlin Object" />
+        <option value="Kotlin File" />
       </list>
     </option>
   </component>
@@ -117,6 +137,7 @@
     "com.android.tools.idea.streaming.zoom.toolbar.visible": "false",
     "com.google.services.firebase.aqiPopupShown": "true",
     "git-widget-placeholder": "feature/local-database",
+    "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/yoni schwartz/drive (yschwartz23@gmail.com)/cs/projects/FamilyTree",
     "project.structure.last.edited": "Dependencies",
@@ -127,11 +148,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\java\com\example\familytree\ui\theme" />
       <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\java\com\example\familytree\data\dataManagement" />
       <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\java\com\example\familytree\ui\theme\dialogs" />
       <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\java\com\example\familytree\ui\theme\homeScreen" />
       <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree" />
-      <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\gradle" />
     </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
       <recent name="com.example.familytree.data.dataManagement" />
@@ -372,7 +393,15 @@
       <option name="project" value="LOCAL" />
       <updated>1738588265050</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="upload successfully all members with their connections to firebase 2.0">
+      <option name="closed" value="true" />
+      <created>1738595242104</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1738595242104</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -402,7 +431,8 @@
     <MESSAGE value="adding new family member with his connection works successfully :)" />
     <MESSAGE value="retrieve successfully all members with their connections from firebase and populating them in the local DB" />
     <MESSAGE value="upload successfully all members with their connections to firebase" />
-    <option name="LAST_COMMIT_MESSAGE" value="upload successfully all members with their connections to firebase" />
+    <MESSAGE value="upload successfully all members with their connections to firebase 2.0" />
+    <option name="LAST_COMMIT_MESSAGE" value="upload successfully all members with their connections to firebase 2.0" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>

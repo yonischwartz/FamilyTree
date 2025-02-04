@@ -22,6 +22,8 @@ import com.example.familytree.ui.theme.dialogs.AddFamilyMemberDialog
 import android.content.Context
 import com.example.familytree.data.dataManagement.DatabaseManager.loadMembersFromFirebaseIntoLocalMap
 import com.example.familytree.data.dataManagement.DatabaseManager.saveLocalMapToFirebase
+import com.example.familytree.ui.theme.WideButton
+import com.example.familytree.ui.theme.dialogs.AddConnectionDialog
 
 /**
  * Composable function that displays the main screen for the family tree application.
@@ -38,8 +40,8 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
     var searchQuery by remember { mutableStateOf("") }
     var searchResults by remember { mutableStateOf<List<FamilyMember>>(emptyList()) }
     var showAddMemberDialog by remember { mutableStateOf(false) }
+    var showAddConnectionDialog by remember { mutableStateOf(false) }
     var showMemberListDialog by remember { mutableStateOf(false) }
-    var isFirestoreAccessible by remember { mutableStateOf(false) }
     var isNetworkAvailable by remember { mutableStateOf(false) }
 
     // Check for network connectivity
@@ -103,9 +105,15 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                     ) {
 
                         // Button to add a new family member
-                        HomeScreenButton(
+                        WideButton(
                             onClick = { showAddMemberDialog = true },
                             HebrewText.ADD_NEW_FAMILY_MEMBER
+                        )
+
+                        // Button to add a new connection
+                        WideButton(
+                            onClick = { showAddConnectionDialog = true },
+                            HebrewText.ADD_CONNECTION_BETWEEN_TWO_EXISTING_MEMBERS
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -116,15 +124,13 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                         Spacer(modifier = Modifier.height(16.dp))
 
                         // Button to show all family members
-                        HomeScreenButton(
+                        WideButton(
                             onClick = { showMemberListDialog = true },
                             HebrewText.SHOW_ALL_FAMILY_MEMBERS
                         )
 
-                        Spacer(modifier = Modifier.height(16.dp))
-
                         // Button to load data from firebase to local DB
-                        HomeScreenButton(
+                        WideButton(
                             onClick = {
                                 loadMembersFromFirebaseIntoLocalMap { success ->
                                     if (success){
@@ -146,10 +152,8 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                             text = HebrewText.LOAD_MEMBERS_FROM_FIREBASE
                         )
 
-                        Spacer(modifier = Modifier.height(16.dp))
-
                         // Button to save and update data to firebase
-                        HomeScreenButton(
+                        WideButton(
                             onClick = {
                                 saveLocalMapToFirebase { success ->
                                     if (success){
@@ -179,6 +183,15 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                         AddFamilyMemberDialog(
                             existingMembers = DatabaseManager.getAllMembers(),
                             onDismiss = { showAddMemberDialog = false }
+                        )
+                    }
+
+                    // Dialog for connecting between two existing members
+                    if (showAddConnectionDialog) {
+
+                        AddConnectionDialog(
+                            existingMembers = DatabaseManager.getAllMembers(),
+                            onDismiss = { showAddConnectionDialog = false }
                         )
                     }
 

@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.familytree.ui.theme.HebrewText
 
 @Composable
 fun FamilyTreeTopBar() {
@@ -22,7 +23,7 @@ fun FamilyTreeTopBar() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "עץ משפחה",  // Hebrew text for "Family Tree".
+            text = HebrewText.FAMILY_TREE,
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onPrimary,
             textAlign = TextAlign.Center

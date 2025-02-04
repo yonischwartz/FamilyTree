@@ -1,4 +1,4 @@
-package com.example.familytree.ui.theme.homeScreen
+package com.example.familytree.ui.theme
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.dataManagement.DatabaseManager
-import com.example.familytree.ui.theme.HebrewText
 
 /**
  * A Composable function that represents an home screen button.
@@ -20,31 +19,27 @@ import com.example.familytree.ui.theme.HebrewText
  * @param text A text to display on the button.
  */
 @Composable
-internal fun HomeScreenButton(onClick: () -> Unit, text: String) {
+internal fun WideButton(onClick: () -> Unit, text: String) {
     Button(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)
+            style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center)
         )
     }
 }
 
 /**
- * Composable button to delete a family member.
+ * A generic small button for dialogs.
  *
- * @param member The family member to delete.
- * @param onDeleted Callback to perform actions after deletion.
+ * @param text The text to display on the button.
+ * @param onClick The action to perform when the button is clicked.
  */
-@RequiresApi(Build.VERSION_CODES.N)
 @Composable
-fun DeleteMemberButton(member: FamilyMember, onDeleted: () -> Unit) {
-    Button(onClick = {
-        member.getId().let { DatabaseManager.deleteMemberFromLocalMemberMap(it) }
-        onDeleted()
-    }) {
-        Text(HebrewText.REMOVE)
+fun SmallDialogButton(text: String, onClick: () -> Unit) {
+    Button(onClick = onClick) {
+        Text(text)
     }
 }
