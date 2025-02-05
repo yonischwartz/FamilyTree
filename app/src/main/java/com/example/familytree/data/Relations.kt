@@ -35,6 +35,21 @@ enum class Relations(val hebrew: String) {
     }
 
     /**
+     * Returns the expected gender for the relationship.
+     * - true for male
+     * - false for female
+     * - null for relationships that do not have a specific gender expectation
+     */
+    fun expectedGender(): Boolean? {
+        return when (this) {
+            FATHER, SON, GRANDFATHER, GRANDSON -> true
+            MOTHER, DAUGHTER, GRANDMOTHER, GRANDDAUGHTER -> false
+            COUSINS, SIBLINGS, MARRIAGE -> null
+        }
+    }
+
+
+    /**
      * Returns the Hebrew text representing how the MARRIAGE relationship should be displayed
      * when describing a connection between family members, based on gender.
      *

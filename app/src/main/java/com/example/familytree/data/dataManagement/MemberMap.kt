@@ -15,37 +15,6 @@ object MemberMap {
     // Stores family members using their unique ID as the key.
     private val members = mutableMapOf<String, FamilyMember>()
 
-    // Relationship Gender Map
-    private val relationshipGenderMap: MutableMap<Relations, Boolean> = mutableMapOf()
-
-    /**
-     * Initializes the relationshipGenderMap with predefined relationships and their expected gender.
-     * This map associates each relationship type with a boolean indicating the expected gender.
-     *
-     * The gender values are represented as:
-     * - true for male
-     * - false for female
-     *
-     * Example mappings:
-     * - Relations.FATHER -> true (male)
-     * - Relations.MOTHER -> false (female)
-     * - Relations.SON -> true (male)
-     * - Relations.DAUGHTER -> false (female)
-     *
-     * This setup ensures consistency when managing family member relationships
-     * and checking gender-based connections.
-     */
-    init {
-        relationshipGenderMap[Relations.FATHER] = true  // FATHER should be male
-        relationshipGenderMap[Relations.MOTHER] = false  // MOTHER should be female
-        relationshipGenderMap[Relations.SON] = true  // SON should be male
-        relationshipGenderMap[Relations.DAUGHTER] = false  // DAUGHTER should be female
-        relationshipGenderMap[Relations.GRANDMOTHER] = false  // GRANDMOTHER should be female
-        relationshipGenderMap[Relations.GRANDFATHER] = true  // GRANDFATHER should be male
-        relationshipGenderMap[Relations.GRANDSON] = true  // GRANDSON should be male
-        relationshipGenderMap[Relations.GRANDDAUGHTER] = false  // GRANDDAUGHTER should be female
-    }
-
     // Functions
 
     /**
@@ -64,22 +33,6 @@ object MemberMap {
      */
     fun getMember(memberId: String): FamilyMember? {
         return members[memberId]
-    }
-
-    /**
-     * Updates an existing family member's information.
-     * @param memberId The ID of the member to update.
-     * @param updatedMember The updated FamilyMember object.
-     * @return True if the member was successfully updated, false if the member does not exist.
-     */
-    fun updateMember(memberId: String, updatedMember: FamilyMember): Boolean {
-        return if (members.containsKey(memberId)) {
-            members[memberId] = updatedMember
-            true
-        }
-        else {
-            false
-        }
     }
 
     /**
@@ -277,7 +230,7 @@ object MemberMap {
      * @throws InvalidGenderRoleException If the gender of the member does not match the expected gender for the relationship.
      */
     private fun validateGenderRole(member: FamilyMember, relationship: Relations) {
-        val expectedGender = relationshipGenderMap[relationship]
+        val expectedGender = relationship.expectedGender()
         if (expectedGender != null && member.getGender() != expectedGender) {
             throw InvalidGenderRoleException(member, relationship)
         }
