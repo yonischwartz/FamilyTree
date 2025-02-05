@@ -12,6 +12,7 @@ object HebrewText {
     const val SUCCESS_SAVING_MEMBERS_IN_FIREBASE = "עץ המשפחה נשמר בהצלחה ב-firebase"
     const val SUCCESS_LOADING_MEMBER_MAP = "בני משפחה נמשכו בהצלחה מה-firebase"
     const val SUCCESS_ADDING_MEMBER = "בן משפחה נוסף בהצלחה"
+    const val SUCCESS_ADDING_CONNECTION = "קשר משפחתי נוסף בהצלחה"
 
     // Home screen buttons
     const val ADD_NEW_FAMILY_MEMBER = "הוסף בן משפחה חדש"

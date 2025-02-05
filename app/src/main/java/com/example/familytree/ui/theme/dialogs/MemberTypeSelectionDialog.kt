@@ -2,11 +2,9 @@ package com.example.familytree.ui.theme.dialogs
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,7 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.familytree.data.MemberType
 import com.example.familytree.ui.theme.HebrewText
-import com.example.familytree.ui.theme.WideButton
+import com.example.familytree.ui.theme.WideBlueButton
 
 /**
  * A composable function that displays a dialog for selecting the member type.
@@ -51,14 +49,14 @@ fun MemberTypeSelectionDialog(
 @Composable
 private fun MemberTypeSelection(onMemberTypeSelected: (MemberType) -> Unit) {
 
-    WideButton(
+    WideBlueButton(
         text = HebrewText.YESHIVA_FAMILY_MEMBER,
         onClick = { onMemberTypeSelected(MemberType.Yeshiva) }
     )
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    WideButton(
+    WideBlueButton(
         text = HebrewText.NON_YESHIVA_FAMILY_MEMBER,
         onClick = { onMemberTypeSelected(MemberType.NonYeshiva) }
     )

@@ -583,7 +583,7 @@ fun AddNewMemberAndRelateToExistingMember(
     // Third step: select the relation between the new member, and the existing member
     else if (relationFromExistingMemberPerspective == null) {
 
-        HowAreTheyRelated(
+        HowAreTheyRelatedDialog(
             existingMember = existingMember!!,
             onRelationSelected = { relationFromExistingMemberPerspective = it },
             onPrevious = { existingMember = null },

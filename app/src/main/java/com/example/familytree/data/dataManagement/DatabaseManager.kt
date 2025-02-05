@@ -190,7 +190,13 @@ object DatabaseManager {
         relationFromMemberOnePerspective: Relations,
     ): Boolean {
 
+        // Add connection to local map
         memberMap.addConnectionToBothMembers(memberOne, memberTwo, relationFromMemberOnePerspective)
+
+        // Add both members ids to modifiedAndNewAddedMembersIds list
+        modifiedAndNewAddedMembersIds.add(memberOne.getId())
+        modifiedAndNewAddedMembersIds.add(memberTwo.getId())
+
         return true
     }
 

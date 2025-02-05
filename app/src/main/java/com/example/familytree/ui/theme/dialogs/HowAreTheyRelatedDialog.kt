@@ -32,7 +32,7 @@ import com.example.familytree.ui.theme.HebrewText
  * when the user clicks the "המשך" (Next) button.
  */
 @Composable
-fun HowAreTheyRelated(
+fun HowAreTheyRelatedDialog(
     existingMember: FamilyMember,
     onRelationSelected: (Relations) -> Unit,
     onPrevious: () -> Unit,

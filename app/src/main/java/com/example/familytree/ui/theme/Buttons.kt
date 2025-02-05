@@ -1,7 +1,5 @@
 package com.example.familytree.ui.theme
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -9,8 +7,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import com.example.familytree.data.FamilyMember
-import com.example.familytree.data.dataManagement.DatabaseManager
 
 /**
  * A Composable function that represents an home screen button.
@@ -19,7 +15,7 @@ import com.example.familytree.data.dataManagement.DatabaseManager
  * @param text A text to display on the button.
  */
 @Composable
-internal fun WideButton(onClick: () -> Unit, text: String) {
+internal fun WideBlueButton(onClick: () -> Unit, text: String) {
     Button(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick

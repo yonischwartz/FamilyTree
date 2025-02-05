@@ -1,4 +1,4 @@
-package com.example.familytree.ui.theme.dialogs
+package com.example.familytree.ui.theme.homeScreen.functionForButtons
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -15,7 +15,7 @@ import com.example.familytree.ui.theme.AddNewMemberAndRelateToExistingMember
  */
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
-fun AddFamilyMemberDialog(
+fun AddFamilyMember(
     existingMembers: List<FamilyMember>,
     onDismiss: () -> Unit
 ) {
