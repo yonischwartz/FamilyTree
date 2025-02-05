@@ -4,17 +4,17 @@ import com.example.familytree.ui.theme.HebrewText
 import java.util.UUID
 
 /**
- * Represents a family member with personal details and identifiers.
- * This class is designed to handle both yeshiva family members and non-yeshiva family members.
+ * Represents a family member in the Yeshiva family tree.
  *
- * @property firstName The first name of the family member (default is an empty string).
- * @property lastName The last name of the family member (default is an empty string).
- * @property gender The gender of the family member, where true typically represents male and false female (default is true).
- * @property machzor The machzor of the family member
- *                   For yeshiva members who did not study in the yeshiva (e.g., staff), machzor is set to 0.
- *                   For non-yeshiva members, machzor is null.
- * @property isRabbi Indicates if the family member is a rabbi (nullable, default is null).
- *                 For yeshiva members who are rabbis, this is set to true, while for non-yeshiva members, rabbi is null.
+ * @property memberType The type of member (e.g., student, rabbi, non-yeshiva member).
+ * @property firstName The first name of the family member.
+ * @property lastName The last name of the family member.
+ * @property gender The gender of the family member (true for male, false for female).
+ * @property machzor The machzor (graduation cycle) the member belongs to. Null for non yeshiva members.
+ * @property isRabbi Indicates whether the member is a rabbi.
+ * @property isYeshivaRabbi Indicates whether the rabbi is specifically affiliated with the Yeshiva.
+ * @property id A unique identifier for the member, auto-generated using UUID.
+ * @property connections A list of relationships the member has with other family members.
  */
 class FamilyMember(
     private val memberType: MemberType = MemberType.NonYeshiva,

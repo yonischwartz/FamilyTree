@@ -12,6 +12,7 @@ import com.example.familytree.data.exceptions.SameMarriageException
  * Provides methods to add, retrieve, update, and delete family members.
  */
 object MemberMap {
+
     // Stores family members using their unique ID as the key.
     private val members = mutableMapOf<String, FamilyMember>()
 
@@ -107,9 +108,10 @@ object MemberMap {
         when (relationFromMemberOnePerspective) {
 
             Relations.MARRIAGE -> {
+
                 addMutualConnection(memberOne, memberTwo, Relations.MARRIAGE)
 
-                // if one of the members is a rabbi, his wife should be updated as a rabbi wife
+                // If one of the members is a rabbi, his wife should be updated as a rabbi wife
                 if (memberOne.getIsRabbi()) {
                     memberTwo.setIsRabbi(true)
                 }
@@ -118,7 +120,16 @@ object MemberMap {
                 }
             }
 
-            Relations.COUSINS, Relations.SIBLINGS ->
+            Relations.SIBLINGS -> {
+
+                addMutualConnection(memberOne, memberTwo, relationFromMemberOnePerspective)
+
+                // Add mutual connections from one sibling to another
+                addConnectionsFromOneSiblingToAnother(memberOne, memberTwo)
+                addConnectionsFromOneSiblingToAnother(memberTwo, memberOne)
+            }
+
+            Relations.COUSINS ->
                 addMutualConnection(memberOne, memberTwo, relationFromMemberOnePerspective)
 
             Relations.FATHER, Relations.MOTHER ->
@@ -455,4 +466,55 @@ object MemberMap {
 
         return possibleConnectionsTwo
     }
+
+    // Private functions for adding connections based on the connection the user added
+
+    /**
+     * Adds connections from one sibling to another, ensuring mutual relationships are established.
+     *
+     * This function iterates through all connections of `memberOne` and adds them to `memberTwo`,
+     * except for non-mutual relationships like marriage, parent-child, and grandparent-grandchild.
+     * It ensures that duplicate connections are not added.
+     *
+     * @param memberOne The source family member whose connections are to be shared.
+     * @param memberTwo The target family member who will receive the shared connections.
+     */
+    private fun addConnectionsFromOneSiblingToAnother(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember
+    ) {
+        for (connection in memberOne.getConnections()) {
+
+            // These relations are not mutual for siblings
+            if (connection.relationship == Relations.MARRIAGE ||
+                connection.relationship == Relations.SON ||
+                connection.relationship == Relations.DAUGHTER ||
+                connection.relationship == Relations.GRANDSON ||
+                connection.relationship == Relations.GRANDDAUGHTER
+            ) {
+                continue
+            }
+
+            // Skip the sibling connection to member two
+            if (connection.memberId == memberTwo.getId()) {
+                continue
+            }
+
+            // Check if memberTwo already has this connection
+            val alreadyConnected = memberTwo.getConnections().any {
+                it.memberId == connection.memberId && it.relationship == connection.relationship
+            }
+
+            // Add the connection to memberTwo
+            if (!alreadyConnected) {
+                val connectionToBeAdded = Connection(connection.memberId, connection.relationship)
+                memberTwo.addConnection(connectionToBeAdded)
+            }
+        }
+    }
+
+
+
+
+
 }

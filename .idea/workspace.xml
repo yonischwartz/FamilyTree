@@ -10,13 +10,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="if a woman is married to a rabbi she becomes automatically a lady rabbi">
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/Relations.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/Relations.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/FamilyMember.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/FamilyMember.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/MemberMap.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/MemberMap.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/PrivateFuncsForAddFamilyMemberDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/PrivateFuncsForAddFamilyMemberDialog.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/AskUserForMemberDetailsDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/AskUserForMemberDetailsDialog.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/homeScreen/functionForButtons/AddFamilyMember.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/homeScreen/functionForButtons/AddFamilyMember.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

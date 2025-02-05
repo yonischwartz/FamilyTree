@@ -66,6 +66,7 @@ fun AskUserForMemberDetailsDialog(
     var lastName by remember { mutableStateOf("") }
     var machzor by remember { mutableStateOf<Int?>(null) }
     var isRabbi by remember { mutableStateOf(false) }
+    var gender by remember { mutableStateOf(true) }
     var isYeshivaRabbi by remember { mutableStateOf(false) }
 
     AlertDialog(
@@ -99,14 +100,27 @@ fun AskUserForMemberDetailsDialog(
                     )
                 }
 
+                // Only nonYeshiva members need to choose a gender
+                else {
+                    BooleanSelection(
+                        label = HebrewText.SEX,
+                        optionOne = HebrewText.MALE,
+                        optionTwo = HebrewText.FEMALE,
+                        selected = gender,
+                        onChange = { gender = it }
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Boolean selection to indicate if the member is a rabbi
-                BooleanSelection(
-                    label = HebrewText.IS_THIS_FAMILY_MEMBER_A_RABBI,
-                    selected = isRabbi,
-                    onChange = { isRabbi = it }
-                )
+                // Only a male member can be a rabbi
+                if (gender) {
+                    BooleanSelection(
+                        label = HebrewText.IS_THIS_FAMILY_MEMBER_A_RABBI,
+                        selected = isRabbi,
+                        onChange = { isRabbi = it }
+                    )
+                }
 
                 // If the member is a rabbi and a Yeshiva member, ask if they are a Yeshiva rabbi
                 if (isRabbi && selectedMemberType == MemberType.Yeshiva) {
@@ -129,7 +143,7 @@ fun AskUserForMemberDetailsDialog(
                             memberType = selectedMemberType!!,
                             firstName = firstName,
                             lastName = lastName,
-                            gender = true,
+                            gender = gender,
                             machzor = machzor,
                             isRabbi = isRabbi,
                             isYeshivaRabbi = isYeshivaRabbi
