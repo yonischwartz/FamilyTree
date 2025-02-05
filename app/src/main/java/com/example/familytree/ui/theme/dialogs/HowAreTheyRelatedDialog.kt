@@ -72,7 +72,10 @@ fun HowAreTheyRelatedDialog(
                     onClick = { expanded = true },
                 ) {
                     Text(
-                        text = selectedRelation?.displayAsConnections(!gender) ?: HebrewText.CHOOSE_RELATION,
+                        text =
+                        selectedRelation?.let { HebrewText.THE + it.displayAsConnections(!gender) } ?:
+                        HebrewText.CHOOSE_RELATION,
+
                         fontSize = 16.sp
                     )
                 }
@@ -92,7 +95,9 @@ fun HowAreTheyRelatedDialog(
                             expanded = false
                         },
                         text = {
-                            Text(text = relation.displayAsConnections(!existingMember.getGender()))
+                            Text(text = HebrewText.THE +
+                                    relation.displayAsConnections(!existingMember.getGender())
+                            )
                         }
                     )
                 }

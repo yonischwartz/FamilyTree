@@ -153,7 +153,19 @@ object MemberMap {
 
         when (relationFromMemberOnePerspective) {
 
-            Relations.MARRIAGE, Relations.COUSINS, Relations.SIBLINGS ->
+            Relations.MARRIAGE -> {
+                addMutualConnection(memberOne, memberTwo, Relations.MARRIAGE)
+
+                // if one of the members is a rabbi, his wife should be updated as a rabbi wife
+                if (memberOne.getIsRabbi()) {
+                    memberTwo.setIsRabbi(true)
+                }
+                if (memberTwo.getIsRabbi()) {
+                    memberOne.setIsRabbi(true)
+                }
+            }
+
+            Relations.COUSINS, Relations.SIBLINGS ->
                 addMutualConnection(memberOne, memberTwo, relationFromMemberOnePerspective)
 
             Relations.FATHER, Relations.MOTHER ->

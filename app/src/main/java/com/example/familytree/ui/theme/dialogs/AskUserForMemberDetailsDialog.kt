@@ -41,7 +41,7 @@ fun AskUserForMemberDetailsDialog(
             Column(modifier = Modifier.padding(16.dp)) {
                 when (selectedMemberType) {
                     MemberType.Yeshiva -> {
-                        AskUserForYeshivaMemberDetails { newMember = it }
+                        AskUserForYeshivaMemberDetails(MemberType.Yeshiva) { newMember = it }
                     }
                     MemberType.NonYeshiva -> {
                         AskUserForNonYeshivaMemberDetails { newMember = it }

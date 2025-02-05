@@ -38,34 +38,54 @@ import com.example.familytree.ui.theme.dialogs.*
  */
 @Composable
 internal fun AskUserForYeshivaMemberDetails(
+    memberType: MemberType,
     onFamilyMemberCreation: (FamilyMember) -> Unit
 ) {
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var machzor by remember { mutableStateOf<Int?>(null) }
     var isRabbi by remember { mutableStateOf(false) }
+    var isYeshivaRabbi by remember { mutableStateOf(false) }
+
 
     Column(modifier = Modifier.padding(16.dp)) {
-        MemberFirstNameField(
-            firstName = firstName,
-            onFirstNameChange = { firstName = it }
+        FreeTextField(
+            text = HebrewText.FIRST_NAME,
+            value = firstName,
+            onValueChange = { firstName = it }
         )
         Spacer(modifier = Modifier.height(8.dp))
-        MemberLastNameField(
-            lastName = lastName,
-            onLastNameChange = { lastName = it }
+        FreeTextField(
+            text = HebrewText.LAST_NAME,
+            value = lastName,
+            onValueChange = { lastName = it }
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        MachzorInput(
-            machzor = machzor,
-            onMachzorChange = { machzor = it }
-        )
+
+        // Only a yeshivaMember needs to enter a machzor
+        if (memberType == MemberType.Yeshiva) {
+            Spacer(modifier = Modifier.height(8.dp))
+            MachzorInput(
+                machzor = machzor,
+                onMachzorChange = { machzor = it }
+            )
+        }
+
         Spacer(modifier = Modifier.height(8.dp))
         BooleanSelection(
             label = HebrewText.IS_THIS_FAMILY_MEMBER_A_RABBI,
             selected = isRabbi,
             onChange = { isRabbi = it }
         )
+
+        // Show this boolean selection only if the this member is a rabbi and he is a yeshivaMember
+        if (isRabbi and (memberType == MemberType.Yeshiva)) {
+            Spacer(modifier = Modifier.height(8.dp))
+            BooleanSelection(
+                label = HebrewText.IS_THIS_RABBI_A_YESHIVA_RABBI,
+                selected = isYeshivaRabbi,
+                onChange = { isYeshivaRabbi = it }
+            )
+        }
     }
 
     if (
@@ -76,27 +96,18 @@ internal fun AskUserForYeshivaMemberDetails(
         // Trigger callback with the newly created FamilyMember object
         onFamilyMemberCreation(
             FamilyMember(
-                memberType = MemberType.Yeshiva,
+                memberType = memberType,
                 firstName = firstName,
                 lastName = lastName,
                 gender = true,
                 machzor = machzor,
-                isRabbi = isRabbi
+                isRabbi = isRabbi,
+                isYeshivaRabbi = isYeshivaRabbi
             )
         )
     }
 }
 
-/**
- * Form fields for adding a Non-Yeshiva family member.
- *
- * @param firstName The first name input.
- * @param lastName The last name input.
- * @param gender The gender input.
- * @param onFirstNameChange Callback for updating the first name.
- * @param onLastNameChange Callback for updating the last name.
- * @param onGenderChange Callback for updating the gender.
- */
 @Composable
 internal fun AskUserForNonYeshivaMemberDetails(
     onFamilyMemberCreation: (FamilyMember) -> Unit
@@ -108,26 +119,35 @@ internal fun AskUserForNonYeshivaMemberDetails(
     var isRabbi by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.padding(16.dp)) {
-        MemberFirstNameField(
-            firstName,
-            onFirstNameChange = { firstName = it }
+        FreeTextField(
+            text = HebrewText.FIRST_NAME,
+            value = firstName,
+            onValueChange = { firstName = it }
         )
         Spacer(modifier = Modifier.height(8.dp))
-        MemberLastNameField(
-            lastName,
-            onLastNameChange = { lastName = it }
+        FreeTextField(
+            text = HebrewText.LAST_NAME,
+            value = lastName,
+            onValueChange = { lastName = it }
         )
         Spacer(modifier = Modifier.height(8.dp))
-        GenderSelection(
-            gender,
-            onGenderChange = { gender = it }
+        BooleanSelection (
+            label = HebrewText.SEX,
+            optionOne = HebrewText.MALE,
+            optionTwo = HebrewText.FEMALE,
+            selected = gender,
+            onChange = { gender = it }
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        BooleanSelection(
-            label = HebrewText.IS_THIS_FAMILY_MEMBER_A_RABBI,
-            selected = isRabbi,
-            onChange = { isRabbi = it }
-        )
+
+        // Only a male can be a rabbi
+        if (gender) {
+            Spacer(modifier = Modifier.height(8.dp))
+            BooleanSelection(
+                label = HebrewText.IS_THIS_FAMILY_MEMBER_A_RABBI,
+                selected = isRabbi,
+                onChange = { isRabbi = it }
+            )
+        }
     }
 
     if (
@@ -149,38 +169,22 @@ internal fun AskUserForNonYeshivaMemberDetails(
 }
 
 /**
- * Provides input field for first name.
+ * A reusable text input field for free-text entry.
  *
- * @param firstName The first name input.
- * @param onFirstNameChange Callback for updating the first name.
+ * @param text The label describing the text field.
+ * @param value The current text value entered by the user.
+ * @param onValueChange Callback triggered when the text value changes.
  */
 @Composable
-private fun MemberFirstNameField(
-    firstName: String,
-    onFirstNameChange: (String) -> Unit
+private fun FreeTextField(
+    text: String,
+    value: String,
+    onValueChange: (String) -> Unit
 ) {
     TextField(
-        value = firstName,
-        onValueChange = onFirstNameChange,
-        label = { Text(HebrewText.FIRST_NAME) }
-    )
-}
-
-/**
- * Provides input field for last name.
- *
- * @param lastName The last name input.
- * @param onLastNameChange Callback for updating the last name.
- */
-@Composable
-private fun MemberLastNameField(
-    lastName: String,
-    onLastNameChange: (String) -> Unit
-) {
-    TextField(
-        value = lastName,
-        onValueChange = onLastNameChange,
-        label = { Text(HebrewText.LAST_NAME) }
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(text) }
     )
 }
 
@@ -191,7 +195,9 @@ private fun MemberLastNameField(
  * @param onGenderChange Callback for updating the gender.
  */
 @Composable
-private fun GenderSelection(gender: Boolean, onGenderChange: (Boolean) -> Unit) {
+private fun GenderSelection(
+    gender: Boolean,
+    onGenderChange: (Boolean) -> Unit) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
         Text(HebrewText.SEX)
         Column(modifier = Modifier.weight(1f)) {
@@ -221,7 +227,13 @@ private fun GenderSelection(gender: Boolean, onGenderChange: (Boolean) -> Unit) 
  * @param onChange Callback for updating the boolean value.
  */
 @Composable
-private fun BooleanSelection(label: String, selected: Boolean, onChange: (Boolean) -> Unit) {
+private fun BooleanSelection(
+    label: String,
+    optionOne: String = HebrewText.YES,
+    optionTwo: String = HebrewText.NO,
+    selected: Boolean = true,
+    onChange: (Boolean) -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
         Text(label, modifier = Modifier.padding(bottom = 8.dp))
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
@@ -234,7 +246,7 @@ private fun BooleanSelection(label: String, selected: Boolean, onChange: (Boolea
                     onClick = { onChange(true) }
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(HebrewText.YES)
+                Text(optionOne)
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -245,7 +257,7 @@ private fun BooleanSelection(label: String, selected: Boolean, onChange: (Boolea
                     onClick = { onChange(false) }
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(HebrewText.NO)
+                Text(optionTwo)
             }
         }
     }
@@ -355,7 +367,7 @@ internal fun AskUserToCreateNewFamilyMember(
     val headLine = if (memberToRelateTo == null || relation == null) {
         HebrewText.ADD_FAMILY_MEMBER
     } else {
-        HebrewText.ENTER_DETAILS_FOR + " " +
+        HebrewText.ENTER_DETAILS_FOR + " " + HebrewText.THE +
                 relation.displayAsConnections(!gender!!) +
                 memberToRelateTo.getFullName()
     }

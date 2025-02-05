@@ -98,7 +98,8 @@ object DatabaseManager {
             val firstName = document.getString("firstName")
             val lastName = document.getString("lastName")
             val gender = document.getBoolean("gender")
-            val isRabbi = document.getBoolean("isRabbi")
+            val isRabbi = document.getBoolean("rabbi")
+            val isYeshivaRabbi = document.getBoolean("yeshivaRabbi")
             val machzor = document.getLong("machzor")?.toInt()
             val memberTypeString = document.getString("memberType")
             val connectionsAsMaps = document.get("connections") as? MutableList<Map<String, Any>>
@@ -110,6 +111,7 @@ object DatabaseManager {
                 lastName == null ||
                 gender == null ||
                 isRabbi == null ||
+                isYeshivaRabbi == null ||
                 memberTypeString == null ||
                 connectionsAsMaps == null
             ) {
@@ -135,6 +137,7 @@ object DatabaseManager {
                 lastName = lastName,
                 gender = gender,
                 isRabbi = isRabbi,
+                isYeshivaRabbi = isYeshivaRabbi,
                 machzor = machzor,
                 memberType = MemberType.valueOf(memberTypeString),
                 connections = connections

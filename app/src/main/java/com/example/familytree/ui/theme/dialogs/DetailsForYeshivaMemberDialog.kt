@@ -29,12 +29,14 @@ fun DetailsForYeshivaMemberDialog(member: FamilyMember, onDismiss: () -> Unit) {
             },
             text = {
                 Column(modifier = Modifier.padding(8.dp)) {
-                    // Add "הרב" before the first name if the member is a rabbi.
-                    val firstNameDisplay = if (member.getIsRabbi() == true) {
-                        "${HebrewText.RABBI}${member.getFirstName()}"
-                    } else {
-                        member.getFirstName()
+
+                    // Define first name display based on whether the member is a rabbi
+                    val firstNameDisplay = when {
+                        member.getIsRabbi() && member.getGender() -> "${HebrewText.RABBI}${member.getFirstName()}"
+                        member.getIsRabbi() && !member.getGender() -> "${HebrewText.RABBI_WIFE}${member.getFirstName()}"
+                        else -> member.getFirstName()
                     }
+
                     // סוג בן משפחה
                     Text("${HebrewText.FAMILY_MEMBER_TYPE}: ${member.getMemberType()}",
                         style = MaterialTheme.typography.bodyMedium)

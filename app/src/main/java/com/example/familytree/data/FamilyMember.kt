@@ -1,5 +1,6 @@
 package com.example.familytree.data
 
+import com.example.familytree.ui.theme.HebrewText
 import java.util.UUID
 
 /**
@@ -21,7 +22,8 @@ class FamilyMember(
     private val lastName: String = "",
     private val gender: Boolean = true,
     private val machzor: Int? = null,  // machzor is 0 for non-student yeshiva members
-    private val isRabbi: Boolean? = null,
+    private var isRabbi: Boolean = false,
+    private val isYeshivaRabbi: Boolean = false,
     private val id: String = UUID.randomUUID().toString(), // Auto-generate unique ID
     private val connections: MutableList<Connection> = mutableListOf()
 ) {
@@ -39,7 +41,8 @@ class FamilyMember(
             "lastName" to lastName,
             "gender" to gender,
             "machzor" to machzor,
-            "isRabbi" to isRabbi,
+            "rabbi" to isRabbi,
+            "yeshivaRabbi" to isYeshivaRabbi,
             "connections" to connections.map { it.toMap() }
         )
     }
@@ -61,12 +64,17 @@ class FamilyMember(
     }
 
     /**
-     * Returns the full name of the family member, combining the first and last name.
+     * Returns the full name of the family member with an appropriate title if applicable.
      *
-     * @return The full name as a string, formatted as "firstName lastName".
+     * @return The full name, including a title if applicable, formatted as "Title FirstName LastName".
      */
     fun getFullName(): String {
-        return "$firstName $lastName"
+        val prefix = when {
+            isRabbi && !gender -> HebrewText.RABBI_WIFE
+            isRabbi -> HebrewText.RABBI
+            else -> ""
+        }
+        return "$prefix$firstName $lastName".trim()
     }
 
     /**
@@ -111,8 +119,26 @@ class FamilyMember(
      *
      * @return True if the rabbi field is true, false if it is false, or null if not set.
      */
-    fun getIsRabbi(): Boolean? {
+    fun getIsRabbi(): Boolean {
         return isRabbi
+    }
+
+    /**
+     * Sets the value of the `isRabbi` property for the member.
+     *
+     * @param rabbi A Boolean value that sets the `isRabbi` property.
+     *              `true` if the member is a rabbi, `false` otherwise.
+     */
+    fun setIsRabbi(rabbi: Boolean) {
+        isRabbi = rabbi
+    }
+
+    /**
+     * Checks if the family member is a rabbi in the yeshiva.
+     *
+     */
+    fun getIsYeshivaRabbi(): Boolean {
+        return isYeshivaRabbi
     }
 
     /**

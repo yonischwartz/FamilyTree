@@ -31,8 +31,8 @@ object HebrewText {
 
     // Relations
     const val MARRIAGE = "נישואין"
-    const val WIFE_OF = "אשתו של "
-    const val HUSBAND_OF = "בעלה של "
+    const val WIFE_OF = "אשה של "
+    const val HUSBAND_OF = "בעל של "
     const val FATHER = "אבא"
     const val MOTHER = "אמא"
     const val SON = "בן"
@@ -53,6 +53,8 @@ object HebrewText {
     const val MACHZOR = "מחזור"
 
 
+    const val THE = "ה"
+    const val IS_THIS_RABBI_A_YESHIVA_RABBI = "האם הרב הזה הוא רב בישיבה?"
     const val ENTER_DETAILS_FOR = "מלא פרטים על"
     const val RELATED_TO_THE_OTHER_MEMBER = "קשור לבן המשפחה הנוסף?"
     const val HOW = "כיצד"
@@ -65,6 +67,7 @@ object HebrewText {
     const val FAMILY_MEMBER_LIST = "רשימת בני משפחה"
     const val UNKNOWN = "לא ידוע"
     const val RABBI = "הרב "
+    const val RABBI_WIFE = "הרבנית "
     const val FAMILY_MEMBER_DETAILS = "פרטי בן משפחה"
     const val MARRIED_COUPLE_CAN_NOT_BE_OF_SAME_SEX = "זוג נשוי אינם יכולים להיות מאותו המין"
     const val EXISTS_ALREADY_FAMILY_RELATION_OF_TYPE = "קיים כבר קשר משפחתי מסוג "
