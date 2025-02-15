@@ -58,6 +58,7 @@ import com.example.familytree.ui.theme.machzorToInt
 fun AskUserForMemberDetailsDialog(
     headLine: String,
     selectedMemberType: MemberType?,
+    expectedGender: Boolean? = null,
     onFamilyMemberCreation: (FamilyMember) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -100,8 +101,8 @@ fun AskUserForMemberDetailsDialog(
                     )
                 }
 
-                // Only nonYeshiva members need to choose a gender
-                else {
+                // nonYeshiva members who doesn't have an expected gender need to choose one
+                else if (expectedGender == null) {
                     BooleanSelection(
                         label = HebrewText.SEX,
                         optionOne = HebrewText.MALE,
@@ -109,6 +110,10 @@ fun AskUserForMemberDetailsDialog(
                         selected = gender,
                         onChange = { gender = it }
                     )
+                }
+
+                else {
+                    gender = expectedGender
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -153,7 +158,7 @@ fun AskUserForMemberDetailsDialog(
                 enabled = firstName.isNotEmpty() && lastName.isNotEmpty() &&
                         (selectedMemberType == MemberType.NonYeshiva || machzor != null)
             ) {
-                Text(HebrewText.NEXT)
+                Text(HebrewText.OK)
             }
         },
 

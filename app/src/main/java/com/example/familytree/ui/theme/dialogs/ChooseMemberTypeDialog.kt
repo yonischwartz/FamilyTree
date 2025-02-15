@@ -1,7 +1,10 @@
 package com.example.familytree.ui.theme.dialogs
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -14,15 +17,11 @@ import com.example.familytree.data.MemberType
 import com.example.familytree.ui.theme.HebrewText
 import com.example.familytree.ui.theme.WideBlueButton
 
-/**
- * A composable function that displays a dialog for selecting the member type.
- *
- * @param onMemberTypeSelected A lambda function triggered when a member type is selected.
- * @param onDismiss A lambda function triggered when the dialog is dismissed.
- */
 @Composable
-fun MemberTypeSelectionDialog(
+fun ChooseMemberTypeDialog(
     onMemberTypeSelected: (MemberType) -> Unit,
+    showPreviousButton: Boolean = true,
+    onPrevious: () -> Unit = {},
     onDismiss: () -> Unit
 ) {
     AlertDialog(
@@ -34,8 +33,15 @@ fun MemberTypeSelectionDialog(
             }
         },
         confirmButton = {
-            Button(onClick = onDismiss) {
-                Text(HebrewText.CANCEL)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                if (showPreviousButton) {
+                    Button(onClick = onPrevious) {
+                        Text(HebrewText.PREVIOUS)
+                    }
+                }
             }
         }
     )

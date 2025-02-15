@@ -21,7 +21,7 @@ fun GenderErrorDialog(
     existingMember: FamilyMember
 ) {
 
-    val genderWord = if (newMember.getGender()) HebrewText.HE else HebrewText.SHE
+    val pronouns = if (newMember.getGender()) HebrewText.HE else HebrewText.SHE
     val genderDescription = if (newMember.getGender()) HebrewText.MALE else HebrewText.FEMALE
 
     AlertDialog(
@@ -34,7 +34,7 @@ fun GenderErrorDialog(
                 text = HebrewText.CAN_NOT_ADD + newMember.getFullName() +
                         "${HebrewText.AS}${relation.displayAsConnections()}" +
                         "${existingMember.getFullName()}, " +
-                        "${HebrewText.BECAUSE}${genderWord} ${genderDescription}."
+                        "${HebrewText.BECAUSE}${pronouns} ${genderDescription}."
             )
         },
         confirmButton = {

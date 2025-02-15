@@ -6,10 +6,12 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import com.example.familytree.data.FamilyMember
+import com.example.familytree.data.FullConnection
 import com.example.familytree.data.MemberType
 import com.example.familytree.data.Relations
+import com.example.familytree.data.Relations.*
+import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.data.dataManagement.DatabaseManager.addConnectionToBothMembersInLocalMap
-import com.example.familytree.data.dataManagement.DatabaseManager.addMemberIdToListOfNotYetUpdated
 import com.example.familytree.data.dataManagement.DatabaseManager.addNewMemberToLocalMemberMap
 import com.example.familytree.data.dataManagement.DatabaseManager.validateConnection
 import com.example.familytree.data.exceptions.InvalidGenderRoleException
@@ -20,11 +22,11 @@ import com.example.familytree.ui.theme.dialogs.AskUserForMemberDetailsDialog
 import com.example.familytree.ui.theme.dialogs.ChooseMemberToRelateToDialog
 import com.example.familytree.ui.theme.dialogs.GenderErrorDialog
 import com.example.familytree.ui.theme.dialogs.HowAreTheyRelatedDialog
-import com.example.familytree.ui.theme.dialogs.MemberTypeSelectionDialog
+import com.example.familytree.ui.theme.dialogs.ChooseMemberTypeDialog
 import com.example.familytree.ui.theme.dialogs.MoreThanOneConnectionErrorDialog
 import com.example.familytree.ui.theme.dialogs.NewMemberMustBeRelatedDialog
 import com.example.familytree.ui.theme.dialogs.SameMemberMarriageErrorDialog
-import kotlinx.coroutines.launch
+import com.example.familytree.ui.theme.dialogs.SuggestConnectionDialog
 
 /**
  * A composable function that displays a dialog for adding a family member to the family tree.
@@ -111,6 +113,8 @@ private fun AddNewMemberAndRelateToExistingMember(
     var showMoreThanOneMemberErrorDialog by remember { mutableStateOf(false) }
     var showSameMemberMarriageErrorDialog by remember { mutableStateOf(false) }
     var isConnectionValid by remember { mutableStateOf(false) }
+    var wasMemberAdded by remember { mutableStateOf(false) }
+
     val context = LocalContext.current
 
     // Reset the state variables to their initial values
@@ -123,6 +127,7 @@ private fun AddNewMemberAndRelateToExistingMember(
         showMoreThanOneMemberErrorDialog = false
         showSameMemberMarriageErrorDialog = false
         isConnectionValid = false
+        wasMemberAdded = false
     }
 
     val onDismissAndResetState: () -> Unit = {
@@ -165,6 +170,8 @@ private fun AddNewMemberAndRelateToExistingMember(
 
         AskUserToCreateNewFamilyMember(
             onMemberCreation = { newMember = it },
+            showPreviousButton = true,
+            onPrevious = { relationFromExistingMemberPerspective = null },
             existingMembers = existingMembers,
             memberToRelateTo = existingMember!!,
             relation = relationFromExistingMemberPerspective,
@@ -227,8 +234,8 @@ private fun AddNewMemberAndRelateToExistingMember(
         }
     }
 
-    // Sixth step: add the new member and update thr connection in both members
-    else {
+    // Sixth step: add the new member and update the connection in both members
+    else if (wasMemberAdded.not()){
 
         // Add new member to local map
         val newMemberAdded = addNewMemberToLocalMemberMap(newMember!!)
@@ -236,17 +243,31 @@ private fun AddNewMemberAndRelateToExistingMember(
         // Add connections between two members
         val connectionAdded = addConnectionToBothMembersInLocalMap(existingMember!!, newMember!!, relationFromExistingMemberPerspective!!)
 
-        // Add the id of the existing member to list of ids that need to be updated
-        addMemberIdToListOfNotYetUpdated(existingMember!!.getId())
-
         if (newMemberAdded && connectionAdded) {
             Toast.makeText(context, HebrewText.SUCCESS_ADDING_MEMBER, Toast.LENGTH_LONG).show()
+            wasMemberAdded = true
         }
         else {
             Toast.makeText(context, HebrewText.ERROR_ADDING_MEMBER, Toast.LENGTH_LONG).show()
         }
+    }
 
-        onDismissAndResetState()
+    // Seventh step: offer user to add suggested connections
+    else {
+
+        var suggestedConnection by remember { mutableStateOf(DatabaseManager.popNextSuggestedConnection()) }
+
+        if (suggestedConnection != null) {
+            SuggestConnectionDialog(
+                suggestedConnection = suggestedConnection!!,
+                onDismiss = {
+                    suggestedConnection = DatabaseManager.popNextSuggestedConnection()
+                }
+            )
+        }
+        else {
+            onDismissAndResetState()
+        }
     }
 }
 
@@ -264,6 +285,8 @@ private fun AddNewMemberAndRelateToExistingMember(
 @Composable
 private fun AskUserToCreateNewFamilyMember(
     onMemberCreation: (FamilyMember) -> Unit,
+    showPreviousButton: Boolean = false,
+    onPrevious: () -> Unit = {},
     existingMembers: List<FamilyMember>,
     memberToRelateTo: FamilyMember? = null,
     relation: Relations? = null,
@@ -271,7 +294,7 @@ private fun AskUserToCreateNewFamilyMember(
 ) {
 
     var newMember: FamilyMember? by remember { mutableStateOf(null) }
-    var selectedMemberType: MemberType? by remember { mutableStateOf<MemberType?>(null) }
+    var selectedMemberType: MemberType? by remember { mutableStateOf(null) }
 
     // If it's a marriage relation, gender will determine weather it's a wife or a husband
     val gender = memberToRelateTo?.getGender()
@@ -302,7 +325,7 @@ private fun AskUserToCreateNewFamilyMember(
 
     // relation.expectedGender() doesn't handle marriage, so these lines check if member is a wife
     if (memberToRelateTo != null &&
-        relation == Relations.MARRIAGE &&
+        relation == MARRIAGE &&
         memberToRelateTo.getGender()
         ) {
         selectedMemberType = MemberType.NonYeshiva
@@ -311,19 +334,21 @@ private fun AskUserToCreateNewFamilyMember(
     // First step: user needs to select member type
     if (selectedMemberType == null) {
         // Display a dialog for selecting the type of member.
-        MemberTypeSelectionDialog(
-            onMemberTypeSelected = {
-                selectedMemberType = it
-            },
+        ChooseMemberTypeDialog(
+            onMemberTypeSelected = { selectedMemberType = it },
+            showPreviousButton = showPreviousButton,
+            onPrevious = onPrevious,
             onDismiss = onDismissAndResetState
         )
     }
 
     // Second step: user needs to enter members details
     else if (newMember == null) {
+
         // Display a dialog for entering member details based on the selected type.
         AskUserForMemberDetailsDialog(
             headLine = headLine,
+//            expectedGender = relation!!.expectedGender(memberToRelateTo!!.getGender()),
             selectedMemberType = selectedMemberType,
             onFamilyMemberCreation = { member ->
                 newMember = member

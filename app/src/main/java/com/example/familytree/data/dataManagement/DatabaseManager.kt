@@ -1,7 +1,9 @@
 package com.example.familytree.data.dataManagement
 
+import android.util.Log
 import com.example.familytree.data.Connection
 import com.example.familytree.data.FamilyMember
+import com.example.familytree.data.FullConnection
 import com.example.familytree.data.MemberType
 import com.example.familytree.data.Relations
 import com.google.firebase.firestore.ktx.firestore
@@ -21,13 +23,13 @@ object DatabaseManager {
     // MemberMap instance
     private val memberMap = MemberMap
 
-    // List that holds the ids of the new added members and the updated members
-    private val modifiedAndNewAddedMembersIds = mutableListOf<String>()
-
-    // List that holds the ids of the members the user asked to remove
-    private val deletedMembersIds = mutableListOf<String>()
-
     // functions
+
+    fun test() {
+        firebase.collection("test").get()
+            .addOnSuccessListener { Log.d("Firestore", "Connected successfully!") }
+            .addOnFailureListener { e -> Log.e("Firestore", "Error: ", e) }
+    }
 
     /**
      * Saves the locally modified members and deletions to Firebase Firestore.
@@ -45,13 +47,13 @@ object DatabaseManager {
         val membersCollection = firebase.collection("memberMap")
 
         // Add or update modified members
-        for (memberId in modifiedAndNewAddedMembersIds) {
+        for (memberId in memberMap.getModifiedAndNewAddedMembersIds()) {
             val memberRef = membersCollection.document(memberId)
             memberMap.getMember(memberId)?.let { batch.set(memberRef, it.toMap()) }
         }
 
         // Remove deleted members
-        for (memberId in deletedMembersIds) {
+        for (memberId in memberMap.getDeletedMembersIds()) {
             val memberRef = membersCollection.document(memberId)
             batch.delete(memberRef)
         }
@@ -59,8 +61,7 @@ object DatabaseManager {
         // Commit the batch operation
         batch.commit().addOnSuccessListener {
             // Clear local tracking after successful save
-            modifiedAndNewAddedMembersIds.clear()
-            deletedMembersIds.clear()
+            memberMap.clearAllTrackedChanges()
             onComplete(true)
         }.addOnFailureListener {
             // Handle failure
@@ -151,17 +152,6 @@ object DatabaseManager {
     }
 
     /**
-    * Adds a member ID to the list of members that need to be updated, if not already present.
-    *
-    * @param memberId The ID of the member to add to the list of members that require an update.
-    */
-    fun addMemberIdToListOfNotYetUpdated(memberId: String) {
-        if (!modifiedAndNewAddedMembersIds.contains(memberId)) {
-            modifiedAndNewAddedMembersIds.add(memberId)
-        }
-    }
-
-    /**
      * Adds a new family member to the local MemberMap and tracks it in
      * modifiedAndNewAddedMembersIds list for future updates to Firebase.
      *
@@ -172,9 +162,6 @@ object DatabaseManager {
 
         // Add member to local memberMap
         memberMap.addMember(member)
-
-        // Add the id of the newly added member to the modifiedAndNewAddedMembersIds list
-        modifiedAndNewAddedMembersIds.add(member.getId())
 
         return true
     }
@@ -195,10 +182,6 @@ object DatabaseManager {
 
         // Add connection to local map
         memberMap.addConnectionToBothMembers(memberOne, memberTwo, relationFromMemberOnePerspective)
-
-        // Add both members ids to modifiedAndNewAddedMembersIds list
-        modifiedAndNewAddedMembersIds.add(memberOne.getId())
-        modifiedAndNewAddedMembersIds.add(memberTwo.getId())
 
         return true
     }
@@ -261,16 +244,34 @@ object DatabaseManager {
      * @param memberToBeRemovedId The ID of the member to remove from the local member map and update connections for.
      */
     fun deleteMemberFromLocalMemberMap(memberToBeRemovedId: String) {
-        val idsOfMembersThatNeedsToBeUpdated = memberMap.deleteMember(memberToBeRemovedId)
+        memberMap.deleteMember(memberToBeRemovedId)
+    }
 
-        // Add the deleted member to the deletedMembersIds list
-        if (!deletedMembersIds.contains(memberToBeRemovedId)) {
-            deletedMembersIds.add(memberToBeRemovedId)
-        }
+    /**
+     * Retrieves and removes the next suggested connection from the queue.
+     *
+     * @return The next `FullConnection` from the queue, or `null` if the queue is empty.
+     */
+    fun popNextSuggestedConnection(): FullConnection? {
+        return memberMap.popNextSuggestedConnection()
+    }
 
-        // Update the idsOfMembersThatNeedsToBeUpdated list with the members needed to be updated
-        for (id in idsOfMembersThatNeedsToBeUpdated) {
-            modifiedAndNewAddedMembersIds.add(id)
-        }
+    /**
+     * Retrieves without removing the next suggested connection from the queue.
+     *
+     * @return The next `FullConnection` from the queue, or `null` if the queue is empty.
+     */
+    fun getNextSuggestedConnection(): FullConnection? {
+        return memberMap.popNextSuggestedConnection()
+    }
+
+    /**
+     * Checks if the queue of suggested connections is empty.
+     *
+     * @return `false` if the queue is empty, `true` otherwise.
+     */
+    fun isQueueOfSuggestedConnectionsNotEmpty(): Boolean {
+        return memberMap.isQueueOfSuggestedConnectionsNotEmpty()
     }
 }
+

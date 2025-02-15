@@ -2,10 +2,13 @@ package com.example.familytree.data.dataManagement
 
 import com.example.familytree.data.Connection
 import com.example.familytree.data.FamilyMember
+import com.example.familytree.data.FullConnection
 import com.example.familytree.data.Relations
 import com.example.familytree.data.exceptions.InvalidGenderRoleException
 import com.example.familytree.data.exceptions.InvalidMoreThanOneConnection
 import com.example.familytree.data.exceptions.SameMarriageException
+import java.util.LinkedList
+import java.util.Queue
 
 /**
  * Object that manages a collection of FamilyMember instances locally.
@@ -16,6 +19,15 @@ object MemberMap {
     // Stores family members using their unique ID as the key.
     private val members = mutableMapOf<String, FamilyMember>()
 
+    // Set that holds the ids of the new added members and the updated members
+    private val modifiedAndNewAddedMembersIds = mutableSetOf<String>()
+
+    // Set that holds the ids of the members the user asked to remove
+    private val deletedMembersIds = mutableSetOf<String>()
+
+    // Set that holds suggested connection to offer the user to add to member map
+    private val QueueOfSuggestedConnections: Queue<FullConnection> = LinkedList()
+
     // Functions
 
     /**
@@ -23,8 +35,13 @@ object MemberMap {
      * same ID already exists, it will be overwritten.
      * @param member The FamilyMember object to be added or updated.
      */
-    fun addMember(member: FamilyMember) {
+    internal fun addMember(member: FamilyMember) {
+
+        // Add member to memberMap
         members[member.getId()] = member
+
+        // Add member's id to list of members who were modified
+        modifiedAndNewAddedMembersIds.add(member.getId())
     }
 
     /**
@@ -32,120 +49,91 @@ object MemberMap {
      * @param memberId The ID of the family member.
      * @return The FamilyMember object if found, otherwise null.
      */
-    fun getMember(memberId: String): FamilyMember? {
+    internal fun getMember(memberId: String): FamilyMember? {
         return members[memberId]
     }
 
     /**
-     * Deletes a family member from the map and removes them from all other members' connections.
+     * Deletes a member from the members map and updates related connections.
      *
-     * This method removes the specified member from the `members` map and ensures that any connections
-     * involving the deleted member are also removed from all other family members' connection lists.
-     * The IDs of members whose connections were modified (i.e., the ones that had a connection to the deleted member)
-     * are returned in a list.
+     * This function:
+     * 1. Removes the member from the `members` map.
+     * 2. Adds the member's ID to `deletedMembersIds`.
+     * 3. Iterates through all remaining members and removes any connections to the deleted member.
+     * 4. If a member's connections are updated, their ID is added to `modifiedAndNewAddedMembersIds`.
      *
-     * @param memberToBeRemovedId The ID of the member to remove from the map and the connections.
-     * @return A list of member IDs whose connections were updated. If no connections were modified,
-     *         this list will be empty. If the specified member does not exist in the map, the list will also be empty.
+     * @param memberToBeRemovedId The ID of the member to be deleted.
      */
-    fun deleteMember(memberToBeRemovedId: String): List<String> {
-        // Create a list to hold the IDs of members whose connections were updated
-        val updatedMembers = mutableListOf<String>()
+    internal fun deleteMember(memberToBeRemovedId: String) {
 
         // Remove the member from the map
         members.remove(memberToBeRemovedId)
 
+        // Add member's ID to the list of deleted members
+        deletedMembersIds.add(memberToBeRemovedId)
+
         // Iterate over all remaining members and remove the deleted member from their connections
         for (member in members.values) {
             // Check if the member has a connection to the deleted member
-            val connectionsToRemove = member.getConnections().filter { it.memberId == memberToBeRemovedId }
+            val connectionToRemove = member.getConnections().filter { it.memberId == memberToBeRemovedId }
 
-            if (connectionsToRemove.isNotEmpty()) {
+            if (connectionToRemove.isNotEmpty()) {
                 // Remove the connections
                 member.getConnections().removeAll { it.memberId == memberToBeRemovedId }
 
-                // Add this member's ID to the list of updated members
-                updatedMembers.add(member.getId())
+                // Add this member's ID to the list of modifiedAndNewAddedMembersIds
+                modifiedAndNewAddedMembersIds.add(member.getId())
             }
         }
-
-        // Return the list of member IDs whose connections were updated
-        return updatedMembers
     }
 
     /**
      * Retrieves a list of all stored family members.
      * @return A list of all FamilyMember objects.
      */
-    fun getAllMembers(): List<FamilyMember> {
+    internal fun getAllMembers(): List<FamilyMember> {
         return members.values.toList()
     }
 
     /**
-     * Adds a connection to a family member's connections list.
-     *
-     * @param memberId The ID of the family member to whom the connection will be added.
-     * @param connectionToBeAdded The connection to add to the family member's connections list.
-     */
-    private fun addConnectionToSingleMember(memberId: String, connectionToBeAdded: Connection) {
-        members[memberId]?.addConnection(connectionToBeAdded)
-    }
-
-    /**
-     * Adds a connection between two family members based on the relationship type.
+     * Adds a connection between two family members, ensuring the relationship
+     * is bidirectional where applicable. After adding the connection to
+     * both members, their id's are added to modifiedAndNewAddedMembersIds list
      *
      * @param memberOne The first family member.
      * @param memberTwo The second family member.
-     * @param relationFromMemberOnePerspective The relationship type from memberOne's perspective.
-     * @return A Boolean value indicating whether the operation was successful.
+     * @param relationFromMemberOnePerspective The relationship from the perspective of memberOne.
      */
-    fun addConnectionToBothMembers(
+    internal fun addConnectionToBothMembers(
         memberOne: FamilyMember,
         memberTwo: FamilyMember,
         relationFromMemberOnePerspective: Relations,
-    ): Boolean {
+    ) {
 
         when (relationFromMemberOnePerspective) {
 
-            Relations.MARRIAGE -> {
+            Relations.MARRIAGE ->
+                addMarriageConnection(memberOne, memberTwo)
 
-                addMutualConnection(memberOne, memberTwo, Relations.MARRIAGE)
-
-                // If one of the members is a rabbi, his wife should be updated as a rabbi wife
-                if (memberOne.getIsRabbi()) {
-                    memberTwo.setIsRabbi(true)
-                }
-                if (memberTwo.getIsRabbi()) {
-                    memberOne.setIsRabbi(true)
-                }
-            }
-
-            Relations.SIBLINGS -> {
-
-                addMutualConnection(memberOne, memberTwo, relationFromMemberOnePerspective)
-
-                // Add mutual connections from one sibling to another
-                addConnectionsFromOneSiblingToAnother(memberOne, memberTwo)
-                addConnectionsFromOneSiblingToAnother(memberTwo, memberOne)
-            }
+            Relations.SIBLINGS ->
+                addSiblingsConnection(memberOne, memberTwo)
 
             Relations.COUSINS ->
-                addMutualConnection(memberOne, memberTwo, relationFromMemberOnePerspective)
+                addCousinsConnection(memberOne, memberTwo)
 
             Relations.FATHER, Relations.MOTHER ->
-                addChildParentConnection(memberOne, memberTwo)
+                addParentConnection(memberOne, memberTwo, relationFromMemberOnePerspective)
 
             Relations.SON, Relations.DAUGHTER ->
-                addChildParentConnection(memberTwo, memberOne)
+                addChildConnection(memberOne, memberTwo)
 
             Relations.GRANDMOTHER, Relations.GRANDFATHER ->
-                addGrandchildGrandparentConnection(memberOne, memberTwo)
+                addGrandparentConnection(memberOne, memberTwo, relationFromMemberOnePerspective)
 
-            Relations.GRANDSON, Relations.GRANDDAUGHTER ->
-                addGrandchildGrandparentConnection(memberTwo, memberOne)
+            Relations.GRANDSON, Relations.GRANDDAUGHTER -> {
+                addGrandchildConnection(memberOne, memberTwo)
+            }
         }
-
-        return true
     }
 
     /**
@@ -159,7 +147,7 @@ object MemberMap {
      * @param relationFromMemberOnePerspective The relationship type as seen from member one's perspective.
      * @return True if the connection is valid; if the connection fails validation, exceptions are thrown.
      */
-    fun validateConnection(
+    internal fun validateConnection(
         memberOne: FamilyMember,
         memberTwo: FamilyMember,
         relationFromMemberOnePerspective: Relations,
@@ -192,7 +180,7 @@ object MemberMap {
      * @param searchTerm The string representing either a full name or a substring of a name to search for.
      * @return A list of FamilyMember objects whose names match or contain the search term.
      */
-    fun searchForMember(searchTerm: String): List<FamilyMember> {
+    internal fun searchForMember(searchTerm: String): List<FamilyMember> {
         val normalizedSearchTerm = searchTerm.lowercase()
         return members.values.filter {
             it.getFullName().lowercase().contains(normalizedSearchTerm)
@@ -200,9 +188,64 @@ object MemberMap {
     }
 
     /**
+     * Retrieves the set of IDs of newly added or modified members.
+     *
+     * @return A set of strings representing the member IDs.
+     */
+    internal fun getModifiedAndNewAddedMembersIds(): Set<String> {
+        return modifiedAndNewAddedMembersIds
+    }
+
+    /**
+     * Retrieves the set of IDs of members that the user has requested to remove.
+     *
+     * @return A set of strings representing the deleted member IDs.
+     */
+    internal fun getDeletedMembersIds(): Set<String> {
+        return deletedMembersIds
+    }
+
+    /**
+     * Clears the lists of newly added, modified, and deleted member IDs.
+     * This function should be called after the Firebase database is successfully updated,
+     * as there is no longer a need to keep track of these changes.
+     */
+    internal fun clearAllTrackedChanges() {
+        modifiedAndNewAddedMembersIds.clear()
+        deletedMembersIds.clear()
+    }
+
+    /**
+     * Retrieves and removes the next suggested connection from the queue.
+     *
+     * @return The next `FullConnection` from the queue, or `null` if the queue is empty.
+     */
+    internal fun popNextSuggestedConnection(): FullConnection? {
+        return QueueOfSuggestedConnections.poll()
+    }
+
+    /**
+     * Retrieves without removing the next suggested connection from the queue.
+     *
+     * @return The next `FullConnection` from the queue, or `null` if the queue is empty.
+     */
+    internal fun getNextSuggestedConnection(): FullConnection? {
+        return QueueOfSuggestedConnections.peek()
+    }
+
+    /**
+     * Checks if the queue of suggested connections is empty.
+     *
+     * @return `false` if the queue is empty, `true` otherwise.
+     */
+    internal fun isQueueOfSuggestedConnectionsNotEmpty(): Boolean {
+        return QueueOfSuggestedConnections.isNotEmpty()
+    }
+
+    /**
      * Clears all family members from the local storage.
      */
-    fun clearMemberMap() {
+    internal fun clearMemberMap() {
         members.clear()
     }
 
@@ -353,10 +396,21 @@ object MemberMap {
         validateGenderRole(grandchild, grandchildRelation)
     }
 
-    // Private functions for adding member
+    // Private functions for adding connection
 
     /**
-     * Adds a mutual connection between two family members to their respective connection lists.
+     * Adds a connection to a family member's connections list,
+     *
+     * @param memberId The ID of the family member to whom the connection will be added.
+     * @param connectionToBeAdded The connection to add to the family member's connections list.
+     */
+    private fun addConnectionToSingleMember(memberId: String, connectionToBeAdded: Connection) {
+        members[memberId]?.addConnection(connectionToBeAdded)
+    }
+
+    /**
+     * Adds a mutual connection between two members to their respective connection lists,
+     * and updates the modifiedAndNewAddedMembersIds list.
      * This function is specifically used for relationships such as **Marriage**, **Cousins**, and **Siblings**.
      *
      * @param memberOne The first family member.
@@ -374,10 +428,15 @@ object MemberMap {
 
         // Add mutual connection to member two
         addConnectionToSingleMember(memberTwo.getId(), Connection(memberOne.getId(), relation))
+
+        // Add both members id's to list of members who were modified
+        modifiedAndNewAddedMembersIds.add(memberOne.getId())
+        modifiedAndNewAddedMembersIds.add(memberTwo.getId())
     }
 
     /**
-     * Adds a child-parent connection between two family members.
+     * Adds a child-parent connection between two members,
+     * and updates the modifiedAndNewAddedMembersIds list.
      *
      * @param child The child family member.
      * @param parent The parent family member.
@@ -402,10 +461,15 @@ object MemberMap {
 
         // Add child connection to parent
         addConnectionToSingleMember(parent.getId(), Connection(child.getId(), childConnection))
+
+        // Add both members id's to list of members who were modified
+        modifiedAndNewAddedMembersIds.add(child.getId())
+        modifiedAndNewAddedMembersIds.add(parent.getId())
     }
 
     /**
-     * Adds a grandchild-grandparent connection between two family members.
+     * Adds a grandchild-grandparent connection between two members,
+     * and updates the modifiedAndNewAddedMembersIds list.
      *
      * @param grandchild The grandchild family member.
      * @param grandparent The grandparent family member.
@@ -430,59 +494,292 @@ object MemberMap {
 
         // Add grandchild connection to parent
         addConnectionToSingleMember(grandparent.getId(), Connection(grandchild.getId(), childConnection))
+
+        // Add both members id's to list of members who were modified
+        modifiedAndNewAddedMembersIds.add(grandchild.getId())
+        modifiedAndNewAddedMembersIds.add(grandparent.getId())
+    }
+
+    /**
+     * Establishes a marriage connection between two family members.
+     * If one member is a rabbi, the spouse is marked accordingly.
+     *
+     * @param memberOne The first spouse.
+     * @param memberTwo The second spouse.
+     */
+    private fun addMarriageConnection(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember
+    ) {
+        addMutualConnection(memberOne, memberTwo, Relations.MARRIAGE)
+
+        // If one of the members is a rabbi, his wife should be updated as a rabbi wife
+        if (memberOne.getIsRabbi()) {
+            memberTwo.setIsRabbi(true)
+        }
+        if (memberTwo.getIsRabbi()) {
+            memberOne.setIsRabbi(true)
+        }
+
+        // Add to QueueOfSuggestedConnections optional connections
+        addSuggestedConnectionsForMarriageFromOneToTwo(memberOne, memberTwo)
+    }
+
+    /**
+     * Establishes a sibling connection between two family members and ensures
+     * their existing mutual connections are updated accordingly.
+     *
+     * @param memberOne The first sibling.
+     * @param memberTwo The second sibling.
+     */
+    private fun addSiblingsConnection(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember
+    ) {
+        // Add the members themself to each others connection
+        addMutualConnection(memberOne, memberTwo, Relations.SIBLINGS)
+
+        // Add their mutual connections to each other
+        addConnectionsFromOneSiblingToAnother(memberOne, memberTwo)
+        addConnectionsFromOneSiblingToAnother(memberTwo, memberOne)
+    }
+
+    /**
+     * Establishes a cousin connection between two family members and ensures
+     * their siblings are also connected as cousins.
+     *
+     * @param memberOne The first cousin.
+     * @param memberTwo The second cousin.
+     */
+    private fun addCousinsConnection(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember
+    ) {
+        // Add the members themself to each others connection
+        addMutualConnection(memberOne, memberTwo, Relations.COUSINS)
+
+
+        // Look for siblings in both members and add to their connection the cousin
+        addRelationToMembersSibling(memberOne, memberTwo, Relations.COUSINS)
+        addRelationToMembersSibling(memberTwo, memberOne, Relations.COUSINS)
+    }
+
+    /**
+     * Adds a parent-child connection between two family members.
+     * Ensures the relationship is established in both directions.
+     * If the parent has a parent, they will be added as a grandparent to the child.
+     * If the child has a child, they will be added as a grandchild to the parent.
+     *
+     * @param memberOne The parent family member.
+     * @param memberTwo The child family member.
+     * @param relationFromMemberOnePerspective The relationship from the perspective of memberOne.
+     */
+    private fun addParentConnection(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember,
+        relationFromMemberOnePerspective: Relations,
+    ) {
+        // Add the members themself to each others connection
+        addChildParentConnection(memberOne, memberTwo)
+
+        // Add (if found) grandparents connections to child
+        addConnectionsFromParentToChild(memberOne, memberTwo)
+
+        // Add (if found) grandchildren connections to parent
+        addConnectionsFromChildToParent(memberOne, memberTwo)
+
+        // Look for siblings in child connections and add to their connection the parent
+        addRelationToMembersSibling(memberOne, memberTwo, relationFromMemberOnePerspective)
+    }
+
+    /**
+     * Adds a child-parent connection between two family members.
+     * Ensures the relationship is established in both directions.
+     * If the parent has a parent, they will be added as a grandparent to the child.
+     * If the child has a child, they will be added as a grandchild to the parent.
+     *
+     * @param memberOne The child family member.
+     * @param memberTwo The parent family member.
+     */
+    private fun addChildConnection(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember,
+    ) {
+        // Add the members themself to each others connection
+        addChildParentConnection(memberTwo, memberOne)
+
+        // Add (if found) grandparents connections to child
+        addConnectionsFromParentToChild(memberTwo, memberOne)
+
+        // Add (if found) grandchildren connections to parent
+        addConnectionsFromChildToParent(memberTwo, memberOne)
+
+        // Determine if parent is a FATHER or a MOTHER
+        val parent = if (memberOne.getGender()) {Relations.FATHER} else (Relations.MOTHER)
+
+        // Look for siblings in child connections and add to their connection the parent
+        addRelationToMembersSibling(memberTwo, memberOne, parent)
+    }
+
+    /**
+     * Establishes a grandparent-grandchild relationship and updates sibling connections.
+     *
+     * @param memberOne The grandparent.
+     * @param memberTwo The grandchild.
+     * @param relationFromMemberOnePerspective Either GRANDFATHER or GRANDMOTHER.
+     */
+    private fun addGrandparentConnection(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember,
+        relationFromMemberOnePerspective: Relations,
+    ) {
+        // Add the members themself to each others connection
+        addGrandchildGrandparentConnection(memberOne, memberTwo)
+
+        // Look for siblings in grandchild connections and add to their connection the grandparent
+        addRelationToMembersSibling(memberOne, memberTwo, relationFromMemberOnePerspective)
+    }
+
+    /**
+     * Establishes a grandchild-grandparent relationship and updates sibling connections.
+     *
+     * @param memberOne The grandchild.
+     * @param memberTwo The grandparent.
+     */
+    private fun addGrandchildConnection(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember,
+    ) {
+        // Add the members themself to each others connection
+        addGrandchildGrandparentConnection(memberTwo, memberOne)
+
+        // Determine if grandparent is a GRANDFATHER or a GRANDMOTHER
+        val grandparent =
+            if (memberOne.getGender()) {Relations.GRANDFATHER} else (Relations.GRANDMOTHER)
+
+        // Look for siblings in grandchild connections and add to their connection the grandparent
+        addRelationToMembersSibling(memberTwo, memberOne, grandparent)
     }
 
     // Private functions for finding possible connections
 
-    private fun findPossibleConnectionsForMarriageConnection(
+    /**
+     * Adds suggested connections between two family members who are married.
+     *
+     * @param memberOne The first spouse in the marriage.
+     * @param memberTwo The second spouse in the marriage.
+     */
+    private fun addSuggestedConnectionsForMarriageFromOneToTwo(
         memberOne: FamilyMember,
-        memberTwo: FamilyMember,
-    ): List<Connection> {
+        memberTwo: FamilyMember
+    ) {
+        // Add suggested children connections
+        addSuggestedChildrenConnectionsForMarriageFromOneToTwo(memberOne, memberTwo)
+        addSuggestedChildrenConnectionsForMarriageFromOneToTwo(memberTwo, memberOne)
 
-        val possibleConnectionsTwo = mutableListOf<Connection>()
+        // Add suggested grandchildren connections
+        addSuggestedGrandchildrenConnectionsForMarriageFromOneToTwo(memberOne, memberTwo)
+        addSuggestedGrandchildrenConnectionsForMarriageFromOneToTwo(memberTwo, memberOne)
+    }
 
+    /**
+     * Suggests parent-child connections when a marriage relationship is established.
+     *
+     * This function checks if `memberOne` has any children and, if so, suggests adding
+     * corresponding parental connections to `memberTwo` (the spouse). The function ensures
+     * that `memberTwo` does not already have the same child connection before adding it.
+     *
+     * @param memberOne The first member in the marriage relationship.
+     * @param memberTwo The second member in the marriage relationship.
+     */
+    private fun addSuggestedChildrenConnectionsForMarriageFromOneToTwo(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember
+    ) {
         for (connection in memberOne.getConnections()) {
 
-            // If memberOne and memberTwo are married, they might have mutual children
+            // Check for possible children connections
             if (connection.relationship == Relations.SON ||
                 connection.relationship == Relations.DAUGHTER) {
 
-                // Check if memberTwo already has this connection
-                if (!memberTwo.getConnections().contains(connection)) {
-                    possibleConnectionsTwo.add(connection)
-                }
-            }
+                // Make sure memberTwo doesn't have this connection already
+                if (connection.memberId !in memberTwo.getConnections().map { it.memberId }) {
 
-            // If memberOne and memberTwo are married, they might have mutual grandchildren
-            if (connection.relationship == Relations.GRANDSON ||
-                connection.relationship == Relations.GRANDDAUGHTER) {
+                    // Get child FamilyMember object
+                    val child = members[connection.memberId]
 
-                // Check if memberTwo already has this connection
-                if (!memberTwo.getConnections().contains(connection)) {
-                    possibleConnectionsTwo.add(connection)
+                    // Determine if parent is a FATHER or a MOTHER
+                    val parentRelation =
+                        if(memberTwo.getGender()) {Relations.FATHER} else {Relations.MOTHER}
+
+                    // Create the full connection to add to queue
+                    val fullConnection = FullConnection(memberTwo, child!!, parentRelation)
+
+                    // Add the full connection to queue
+                    QueueOfSuggestedConnections.add(fullConnection)
                 }
             }
         }
-
-        return possibleConnectionsTwo
     }
+
+    /**
+     * Suggests grandparent-grandchild connections when a marriage relationship is established.
+     *
+     * This function checks if `memberOne` has any grandchildren and, if so, suggests adding
+     * corresponding grandparent connections to `memberTwo` (the spouse). The function ensures
+     * that `memberTwo` does not already have the same grandchild connection before adding it.
+     *
+     * @param memberOne The first member in the marriage relationship.
+     * @param memberTwo The second member in the marriage relationship.
+     */
+    private fun addSuggestedGrandchildrenConnectionsForMarriageFromOneToTwo(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember
+    ) {
+        for (connection in memberOne.getConnections()) {
+
+            // Check for possible grandchildren connections
+            if (connection.relationship == Relations.GRANDSON ||
+                connection.relationship == Relations.GRANDDAUGHTER) {
+
+                // Make sure memberTwo doesn't have this connection already
+                if (connection.memberId !in memberTwo.getConnections().map { it.memberId }) {
+
+                    // Get grandchild FamilyMember object
+                    val grandchild = members[connection.memberId]
+
+                    // Determine if parent is a GRANDFATHER or a GRANDMOTHER
+                    val grandparentRelation =
+                        if(memberTwo.getGender()) {Relations.GRANDFATHER} else {Relations.GRANDMOTHER}
+
+                    // Create the full connection to add to queue
+                    val fullConnection = FullConnection(memberTwo, grandchild!!, grandparentRelation)
+
+                    // Add the full connection to queue
+                    QueueOfSuggestedConnections.add(fullConnection)
+                }
+            }
+        }
+    }
+
 
     // Private functions for adding connections based on the connection the user added
 
     /**
-     * Adds connections from one sibling to another, ensuring mutual relationships are established.
+     * Adds mutual connections from one sibling to another based on existing relationships.
      *
-     * This function iterates through all connections of `memberOne` and adds them to `memberTwo`,
-     * except for non-mutual relationships like marriage, parent-child, and grandparent-grandchild.
-     * It ensures that duplicate connections are not added.
+     * This function iterates through the connections of `memberOne` and adds applicable
+     * relationships to `memberTwo`, ensuring that certain non-mutual relationships
+     * (e.g., marriage, son, daughter, grandson, granddaughter) are excluded.
      *
-     * @param memberOne The source family member whose connections are to be shared.
-     * @param memberTwo The target family member who will receive the shared connections.
+     * @param memberOne The first sibling whose connections will be copied.
+     * @param memberTwo The second sibling who will receive applicable connections.
      */
     private fun addConnectionsFromOneSiblingToAnother(
         memberOne: FamilyMember,
         memberTwo: FamilyMember
     ) {
+
         for (connection in memberOne.getConnections()) {
 
             // These relations are not mutual for siblings
@@ -507,14 +804,145 @@ object MemberMap {
 
             // Add the connection to memberTwo
             if (!alreadyConnected) {
-                val connectionToBeAdded = Connection(connection.memberId, connection.relationship)
-                memberTwo.addConnection(connectionToBeAdded)
+
+                addConnectionToBothMembers(
+                    memberTwo,
+                    members[connection.memberId]!!,
+                    connection.relationship
+                )
+
+                // Add the member that was connected to modified member id list
+                modifiedAndNewAddedMembersIds.add(connection.memberId)
             }
         }
     }
 
+    /**
+     * Adds parent connections of the parent as grandparents connections to the child.
+     *
+     * @param child The child who will receive grandparent connections.
+     * @param parent The parent whose parents will be added as the child's grandparents.
+     */
+    private fun addConnectionsFromParentToChild(
+        child: FamilyMember,
+        parent: FamilyMember
+    ) {
+        for (connection in parent.getConnections()) {
+            // Only consider parents of the parent
+            if (connection.relationship != Relations.FATHER &&
+                connection.relationship != Relations.MOTHER
+            ) {
+                continue
+            }
+
+            // Check if the child already has this grandparent connection
+            val alreadyConnected = child.getConnections().any {
+                it.memberId == connection.memberId &&
+                        (it.relationship == Relations.GRANDFATHER ||
+                        it.relationship == Relations.GRANDMOTHER)
+            }
+
+            // Add the grandparent connection if it doesn't already exist
+            if (!alreadyConnected) {
+
+                // Determine if it's a GRANDFATHER or a GRANDMOTHER
+                val grandparentRelation =
+                    if (connection.relationship == Relations.FATHER) Relations.GRANDFATHER
+                    else Relations.GRANDMOTHER
 
 
+                addConnectionToBothMembers(
+                    child,
+                    members[connection.memberId]!!,
+                    grandparentRelation
+                )
 
+                // Add the member that was connected to modified member id list
+                modifiedAndNewAddedMembersIds.add(connection.memberId)
+            }
+        }
+    }
 
+    /**
+     * Adds child connections of the child as grandchildren connections to the parent.
+     *
+     * @param child The child whose children will be added as the parent's grandchildren.
+     * @param parent The parent who will receive grandchild connections.
+     */
+    private fun addConnectionsFromChildToParent(
+        child: FamilyMember,
+        parent: FamilyMember
+    ) {
+        for (connection in child.getConnections()) {
+
+            // Only consider children of the child
+            if (connection.relationship != Relations.SON &&
+                connection.relationship != Relations.DAUGHTER
+            ) {
+                continue
+            }
+
+            // Check if the parent already has this grandchild connection
+            val alreadyConnected = parent.getConnections().any {
+                it.memberId == connection.memberId &&
+                        (it.relationship == Relations.GRANDSON ||
+                                it.relationship == Relations.GRANDDAUGHTER)
+            }
+
+            // Add the grandchild connection if it doesn't already exist
+            if (!alreadyConnected) {
+
+                // Determine if it's a GRANDSON or a GRANDDAUGHTER
+                val grandchildRelation =
+                    if (connection.relationship == Relations.SON) Relations.GRANDSON
+                    else Relations.GRANDDAUGHTER
+
+                addConnectionToBothMembers(
+                    parent,
+                    members[connection.memberId]!!,
+                    grandchildRelation
+                )
+
+                // Add the member that was connected to modified member id list
+                modifiedAndNewAddedMembersIds.add(connection.memberId)
+            }
+        }
+    }
+
+    /**
+     * Adds a specified relationship between a member and all of their siblings.
+     *
+     * This function iterates through `memberOne`'s connections to find siblings.
+     * If `memberTwo` is not already connected to a sibling, it establishes the relationship
+     * between them and marks the sibling as modified.
+     *
+     * @param memberOne The first family member whose siblings will be considered.
+     * @param memberTwo The second family member who will be connected to the siblings.
+     * @param relation The type of relationship to establish between memberTwo and the siblings.
+     */
+    private fun addRelationToMembersSibling(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember,
+        relation: Relations
+    ) {
+
+        for (connection in memberOne.getConnections()) {
+            if (connection.relationship == Relations.SIBLINGS) {
+                val sibling = members[connection.memberId]!!
+
+                // Check if memberTwo is already connected to this sibling
+                if (sibling.getConnections().any { it.memberId == memberTwo.getId() && it.relationship == relation }) {
+                    continue // Skip if the relation already exists
+                }
+
+                // Connect the sibling with memberTwo if not already connected, and add to modifiedAndNewAddedMembersIds
+                addConnectionToBothMembers(sibling, memberTwo, relation)
+                modifiedAndNewAddedMembersIds.add(connection.memberId)
+            }
+        }
+    }
 }
+
+
+
+

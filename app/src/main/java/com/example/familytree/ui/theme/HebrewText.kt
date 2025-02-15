@@ -52,12 +52,16 @@ object HebrewText {
     const val FEMALE = "נקבה"
     const val MACHZOR = "מחזור"
 
+    // Question words
+    const val HOW = "כיצד"
+    const val DOES = "האם"
+
+
 
     const val THE = "ה"
     const val IS_THIS_RABBI_A_YESHIVA_RABBI = "האם הרב הזה הוא רב בישיבה?"
     const val ENTER_DETAILS_FOR = "מלא פרטים על"
     const val RELATED_TO_THE_OTHER_MEMBER = "קשור לבן המשפחה הנוסף?"
-    const val HOW = "כיצד"
     const val OF = "של"
     const val THE_OTHER_MEMBER_IS = "בן / בת המשפחה הנוסף הוא / היא"
     const val FAMILY_TREE = "עץ משפחה"

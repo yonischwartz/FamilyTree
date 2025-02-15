@@ -31,31 +31,32 @@ android {
 }
 
 dependencies {
+    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
 
+    // Firebase
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation(libs.firebaseFirestore)
+
+    // Jetpack Compose
     implementation(libs.composeUi)
     implementation(libs.composeMaterial)
-    implementation(libs.firebaseFirestore)
-    implementation(libs.gson)
+    implementation(libs.material3)
     implementation(libs.uiToolingPreviewAndroid)
+    implementation("androidx.activity:activity-compose:1.10.0")
+    implementation("androidx.compose.ui:ui:1.7.8")
+    implementation("androidx.compose.material3:material3:1.3.1")
+    implementation("androidx.compose.material:material-icons-core:1.7.8")
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+
+    // Other dependencies
+    implementation(libs.gson)
     implementation(libs.jewishDate)
     implementation(libs.kotlinxCoroutines)
-    implementation(libs.material3)
-    implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("androidx.activity:activity-compose:1.10.0")
-    implementation("androidx.compose.ui:ui:1.7.6")
-    implementation("androidx.compose.material3:material3:1.3.1")
-    implementation("androidx.compose.material3:material3:1.3.1")
-    implementation ("androidx.compose.ui:ui:1.7.6")
-    implementation("androidx.compose.material:material-icons-core:1.7.6")
-    implementation("androidx.compose.material:material-icons-extended:1.7.6")
-    implementation("androidx.compose.material3:material3:1.3.1")
-    implementation(libs.coreKtx)
-    implementation(libs.coreKtx)
+    implementation("net.sourceforge.jexcelapi:jxl:2.6.12")
+    implementation(libs.coreKtx)  // Removed duplicate
 
     // Test dependencies
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidxJunit)
     androidTestImplementation(libs.espressoCore)
 }
-

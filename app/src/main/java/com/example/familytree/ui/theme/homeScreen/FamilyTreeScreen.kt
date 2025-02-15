@@ -22,6 +22,7 @@ import com.example.familytree.ui.theme.homeScreen.functionForButtons.AddFamilyMe
 import android.content.Context
 import com.example.familytree.data.dataManagement.DatabaseManager.loadMembersFromFirebaseIntoLocalMap
 import com.example.familytree.data.dataManagement.DatabaseManager.saveLocalMapToFirebase
+import com.example.familytree.data.dataManagement.DatabaseManager.test
 import com.example.familytree.ui.theme.homeScreen.functionForButtons.ConnectTwoMembers
 import com.example.familytree.ui.theme.WideBlueButton
 
@@ -74,7 +75,6 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Search bar for finding family members
                     SearchBar(
@@ -116,12 +116,8 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                             HebrewText.ADD_CONNECTION_BETWEEN_TWO_EXISTING_MEMBERS
                         )
 
-                        Spacer(modifier = Modifier.height(16.dp))
-
                         // Display the logo
                         YbmLogo()
-
-                        Spacer(modifier = Modifier.height(16.dp))
 
                         // Button to show all family members
                         WideBlueButton(
@@ -174,7 +170,6 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                             },
                             text = HebrewText.SAVE_AND_UPDATE_MEMBERS_TO_FIREBASE
                         )
-
                     }
 
                     // Dialog for adding a new family member
