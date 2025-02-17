@@ -116,11 +116,16 @@ fun ConnectTwoMembers(
 
     // Fifth step: offer user to add suggested connections
     else {
-        while (DatabaseManager.isQueueOfSuggestedConnectionsNotEmpty()) {
-            val suggestedConnection: FullConnection? =
-                DatabaseManager.popNextSuggestedConnection()
 
-            SuggestConnectionDialog(suggestedConnection!!) {}
+        var suggestedConnection by remember { mutableStateOf(DatabaseManager.popNextSuggestedConnection()) }
+
+        if (suggestedConnection != null) {
+            SuggestConnectionDialog(
+                suggestedConnection = suggestedConnection!!,
+                onDismiss = {
+                    suggestedConnection = DatabaseManager.popNextSuggestedConnection()
+                }
+            )
         }
         onDismissAndResetState()
     }

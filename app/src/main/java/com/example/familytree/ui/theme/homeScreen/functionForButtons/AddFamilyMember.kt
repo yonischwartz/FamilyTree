@@ -6,7 +6,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import com.example.familytree.data.FamilyMember
-import com.example.familytree.data.FullConnection
 import com.example.familytree.data.MemberType
 import com.example.familytree.data.Relations
 import com.example.familytree.data.Relations.*
@@ -348,11 +347,9 @@ private fun AskUserToCreateNewFamilyMember(
         // Display a dialog for entering member details based on the selected type.
         AskUserForMemberDetailsDialog(
             headLine = headLine,
-//            expectedGender = relation!!.expectedGender(memberToRelateTo!!.getGender()),
+            expectedGender = relation!!.expectedGender(memberToRelateTo!!.getGender()),
             selectedMemberType = selectedMemberType,
-            onFamilyMemberCreation = { member ->
-                newMember = member
-            },
+            onFamilyMemberCreation = { member -> newMember = member },
             onDismiss = onDismissAndResetState
         )
 

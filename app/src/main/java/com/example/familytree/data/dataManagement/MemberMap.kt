@@ -130,9 +130,8 @@ object MemberMap {
             Relations.GRANDMOTHER, Relations.GRANDFATHER ->
                 addGrandparentConnection(memberOne, memberTwo, relationFromMemberOnePerspective)
 
-            Relations.GRANDSON, Relations.GRANDDAUGHTER -> {
+            Relations.GRANDSON, Relations.GRANDDAUGHTER ->
                 addGrandchildConnection(memberOne, memberTwo)
-            }
         }
     }
 
@@ -713,7 +712,7 @@ object MemberMap {
                         if(memberTwo.getGender()) {Relations.FATHER} else {Relations.MOTHER}
 
                     // Create the full connection to add to queue
-                    val fullConnection = FullConnection(memberTwo, child!!, parentRelation)
+                    val fullConnection = FullConnection(child!!, memberTwo, parentRelation)
 
                     // Add the full connection to queue
                     QueueOfSuggestedConnections.add(fullConnection)
@@ -753,7 +752,7 @@ object MemberMap {
                         if(memberTwo.getGender()) {Relations.GRANDFATHER} else {Relations.GRANDMOTHER}
 
                     // Create the full connection to add to queue
-                    val fullConnection = FullConnection(memberTwo, grandchild!!, grandparentRelation)
+                    val fullConnection = FullConnection(grandchild!!, memberTwo, grandparentRelation)
 
                     // Add the full connection to queue
                     QueueOfSuggestedConnections.add(fullConnection)
@@ -761,7 +760,6 @@ object MemberMap {
             }
         }
     }
-
 
     // Private functions for adding connections based on the connection the user added
 
