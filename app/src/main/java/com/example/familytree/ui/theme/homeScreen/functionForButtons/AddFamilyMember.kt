@@ -15,7 +15,7 @@ import com.example.familytree.data.dataManagement.DatabaseManager.addNewMemberTo
 import com.example.familytree.data.dataManagement.DatabaseManager.validateConnection
 import com.example.familytree.data.exceptions.InvalidGenderRoleException
 import com.example.familytree.data.exceptions.InvalidMoreThanOneConnection
-import com.example.familytree.data.exceptions.SameMarriageException
+import com.example.familytree.data.exceptions.SameSexMarriageException
 import com.example.familytree.ui.theme.HebrewText
 import com.example.familytree.ui.theme.dialogs.AskUserForMemberDetailsDialog
 import com.example.familytree.ui.theme.dialogs.ChooseMemberToRelateToDialog
@@ -195,7 +195,7 @@ private fun AddNewMemberAndRelateToExistingMember(
         catch (e: InvalidMoreThanOneConnection) {
             showMoreThanOneMemberErrorDialog = true
         }
-        catch (e: SameMarriageException) {
+        catch (e: SameSexMarriageException) {
             showSameMemberMarriageErrorDialog = true
         }
         catch (e: Exception) {
@@ -253,20 +253,7 @@ private fun AddNewMemberAndRelateToExistingMember(
 
     // Seventh step: offer user to add suggested connections
     else {
-
-        var suggestedConnection by remember { mutableStateOf(DatabaseManager.popNextSuggestedConnection()) }
-
-        if (suggestedConnection != null) {
-            SuggestConnectionDialog(
-                suggestedConnection = suggestedConnection!!,
-                onDismiss = {
-                    suggestedConnection = DatabaseManager.popNextSuggestedConnection()
-                }
-            )
-        }
-        else {
-            onDismissAndResetState()
-        }
+        SuggestConnections(onDismissAndResetState)
     }
 }
 

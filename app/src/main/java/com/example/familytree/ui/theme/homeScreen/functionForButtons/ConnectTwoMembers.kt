@@ -116,18 +116,7 @@ fun ConnectTwoMembers(
 
     // Fifth step: offer user to add suggested connections
     else {
-
-        var suggestedConnection by remember { mutableStateOf(DatabaseManager.popNextSuggestedConnection()) }
-
-        if (suggestedConnection != null) {
-            SuggestConnectionDialog(
-                suggestedConnection = suggestedConnection!!,
-                onDismiss = {
-                    suggestedConnection = DatabaseManager.popNextSuggestedConnection()
-                }
-            )
-        }
-        onDismissAndResetState()
+        SuggestConnections(onDismissAndResetState)
     }
 }
 

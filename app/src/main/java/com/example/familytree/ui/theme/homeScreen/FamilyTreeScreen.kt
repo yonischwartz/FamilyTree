@@ -20,9 +20,9 @@ import com.example.familytree.ui.theme.HebrewText
 import com.example.familytree.ui.theme.dialogs.MemberListDialog
 import com.example.familytree.ui.theme.homeScreen.functionForButtons.AddFamilyMember
 import android.content.Context
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.familytree.data.dataManagement.DatabaseManager.loadMembersFromFirebaseIntoLocalMap
 import com.example.familytree.data.dataManagement.DatabaseManager.saveLocalMapToFirebase
-import com.example.familytree.data.dataManagement.DatabaseManager.test
 import com.example.familytree.ui.theme.homeScreen.functionForButtons.ConnectTwoMembers
 import com.example.familytree.ui.theme.WideBlueButton
 
@@ -35,6 +35,7 @@ import com.example.familytree.ui.theme.WideBlueButton
  */
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
+@Preview
 fun FamilyTreeScreen(modifier: Modifier = Modifier) {
 
     // State variables for UI components

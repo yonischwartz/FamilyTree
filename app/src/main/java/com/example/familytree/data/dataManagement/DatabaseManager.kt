@@ -25,10 +25,13 @@ object DatabaseManager {
 
     // functions
 
-    fun test() {
-        firebase.collection("test").get()
-            .addOnSuccessListener { Log.d("Firestore", "Connected successfully!") }
-            .addOnFailureListener { e -> Log.e("Firestore", "Error: ", e) }
+    /**
+     * Retrieves a family member by their unique ID.
+     * @param memberId The ID of the family member.
+     * @return The FamilyMember object if found, otherwise null.
+     */
+    fun getMemberById(memberId: String): FamilyMember? {
+        return memberMap.getMember(memberId)
     }
 
     /**
