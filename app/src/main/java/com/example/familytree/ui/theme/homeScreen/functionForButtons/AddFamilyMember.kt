@@ -9,7 +9,6 @@ import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.MemberType
 import com.example.familytree.data.Relations
 import com.example.familytree.data.Relations.*
-import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.data.dataManagement.DatabaseManager.addConnectionToBothMembersInLocalMap
 import com.example.familytree.data.dataManagement.DatabaseManager.addNewMemberToLocalMemberMap
 import com.example.familytree.data.dataManagement.DatabaseManager.validateConnection
@@ -25,7 +24,6 @@ import com.example.familytree.ui.theme.dialogs.ChooseMemberTypeDialog
 import com.example.familytree.ui.theme.dialogs.MoreThanOneConnectionErrorDialog
 import com.example.familytree.ui.theme.dialogs.NewMemberMustBeRelatedDialog
 import com.example.familytree.ui.theme.dialogs.SameMemberMarriageErrorDialog
-import com.example.familytree.ui.theme.dialogs.SuggestConnectionDialog
 
 /**
  * A composable function that displays a dialog for adding a family member to the family tree.
@@ -170,7 +168,8 @@ private fun AddNewMemberAndRelateToExistingMember(
         AskUserToCreateNewFamilyMember(
             onMemberCreation = { newMember = it },
             showPreviousButton = true,
-            onPrevious = { relationFromExistingMemberPerspective = null },
+            onPreviousForStepOne = { relationFromExistingMemberPerspective = null },
+            onPreviousForStepTwo = {relationFromExistingMemberPerspective = null},
             existingMembers = existingMembers,
             memberToRelateTo = existingMember!!,
             relation = relationFromExistingMemberPerspective,
@@ -258,21 +257,27 @@ private fun AddNewMemberAndRelateToExistingMember(
 }
 
 /**
- * A composable function that displays a series of dialogs to guide the user in creating a new family member
+ * A Composable function that guides the user through the process of creating a new family member.
+ * The function consists of multiple steps:
+ * 1. Selecting the type of member (if applicable).
+ * 2. Entering the member's details.
+ * 3. Creating the new member and returning it via [onMemberCreation].
  *
- * This function handles a step-by-step process:
- * 1. The user selects the type of member (Yeshiva or NonYeshiva).
- * 2. The user enters the details of the family member.
- *
- * @param existingMembers A list of existing family members used for validation or reference.
- * @param onMemberCreation A lambda function invoked when a new family member is successfully created, passing the new FamilyMember object.
- * @param onDismiss A lambda function that is called to dismiss the dialog when the user cancels the action.
+ * @param onMemberCreation Callback triggered when a new [FamilyMember] is successfully created.
+ * @param showPreviousButton Boolean flag indicating whether the previous button should be shown.
+ * @param onPreviousForStepOne Callback triggered when the user goes back from the member type selection step.
+ * @param onPreviousForStepTwo Callback triggered when the user goes back from the member details entry step.
+ * @param existingMembers List of existing [FamilyMember]s to check for duplicates.
+ * @param memberToRelateTo Optional [FamilyMember] to establish a relationship with the new member.
+ * @param relation Optional [Relations] enum representing the relationship between the new member and [memberToRelateTo].
+ * @param onDismiss Callback triggered when the process is dismissed.
  */
 @Composable
 private fun AskUserToCreateNewFamilyMember(
     onMemberCreation: (FamilyMember) -> Unit,
     showPreviousButton: Boolean = false,
-    onPrevious: () -> Unit = {},
+    onPreviousForStepOne: () -> Unit = {},
+    onPreviousForStepTwo: () -> Unit = {},
     existingMembers: List<FamilyMember>,
     memberToRelateTo: FamilyMember? = null,
     relation: Relations? = null,
@@ -281,6 +286,12 @@ private fun AskUserToCreateNewFamilyMember(
 
     var newMember: FamilyMember? by remember { mutableStateOf(null) }
     var selectedMemberType: MemberType? by remember { mutableStateOf(null) }
+
+    // onPreviousForStepTwo should be defined differently if user needs to select a memberType.
+    // Define a new lambda so it could be modified later
+    var onPreviousForStepTwoModified by remember {
+        mutableStateOf(onPreviousForStepTwo)
+    }
 
     // If it's a marriage relation, gender will determine weather it's a wife or a husband
     val gender = memberToRelateTo?.getGender()
@@ -305,30 +316,25 @@ private fun AskUserToCreateNewFamilyMember(
     }
 
     // Females can't be of YeshivaMember type
-    if (relation != null && relation.expectedGender() == false) {
+    if (relation != null && relation.expectedGender(memberToRelateTo!!.getGender()) == false) {
         selectedMemberType = MemberType.NonYeshiva
     }
 
-    // relation.expectedGender() doesn't handle marriage, so these lines check if member is a wife
-    if (memberToRelateTo != null &&
-        relation == MARRIAGE &&
-        memberToRelateTo.getGender()
-        ) {
-        selectedMemberType = MemberType.NonYeshiva
-    }
-
-    // First step: user needs to select member type
+    // Step 1: User selects member type
     if (selectedMemberType == null) {
         // Display a dialog for selecting the type of member.
         ChooseMemberTypeDialog(
             onMemberTypeSelected = { selectedMemberType = it },
             showPreviousButton = showPreviousButton,
-            onPrevious = onPrevious,
+            onPrevious = onPreviousForStepOne,
             onDismiss = onDismissAndResetState
         )
+
+        // If user needs to select a member type, the onPreviousForStepTwo should change
+        onPreviousForStepTwoModified = {selectedMemberType = null}
     }
 
-    // Second step: user needs to enter members details
+    // Step 2: User enters member details
     else if (newMember == null) {
 
         // Display a dialog for entering member details based on the selected type.
@@ -337,6 +343,7 @@ private fun AskUserToCreateNewFamilyMember(
             expectedGender = relation!!.expectedGender(memberToRelateTo!!.getGender()),
             selectedMemberType = selectedMemberType,
             onFamilyMemberCreation = { member -> newMember = member },
+            onPrevious = onPreviousForStepTwoModified,
             onDismiss = onDismissAndResetState
         )
 
@@ -344,7 +351,7 @@ private fun AskUserToCreateNewFamilyMember(
 
     }
 
-    // Third step: If both steps are complete, crate new member and return it.
+    // Step 3: Member is created and returned.
     else {
         newMember?.let { onMemberCreation(it) }
     }

@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -60,6 +61,7 @@ fun AskUserForMemberDetailsDialog(
     selectedMemberType: MemberType?,
     expectedGender: Boolean? = null,
     onFamilyMemberCreation: (FamilyMember) -> Unit,
+    onPrevious: () -> Unit,
     onDismiss: () -> Unit
 ) {
     // State variables to store user input
@@ -138,34 +140,37 @@ fun AskUserForMemberDetailsDialog(
                 }
             }
         },
-
-        // Confirm button is enabled only when mandatory fields are filled
         confirmButton = {
-            TextButton(
-                onClick = {
-                    onFamilyMemberCreation(
-                        FamilyMember(
-                            memberType = selectedMemberType!!,
-                            firstName = firstName,
-                            lastName = lastName,
-                            gender = gender,
-                            machzor = machzor,
-                            isRabbi = isRabbi,
-                            isYeshivaRabbi = isYeshivaRabbi
-                        )
-                    )
-                },
-                enabled = firstName.isNotEmpty() && lastName.isNotEmpty() &&
-                        (selectedMemberType == MemberType.NonYeshiva || machzor != null)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(HebrewText.OK)
-            }
-        },
 
-        // Dismiss button to close the dialog without saving
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(HebrewText.CANCEL)
+                // Previous button
+                Button(onClick = onPrevious) {
+                    Text(HebrewText.PREVIOUS)
+                }
+
+                // Next button
+                Button(
+                    onClick = {
+                        onFamilyMemberCreation(
+                            FamilyMember(
+                                memberType = selectedMemberType!!,
+                                firstName = firstName,
+                                lastName = lastName,
+                                gender = gender,
+                                machzor = machzor,
+                                isRabbi = isRabbi,
+                                isYeshivaRabbi = isYeshivaRabbi
+                            )
+                        )
+                    },
+                    enabled = firstName.isNotEmpty() && lastName.isNotEmpty() &&
+                            (selectedMemberType == MemberType.NonYeshiva || machzor != null)
+                ) {
+                    Text(HebrewText.OK)
+                }
             }
         }
     )

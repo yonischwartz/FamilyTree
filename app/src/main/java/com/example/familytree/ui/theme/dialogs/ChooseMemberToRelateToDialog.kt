@@ -1,6 +1,7 @@
 package com.example.familytree.ui.theme.dialogs
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -70,19 +71,24 @@ fun ChooseMemberToRelateToDialog(
             }
         },
         confirmButton = {
-            Button(
-                onClick = {
-                    existingMembers.find { it.getId() == checkedMemberId }?.let { onMemberSelected(it) }
-                },
-                enabled = checkedMemberId != null
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = HebrewText.NEXT)
-            }
-        },
-        dismissButton = {
-            if (showPreviousButton) {
-                TextButton(onClick = { onPrevious() }) {
-                    Text(text = HebrewText.PREVIOUS)
+
+                // Previous button
+                Button(onClick = onPrevious) {
+                    Text(HebrewText.PREVIOUS)
+                }
+
+                // Next button
+                Button(
+                    onClick = {
+                        existingMembers.find { it.getId() == checkedMemberId }?.let { onMemberSelected(it) }
+                    },
+                    enabled = checkedMemberId != null
+                ) {
+                    Text(text = HebrewText.NEXT)
                 }
             }
         }
