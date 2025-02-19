@@ -63,7 +63,12 @@ object MemberMap {
      *
      * @param memberToBeRemovedId The ID of the member to be deleted.
      */
-    internal fun deleteMember(memberToBeRemovedId: String) {
+    internal fun deleteMember(memberToBeRemovedId: String): Boolean {
+
+        // Check if memberToBeRemovedId can be removed
+        if (isDeleteSafe(memberToBeRemovedId).not()) {
+            return false
+        }
 
         // Remove the member from the map
         members.remove(memberToBeRemovedId)
@@ -84,6 +89,9 @@ object MemberMap {
                 modifiedAndNewAddedMembersIds.add(member.getId())
             }
         }
+
+        // Delete succeed
+        return true
     }
 
     /**
@@ -247,7 +255,43 @@ object MemberMap {
         members.clear()
     }
 
-    // private functions for validation
+    // Private functions for deleting member
+
+    /**
+     * Checks if removing a member from the family tree would split the graph into multiple components.
+     *
+     * @param memberToBeRemovedId The ID of the member to be removed.
+     * @return true if removing the member does not split the graph, false otherwise.
+     *
+     * Time Complexity: O(V + E), where V is the number of members and E is the number of relationships.
+     * Space Complexity: O(V) due to the visited set.
+     */
+    private fun isDeleteSafe(memberToBeRemovedId: String): Boolean {
+        val visited = mutableSetOf<String>()
+        val remainingMembers = members.keys - memberToBeRemovedId
+
+        if (remainingMembers.isEmpty()) return true // If no members remain, it's safe
+
+        // Find a starting point different from the one being removed
+        val startMember = remainingMembers.first()
+
+        // Perform BFS or DFS to check connectivity
+        fun dfs(memberId: String) {
+            if (memberId in visited) return
+            visited.add(memberId)
+            members[memberId]?.getConnections()?.forEach { connection ->
+                if (connection.memberId != memberToBeRemovedId) {
+                    dfs(connection.memberId)
+                }
+            }
+        }
+
+        dfs(startMember)
+
+        return visited.size == remainingMembers.size // If all remaining members are visited, it's safe
+    }
+
+    // Private functions for validation
 
     /**
      * Validates the gender role of a family member based on the expected gender for the specified relationship.

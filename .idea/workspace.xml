@@ -9,11 +9,14 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="I am probably missing something but it seems that all the required suggestion are made when a new connection is added">
+    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="It seems like there are previous buttons where ever there should be">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/GenericMessageDialog.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/AskUserForMemberDetailsDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/AskUserForMemberDetailsDialog.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/ChooseMemberToRelateToDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/ChooseMemberToRelateToDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/DatabaseManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/DatabaseManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/MemberMap.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/MemberMap.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/HebrewText.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/HebrewText.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/MemberListDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/MemberListDialog.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/homeScreen/functionForButtons/AddFamilyMember.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/homeScreen/functionForButtons/AddFamilyMember.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -428,7 +431,15 @@
       <option name="project" value="LOCAL" />
       <updated>1739973265297</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="It seems like there are previous buttons where ever there should be">
+      <option name="closed" value="true" />
+      <created>1739977196033</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1739977196033</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -465,7 +476,8 @@
     <MESSAGE value="when a sibling connection is added all mutual connection from both siblings are added to one another" />
     <MESSAGE value="after adding marriage connection app offers successfully to add each others children to one another" />
     <MESSAGE value="I am probably missing something but it seems that all the required suggestion are made when a new connection is added" />
-    <option name="LAST_COMMIT_MESSAGE" value="I am probably missing something but it seems that all the required suggestion are made when a new connection is added" />
+    <MESSAGE value="It seems like there are previous buttons where ever there should be" />
+    <option name="LAST_COMMIT_MESSAGE" value="It seems like there are previous buttons where ever there should be" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>

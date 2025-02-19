@@ -245,9 +245,10 @@ object DatabaseManager {
      *    ensuring the list reflects all members affected by the deletion.
      *
      * @param memberToBeRemovedId The ID of the member to remove from the local member map and update connections for.
+     * @return `true` if the member was successfully deleted, `false` otherwise.
      */
-    fun deleteMemberFromLocalMemberMap(memberToBeRemovedId: String) {
-        memberMap.deleteMember(memberToBeRemovedId)
+    fun deleteMemberFromLocalMemberMap(memberToBeRemovedId: String): Boolean {
+        return memberMap.deleteMember(memberToBeRemovedId)
     }
 
     /**

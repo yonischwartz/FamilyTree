@@ -340,7 +340,7 @@ private fun AskUserToCreateNewFamilyMember(
         // Display a dialog for entering member details based on the selected type.
         AskUserForMemberDetailsDialog(
             headLine = headLine,
-            expectedGender = relation!!.expectedGender(memberToRelateTo!!.getGender()),
+            expectedGender = relation?.expectedGender(memberToRelateTo!!.getGender()),
             selectedMemberType = selectedMemberType,
             onFamilyMemberCreation = { member -> newMember = member },
             onPrevious = onPreviousForStepTwoModified,

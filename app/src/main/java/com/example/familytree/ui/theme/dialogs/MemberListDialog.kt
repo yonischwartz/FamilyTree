@@ -31,6 +31,7 @@ fun MemberListDialog(existingMembers: List<FamilyMember>, onDismiss: () -> Unit)
     // Use state-backed mutable list for dynamic updates
     val memberList = remember { mutableStateListOf(*existingMembers.toTypedArray()) }
     var selectedMember by remember { mutableStateOf<FamilyMember?>(null) }
+    var showDeleteErrorDialog by remember { mutableStateOf(false) }
 
     // Set right-to-left layout direction for Hebrew content.
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
@@ -51,8 +52,25 @@ fun MemberListDialog(existingMembers: List<FamilyMember>, onDismiss: () -> Unit)
                                     .clickable { selectedMember = member }
                             )
                             SmallDialogButton(text = HebrewText.REMOVE) {
-                                deleteMemberFromLocalMemberMap(member.getId())
-                                memberList.remove(member)
+
+                                // Remove member from dialog only if removal was successful
+                                if (deleteMemberFromLocalMemberMap(member.getId())) {
+                                    memberList.remove(member)
+                                }
+
+                                // Removal was unsuccessful
+                                else {
+                                    showDeleteErrorDialog = true
+                                }
+                            }
+
+                            // Inform user that removal is invalid
+                            if (showDeleteErrorDialog) {
+                                GenericMessageDialog(
+                                    title = HebrewText.ERROR_REMOVING_MEMBER,
+                                    text = HebrewText.REMOVING_THIS_MEMBER_BRAKES_THE_TREE,
+                                    onDismiss = { showDeleteErrorDialog = false }
+                                )
                             }
                         }
                     }

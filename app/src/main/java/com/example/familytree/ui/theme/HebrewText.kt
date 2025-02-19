@@ -6,6 +6,7 @@ object HebrewText {
     const val ERROR_SAVING_MEMBERS_IN_FIREBASE = "שגיאה בשמירת עץ המשפחה ב-firebase"
     const val ERROR_LOADING_MEMBER_MAP = "שגיאה בטעינת בני משפחה"
     const val ERROR_ADDING_MEMBER = "שגיאה בהוספת בן משפחה"
+    const val ERROR_REMOVING_MEMBER = "שגיאה בהסרת בן משפחה"
     const val ERROR_CONNECTING_TO_FIREBASE = "שגיאה בגישה ל-firebase, אולי כדאי לבדוק חיבור לאינטרנט"
 
     // Successes
@@ -73,6 +74,7 @@ object HebrewText {
     const val RABBI = "הרב "
     const val RABBI_WIFE = "הרבנית "
     const val FAMILY_MEMBER_DETAILS = "פרטי בן משפחה"
+    const val REMOVING_THIS_MEMBER_BRAKES_THE_TREE = "הסרת מועמד זה אינה חוקית, מפני שהיא מחלקת את עץ המשפחה למספר חלקים שונים"
     const val MARRIED_COUPLE_CAN_NOT_BE_OF_SAME_SEX = "זוג נשוי אינם יכולים להיות מאותו המין"
     const val EXISTS_ALREADY_FAMILY_RELATION_OF_TYPE = "קיים כבר קשר משפחתי מסוג "
     const val CAN_NOT_ADD = "לא ניתן להוסיף את "
