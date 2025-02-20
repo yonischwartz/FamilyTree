@@ -9,15 +9,16 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="It seems like there are previous buttons where ever there should be">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/GenericMessageDialog.kt" afterDir="false" />
+    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="when deleting a member the function insures the removal is valid, and doesn't break the tree">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/GenericMessageDialogWithTwoButtons.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/DatabaseManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/DatabaseManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/MemberMap.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/MemberMap.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/HebrewText.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/HebrewText.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/GenericMessageDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/GenericMessageDialogWithOneButton.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/MemberListDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/dialogs/MemberListDialog.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/homeScreen/functionForButtons/AddFamilyMember.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/homeScreen/functionForButtons/AddFamilyMember.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/homeScreen/functionForButtons/SuggestConnections.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/theme/homeScreen/functionForButtons/SuggestConnections.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,11 +122,11 @@
     "git-widget-placeholder": "back__to__work",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/yoni schwartz/drive (yschwartz23@gmail.com)/cs/projects/FamilyTree",
+    "last_opened_file_path": "C:/Users/yoni schwartz/Downloads/Sinai-main",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.17",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "project.propDebugger"
+    "settings.editor.selected.configurable": "experimental"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -439,7 +440,15 @@
       <option name="project" value="LOCAL" />
       <updated>1739977196033</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="when deleting a member the function insures the removal is valid, and doesn't break the tree">
+      <option name="closed" value="true" />
+      <created>1739997003267</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1739997003267</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -477,7 +486,8 @@
     <MESSAGE value="after adding marriage connection app offers successfully to add each others children to one another" />
     <MESSAGE value="I am probably missing something but it seems that all the required suggestion are made when a new connection is added" />
     <MESSAGE value="It seems like there are previous buttons where ever there should be" />
-    <option name="LAST_COMMIT_MESSAGE" value="It seems like there are previous buttons where ever there should be" />
+    <MESSAGE value="when deleting a member the function insures the removal is valid, and doesn't break the tree" />
+    <option name="LAST_COMMIT_MESSAGE" value="when deleting a member the function insures the removal is valid, and doesn't break the tree" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>

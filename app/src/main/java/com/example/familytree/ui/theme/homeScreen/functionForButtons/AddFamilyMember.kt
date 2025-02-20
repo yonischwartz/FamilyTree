@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.MemberType
 import com.example.familytree.data.Relations
-import com.example.familytree.data.Relations.*
 import com.example.familytree.data.dataManagement.DatabaseManager.addConnectionToBothMembersInLocalMap
 import com.example.familytree.data.dataManagement.DatabaseManager.addNewMemberToLocalMemberMap
 import com.example.familytree.data.dataManagement.DatabaseManager.validateConnection
@@ -21,6 +20,8 @@ import com.example.familytree.ui.theme.dialogs.ChooseMemberToRelateToDialog
 import com.example.familytree.ui.theme.dialogs.GenderErrorDialog
 import com.example.familytree.ui.theme.dialogs.HowAreTheyRelatedDialog
 import com.example.familytree.ui.theme.dialogs.ChooseMemberTypeDialog
+import com.example.familytree.ui.theme.dialogs.GenericMessageDialogWithOneButton
+import com.example.familytree.ui.theme.dialogs.GenericMessageDialogWithTwoButtons
 import com.example.familytree.ui.theme.dialogs.MoreThanOneConnectionErrorDialog
 import com.example.familytree.ui.theme.dialogs.NewMemberMustBeRelatedDialog
 import com.example.familytree.ui.theme.dialogs.SameMemberMarriageErrorDialog
@@ -81,10 +82,12 @@ private fun AddNewFamilyMemberToEmptyTree(
     )
 
     if (newMember != null) {
-        newMember?.let { member ->
-            addNewMemberToLocalMemberMap(member)
-            Toast.makeText(context, HebrewText.SUCCESS_ADDING_MEMBER, Toast.LENGTH_LONG).show()
-            onDismiss()
+        if (addNewMemberToLocalMemberMap(newMember!!)) {
+            GenericMessageDialogWithOneButton(
+                title = HebrewText.SUCCESS_ADDING_MEMBER,
+                text = newMember!!.getFullName() + " " + HebrewText.WAS_ADDED_SUCCESSFULLY,
+                onDismiss = onDismiss
+            )
         }
     }
 }
@@ -111,6 +114,7 @@ private fun AddNewMemberAndRelateToExistingMember(
     var showSameMemberMarriageErrorDialog by remember { mutableStateOf(false) }
     var isConnectionValid by remember { mutableStateOf(false) }
     var wasMemberAdded by remember { mutableStateOf(false) }
+    var AreSuggesstionsFinished by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
 
@@ -125,6 +129,7 @@ private fun AddNewMemberAndRelateToExistingMember(
         showSameMemberMarriageErrorDialog = false
         isConnectionValid = false
         wasMemberAdded = false
+        AreSuggesstionsFinished = false
     }
 
     val onDismissAndResetState: () -> Unit = {
@@ -132,7 +137,7 @@ private fun AddNewMemberAndRelateToExistingMember(
         onDismiss()
     }
 
-    // First step: inform user he must relate to an existing member
+    // Step 1: inform user he must relate to an existing member
     if (!wasUserInformed) {
         NewMemberMustBeRelatedDialog(
             onConfirm = {wasUserInformed = true},
@@ -140,7 +145,7 @@ private fun AddNewMemberAndRelateToExistingMember(
         )
     }
 
-    // Second step: select an existing member in the tree to connect to
+    // Step 2: select an existing member in the tree to connect to
     else if (existingMember == null) {
 
         ChooseMemberToRelateToDialog(
@@ -151,7 +156,7 @@ private fun AddNewMemberAndRelateToExistingMember(
         )
     }
 
-    // Third step: select the relation between the new member, and the existing member
+    // Step 3: select the relation between the new member, and the existing member
     else if (relationFromExistingMemberPerspective == null) {
 
         HowAreTheyRelatedDialog(
@@ -162,7 +167,7 @@ private fun AddNewMemberAndRelateToExistingMember(
         )
     }
 
-    // Forth step: create a new FamilyMember object representing the new member
+    // Step 4: create a new FamilyMember object representing the new member
     else if (newMember == null) {
 
         AskUserToCreateNewFamilyMember(
@@ -177,7 +182,7 @@ private fun AddNewMemberAndRelateToExistingMember(
         )
     }
 
-    // Fifth step: Make sure the connection the user wants to add is valid
+    // Step 5: Make sure the connection the user wants to add is valid
     else if (!isConnectionValid) {
 
         try {
@@ -232,7 +237,7 @@ private fun AddNewMemberAndRelateToExistingMember(
         }
     }
 
-    // Sixth step: add the new member and update the connection in both members
+    // Step 6: add the new member and update the connection in both members
     else if (wasMemberAdded.not()){
 
         // Add new member to local map
@@ -250,9 +255,19 @@ private fun AddNewMemberAndRelateToExistingMember(
         }
     }
 
-    // Seventh step: offer user to add suggested connections
+    // Step 7: offer user to add suggested connections
+    else if (AreSuggesstionsFinished.not()) {
+        SuggestConnections({ AreSuggesstionsFinished = true })
+    }
+
+    // Step 8: Inform the user, the member was added successfully, and then dismiss
     else {
-        SuggestConnections(onDismissAndResetState)
+
+        GenericMessageDialogWithOneButton(
+            title = HebrewText.SUCCESS_ADDING_MEMBER,
+            text = newMember!!.getFullName() + " " + HebrewText.WAS_ADDED_SUCCESSFULLY,
+            onDismiss = onDismissAndResetState
+        )
     }
 }
 
@@ -346,13 +361,23 @@ private fun AskUserToCreateNewFamilyMember(
             onPrevious = onPreviousForStepTwoModified,
             onDismiss = onDismissAndResetState
         )
-
-        //TODO: Check if there's already a member with this name
-
     }
 
     // Step 3: Member is created and returned.
     else {
-        newMember?.let { onMemberCreation(it) }
+        val memberExists = existingMembers.any {
+            it.getFullName() == newMember?.getFullName() && it.getMachzor() == newMember?.getMachzor()
+        }
+        if (memberExists) {
+            // Show a dialog to ask the user if they still want to add the new member
+            GenericMessageDialogWithTwoButtons(
+                title = HebrewText.MEMBER_ALREADY_EXISTS,
+                text = HebrewText.DO_YOU_WANT_TO_ADD_ANYWAY,
+                onClick = { newMember?.let { onMemberCreation(it) } },
+                textForOnClick = HebrewText.YES,
+                onDismiss = onDismissAndResetState,
+                textForOnDismiss = HebrewText.NO
+            )
+        }
     }
 }

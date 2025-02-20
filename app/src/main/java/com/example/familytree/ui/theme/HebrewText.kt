@@ -59,6 +59,10 @@ object HebrewText {
 
 
 
+
+    const val DO_YOU_WANT_TO_ADD_ANYWAY = "האם תרצה להוסיף בן משפחה זה, בכל זאת?"
+    const val MEMBER_ALREADY_EXISTS = "קיים כבר בן משפחה עם שם זה בעץ"
+    const val WAS_ADDED_SUCCESSFULLY = "נוסף בהצלחה"
     const val THE = "ה"
     const val IS_THIS_RABBI_A_YESHIVA_RABBI = "האם הרב הזה הוא רב בישיבה?"
     const val ENTER_DETAILS_FOR = "מלא פרטים על"

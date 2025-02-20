@@ -66,7 +66,7 @@ fun MemberListDialog(existingMembers: List<FamilyMember>, onDismiss: () -> Unit)
 
                             // Inform user that removal is invalid
                             if (showDeleteErrorDialog) {
-                                GenericMessageDialog(
+                                GenericMessageDialogWithOneButton(
                                     title = HebrewText.ERROR_REMOVING_MEMBER,
                                     text = HebrewText.REMOVING_THIS_MEMBER_BRAKES_THE_TREE,
                                     onDismiss = { showDeleteErrorDialog = false }

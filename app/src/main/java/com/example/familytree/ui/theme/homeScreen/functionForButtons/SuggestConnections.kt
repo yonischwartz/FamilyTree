@@ -48,6 +48,7 @@ fun SuggestConnections(
                 suggestedConnection = DatabaseManager.popNextSuggestedConnection()
             }
         )
+
         return
     }
 

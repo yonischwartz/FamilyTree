@@ -1,6 +1,8 @@
 package com.example.familytree.ui.theme.dialogs
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -11,20 +13,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.familytree.ui.theme.HebrewText
 
-/**
- * A generic message dialog using Jetpack Compose's AlertDialog.
- *
- * This composable displays a simple dialog with a title, message, and a single confirmation button.
- *
- * @param title The title of the dialog.
- * @param text The message content displayed in the dialog.
- * @param onDismiss A callback invoked when the dialog is dismissed.
- */
 @Composable
-fun GenericMessageDialog(
+fun GenericMessageDialogWithTwoButtons(
     title: String,
     text: String,
-    onDismiss: () -> Unit
+    onClick: () -> Unit,
+    textForOnClick: String,
+    onDismiss: () -> Unit,
+    textForOnDismiss: String
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -35,8 +31,20 @@ fun GenericMessageDialog(
         },
         text = { Text(text, style = MaterialTheme.typography.bodyMedium) },
         confirmButton = {
-            Button(onClick = onDismiss) {
-                Text(HebrewText.OK)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+
+                // First button
+                Button(onClick = onClick) {
+                    Text(textForOnClick)
+                }
+
+                // Second button
+                Button(onClick = onDismiss) {
+                    Text(textForOnDismiss)
+                    }
             }
         }
     )
