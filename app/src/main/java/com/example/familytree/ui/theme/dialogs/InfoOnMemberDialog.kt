@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.*
 import com.example.familytree.data.FamilyMember
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
+import com.example.familytree.data.MemberType
 import com.example.familytree.ui.theme.HebrewText
+import com.example.familytree.ui.theme.DialogButton
 import com.example.familytree.ui.theme.intToMachzor
 
 /**
@@ -19,7 +21,7 @@ import com.example.familytree.ui.theme.intToMachzor
  * @param onDismiss The action to perform when the detail dialog is dismissed.
  */
 @Composable
-fun DetailsForYeshivaMemberDialog(member: FamilyMember, onDismiss: () -> Unit) {
+fun InfoOnMemberDialog(member: FamilyMember, onDismiss: () -> Unit) {
     // Set right-to-left layout direction for Hebrew content.
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         AlertDialog(
@@ -54,14 +56,20 @@ fun DetailsForYeshivaMemberDialog(member: FamilyMember, onDismiss: () -> Unit) {
                         style = MaterialTheme.typography.bodyMedium)
 
                     // מחזור
-                    Text("${HebrewText.MACHZOR}: ${intToMachzor[member.getMachzor()] ?: HebrewText.UNKNOWN}",
-                        style = MaterialTheme.typography.bodyMedium)
+                    // Only for yeshiva members
+                    if (member.getMemberType() == MemberType.Yeshiva) {
+                        Text(
+                            "${HebrewText.MACHZOR}: ${intToMachzor[member.getMachzor()] ?: HebrewText.UNKNOWN}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
             },
             confirmButton = {
-                Button(onClick = onDismiss) {
-                    Text(HebrewText.CLOSE)
-                }
+                DialogButton(
+                    text = HebrewText.CLOSE,
+                    onClick = onDismiss
+                )
             }
         )
     }

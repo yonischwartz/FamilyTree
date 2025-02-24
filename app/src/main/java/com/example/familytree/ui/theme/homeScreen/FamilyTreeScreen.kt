@@ -25,6 +25,8 @@ import com.example.familytree.data.dataManagement.DatabaseManager.loadMembersFro
 import com.example.familytree.data.dataManagement.DatabaseManager.saveLocalMapToFirebase
 import com.example.familytree.ui.theme.homeScreen.functionForButtons.ConnectTwoMembers
 import com.example.familytree.ui.theme.WideBlueButton
+import com.example.familytree.ui.theme.graphicTreeDisplay.ClickableShapesCanvas
+import com.example.familytree.ui.theme.graphicTreeDisplay.MemberGraphicNode
 
 /**
  * Composable function that displays the main screen for the family tree application.
@@ -43,8 +45,10 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
     var searchResults by remember { mutableStateOf<List<FamilyMember>>(emptyList()) }
     var showAddMemberDialog by remember { mutableStateOf(false) }
     var showAddConnectionDialog by remember { mutableStateOf(false) }
+    var showFindConnectionDialog by remember { mutableStateOf(false) }
     var showMemberListDialog by remember { mutableStateOf(false) }
     var isNetworkAvailable by remember { mutableStateOf(false) }
+    var testing by remember { mutableStateOf(false) }
 
     // Check for network connectivity
     val context = LocalContext.current
@@ -105,6 +109,29 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 
+                        // Test button
+                        WideBlueButton(
+                            onClick = { testing = !testing },
+                            "test"
+                        )
+
+//                        val familyMember = DatabaseManager.getRandomMember()
+
+//                        Box(modifier = Modifier.fillMaxSize()) {
+//                            MemberGraphicNode(
+//                                familyMember = familyMember,
+//                                onClick = {
+//                                    // Handle click event, e.g., navigate or show details
+//                                    println("Clicked on ${familyMember.getFullName()}")
+//                                }
+//                            )
+//                        }
+
+
+                        if (testing) {
+                            ClickableShapesCanvas()
+                        }
+
                         // Button to add a new family member
                         WideBlueButton(
                             onClick = { showAddMemberDialog = true },
@@ -115,6 +142,12 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                         WideBlueButton(
                             onClick = { showAddConnectionDialog = true },
                             HebrewText.ADD_CONNECTION_BETWEEN_TWO_EXISTING_MEMBERS
+                        )
+
+                        // Find connection button
+                        WideBlueButton(
+                            onClick = { showFindConnectionDialog = true },
+                            text = HebrewText.FIND_CONNECTION_BETWEEN_TWO_MEMBERS
                         )
 
                         // Display the logo
@@ -192,6 +225,16 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                     }
 
                     // Dialog to display the list of all family members
+                    if (showFindConnectionDialog) {
+
+//                        FindConnectionDialog(
+//                            existingMembers = DatabaseManager.getAllMembers(),
+//                            onDismiss = { showMemberListDialog = false }
+//                        )
+                    }
+
+
+                        // Dialog to display the list of all family members
                     if (showMemberListDialog) {
 
                         MemberListDialog(

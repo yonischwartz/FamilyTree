@@ -15,8 +15,8 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.dataManagement.DatabaseManager.deleteMemberFromLocalMemberMap
 import com.example.familytree.ui.theme.HebrewText
-import com.example.familytree.ui.theme.ShowDetailsForMember
-import com.example.familytree.ui.theme.SmallDialogButton
+import com.example.familytree.ui.theme.DialogButton
+import com.example.familytree.ui.theme.dialogs.errorDialogs.DeleteErrorDialog
 
 /**
  * Composable function that displays a dialog containing a list of all family members.
@@ -51,26 +51,24 @@ fun MemberListDialog(existingMembers: List<FamilyMember>, onDismiss: () -> Unit)
                                     .weight(1f)
                                     .clickable { selectedMember = member }
                             )
-                            SmallDialogButton(text = HebrewText.REMOVE) {
+                            DialogButton(
+                                text = HebrewText.REMOVE,
+                                onClick = {
+                                    // Remove member from dialog only if removal was successful
+                                    if (deleteMemberFromLocalMemberMap(member.getId())) {
+                                        memberList.remove(member)
+                                    }
 
-                                // Remove member from dialog only if removal was successful
-                                if (deleteMemberFromLocalMemberMap(member.getId())) {
-                                    memberList.remove(member)
+                                    // Removal was unsuccessful
+                                    else {
+                                        showDeleteErrorDialog = true
+                                    }
                                 }
-
-                                // Removal was unsuccessful
-                                else {
-                                    showDeleteErrorDialog = true
-                                }
-                            }
+                            )
 
                             // Inform user that removal is invalid
                             if (showDeleteErrorDialog) {
-                                GenericMessageDialogWithOneButton(
-                                    title = HebrewText.ERROR_REMOVING_MEMBER,
-                                    text = HebrewText.REMOVING_THIS_MEMBER_BRAKES_THE_TREE,
-                                    onDismiss = { showDeleteErrorDialog = false }
-                                )
+                                DeleteErrorDialog { showDeleteErrorDialog = false }
                             }
                         }
                     }
@@ -84,9 +82,9 @@ fun MemberListDialog(existingMembers: List<FamilyMember>, onDismiss: () -> Unit)
         )
     }
 
-    // Display appropriate detail dialog based on member type.
+    // Display details dialog of member
     selectedMember?.let { member ->
-        ShowDetailsForMember(member = member, onDismiss = { selectedMember = null })
+        InfoOnMemberDialog(member = member, onDismiss = { selectedMember = null })
     }
 }
 

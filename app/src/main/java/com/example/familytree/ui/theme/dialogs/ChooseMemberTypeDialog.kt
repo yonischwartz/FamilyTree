@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,6 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.familytree.data.MemberType
 import com.example.familytree.ui.theme.HebrewText
+import com.example.familytree.ui.theme.DialogButton
 import com.example.familytree.ui.theme.WideBlueButton
 
 @Composable
@@ -38,9 +38,11 @@ fun ChooseMemberTypeDialog(
                 horizontalArrangement = Arrangement.Start
             ) {
                 if (showPreviousButton) {
-                    Button(onClick = onPrevious) {
-                        Text(HebrewText.PREVIOUS)
-                    }
+
+                    DialogButton(
+                        text = HebrewText.PREVIOUS,
+                        onClick = onPrevious
+                    )
                 }
             }
         }

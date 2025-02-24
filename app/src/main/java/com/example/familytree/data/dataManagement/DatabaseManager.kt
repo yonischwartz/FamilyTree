@@ -26,6 +26,14 @@ object DatabaseManager {
     // functions
 
     /**
+     * Checks if the family tree is empty by verifying if the member map is empty.
+     * @return true if the family tree is empty, false otherwise.
+     */
+    fun isTreeEmpty(): Boolean {
+        return memberMap.getAllMembers().isEmpty()
+    }
+
+    /**
      * Retrieves a family member by their unique ID.
      * @param memberId The ID of the family member.
      * @return The FamilyMember object if found, otherwise null.
@@ -258,6 +266,22 @@ object DatabaseManager {
      */
     fun popNextSuggestedConnection(): FullConnection? {
         return memberMap.popNextSuggestedConnection()
+    }
+
+    /**
+     * Finds the shortest path between two family members using a BFS algorithm.
+     *
+     * @param memberOne The starting family member.
+     * @param memberTwo The target family member.
+     * @return A list of FamilyMember objects representing the shortest path from memberOne to memberTwo.
+     *         If no path is found, the list will be empty.
+     */
+    internal fun getShortestPathBetweenTwoMembers(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember
+    ): List<FamilyMember> {
+
+        return memberMap.getShortestPathBetweenTwoMembers(memberOne, memberTwo)
     }
 
     /**

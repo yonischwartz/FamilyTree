@@ -18,11 +18,14 @@ object HebrewText {
     // Home screen buttons
     const val ADD_NEW_FAMILY_MEMBER = "הוסף בן משפחה חדש"
     const val ADD_CONNECTION_BETWEEN_TWO_EXISTING_MEMBERS = "קשר בין שני בני משפחה קיימים"
+    const val FIND_CONNECTION_BETWEEN_TWO_MEMBERS = "מצא קשר בן שני בני משפחה"
     const val SHOW_ALL_FAMILY_MEMBERS = "הצג את כל בני המשפחה"
     const val LOAD_MEMBERS_FROM_FIREBASE = "משוך נתונים מה-firebase"
     const val SAVE_AND_UPDATE_MEMBERS_TO_FIREBASE = "שמור ועדכן שינויים ב-firebase"
 
     // Other buttons
+    const val YES = "כן"
+    const val NO = "לא"
     const val REMOVE = "הסר"
     const val NEXT = "המשך"
     const val PREVIOUS = "הקודם"
@@ -30,10 +33,30 @@ object HebrewText {
     const val CANCEL = "בטל"
     const val OK = "אישור"
 
+    // Relations as a subjective
+    const val WIFE_OF = "אשתו של"
+    const val HUSBAND_OF = "בעלה של"
+    const val FATHER_OF = "אבא של"
+    const val MOTHER_OF = "אמא של"
+    const val SON_OF = "בן של"
+    const val DAUGHTER_OF = "בת של"
+    const val GRANDMOTHER_OF = "סבתא של"
+    const val GRANDFATHER_OF = "סבא של"
+    const val GRANDSON_OF = "נכד של"
+    const val GRANDDAUGHTER_OF = "נכדה של"
+    const val MALE_COUSIN_OF = "בן דוד של"
+    const val FEMALE_COUSIN_OF = "בת דודה של"
+    const val BROTHER_OF = "אח של"
+    const val SISTER_OF = "אחות של"
+
     // Relations
+    const val WIFE = "אשתו"
+    const val HUSBAND = "בעלה"
+    const val MALE_COUSIN = "בן דוד"
+    const val FEMALE_COUSIN = "בת דודה"
+    const val BROTHER = "אח"
+    const val SISTER = "אחות"
     const val MARRIAGE = "נישואין"
-    const val WIFE_OF = "אשה של "
-    const val HUSBAND_OF = "בעל של "
     const val FATHER = "אבא"
     const val MOTHER = "אמא"
     const val SON = "בן"
@@ -43,7 +66,7 @@ object HebrewText {
     const val GRANDSON = "נכד"
     const val GRANDDAUGHTER = "נכדה"
     const val COUSIN = "בן דוד / בת דודה"
-    const val SIBLING_OF = "אח / אחות"
+    const val SIBLING = "אח / אחות"
 
     // FamilyMember details
     const val FIRST_NAME = "שם פרטי"
@@ -57,9 +80,11 @@ object HebrewText {
     const val HOW = "כיצד"
     const val DOES = "האם"
 
-
-
-
+    const val BLANK = "______"
+    const val CHOOSE = "בחר"
+    const val HOW_IS_OTHER_MEMBER_RELATED_TO = "כיצד בן המשפחה הנוסף קשור ל"
+    const val RABBIS_OR_STAFF_THAT_DID_NOT_LEARN_IN_YESHIVA = "רבנים או צוות הישיבה שלא למדו בישיבה"
+    const val ADDING_NEW_MEMBER = "הוספת בן משפחה חדש"
     const val DO_YOU_WANT_TO_ADD_ANYWAY = "האם תרצה להוסיף בן משפחה זה, בכל זאת?"
     const val MEMBER_ALREADY_EXISTS = "קיים כבר בן משפחה עם שם זה בעץ"
     const val WAS_ADDED_SUCCESSFULLY = "נוסף בהצלחה"
@@ -92,8 +117,6 @@ object HebrewText {
     const val NON_YESHIVA_FAMILY_MEMBER = "בן משפחה שאינו מהישיבה"
     const val ADD_FAMILY_MEMBER = "הוסף בן משפחה"
     const val IS_THIS_FAMILY_MEMBER_A_RABBI = "האם בן משפחה זה הוא רב?"
-    const val YES = "כן"
-    const val NO = "לא"
     const val NEW_FAMILY_MEMBERS_MUST_BE_RELATED_TO_AN_EXISTING_MEMBER = "בני משפחה חדשים נדרשים להיות קשורים לבן משפחה קיים בעץ. עליך לבחור בן משפחה שאליו קשור בן המשפחה שאתה רוצה להוסיף"
 
 

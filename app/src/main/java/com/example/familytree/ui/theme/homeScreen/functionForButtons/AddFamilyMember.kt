@@ -17,14 +17,14 @@ import com.example.familytree.data.exceptions.SameSexMarriageException
 import com.example.familytree.ui.theme.HebrewText
 import com.example.familytree.ui.theme.dialogs.AskUserForMemberDetailsDialog
 import com.example.familytree.ui.theme.dialogs.ChooseMemberToRelateToDialog
-import com.example.familytree.ui.theme.dialogs.GenderErrorDialog
+import com.example.familytree.ui.theme.dialogs.errorDialogs.GenderErrorDialog
 import com.example.familytree.ui.theme.dialogs.HowAreTheyRelatedDialog
 import com.example.familytree.ui.theme.dialogs.ChooseMemberTypeDialog
-import com.example.familytree.ui.theme.dialogs.GenericMessageDialogWithOneButton
-import com.example.familytree.ui.theme.dialogs.GenericMessageDialogWithTwoButtons
-import com.example.familytree.ui.theme.dialogs.MoreThanOneConnectionErrorDialog
+import com.example.familytree.ui.theme.dialogs.MemberAddedSuccessfullyDialog
+import com.example.familytree.ui.theme.dialogs.errorDialogs.MemberWithSameNameAlreadyExistsDialog
+import com.example.familytree.ui.theme.dialogs.errorDialogs.MoreThanOneConnectionErrorDialog
 import com.example.familytree.ui.theme.dialogs.NewMemberMustBeRelatedDialog
-import com.example.familytree.ui.theme.dialogs.SameMemberMarriageErrorDialog
+import com.example.familytree.ui.theme.dialogs.errorDialogs.SameMemberMarriageErrorDialog
 
 /**
  * A composable function that displays a dialog for adding a family member to the family tree.
@@ -47,7 +47,7 @@ fun AddFamilyMember(
         )
 
     } else {
-
+        // If the tree isn't empty, new members must be related to existing members
         AddNewMemberAndRelateToExistingMember(
             existingMembers = existingMembers,
             onDismiss = onDismiss
@@ -73,7 +73,6 @@ private fun AddNewFamilyMemberToEmptyTree(
     onDismiss: () -> Unit
 ) {
     var newMember: FamilyMember? by remember { mutableStateOf(null) }
-    val context = LocalContext.current
 
     AskUserToCreateNewFamilyMember(
         onMemberCreation = { newMember = it },
@@ -83,9 +82,8 @@ private fun AddNewFamilyMemberToEmptyTree(
 
     if (newMember != null) {
         if (addNewMemberToLocalMemberMap(newMember!!)) {
-            GenericMessageDialogWithOneButton(
-                title = HebrewText.SUCCESS_ADDING_MEMBER,
-                text = newMember!!.getFullName() + " " + HebrewText.WAS_ADDED_SUCCESSFULLY,
+            MemberAddedSuccessfullyDialog(
+                newMember = newMember!!,
                 onDismiss = onDismiss
             )
         }
@@ -108,13 +106,14 @@ private fun AddNewMemberAndRelateToExistingMember(
     var existingMember: FamilyMember? by remember { mutableStateOf(null) }
     var newMember: FamilyMember? by remember { mutableStateOf(null) }
     var relationFromExistingMemberPerspective: Relations? by remember { mutableStateOf(null) }
+    var expectedGenderOfNewMember: Boolean by remember { mutableStateOf(true) }
     var wasUserInformed by remember { mutableStateOf(false) }
     var showGenderErrorDialog by remember { mutableStateOf(false) }
     var showMoreThanOneMemberErrorDialog by remember { mutableStateOf(false) }
     var showSameMemberMarriageErrorDialog by remember { mutableStateOf(false) }
     var isConnectionValid by remember { mutableStateOf(false) }
     var wasMemberAdded by remember { mutableStateOf(false) }
-    var AreSuggesstionsFinished by remember { mutableStateOf(false) }
+    var areSuggestionsFinished by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
 
@@ -123,13 +122,14 @@ private fun AddNewMemberAndRelateToExistingMember(
         existingMember = null
         newMember = null
         relationFromExistingMemberPerspective = null
+        expectedGenderOfNewMember = true
         wasUserInformed = false
         showGenderErrorDialog = false
         showMoreThanOneMemberErrorDialog = false
         showSameMemberMarriageErrorDialog = false
         isConnectionValid = false
         wasMemberAdded = false
-        AreSuggesstionsFinished = false
+        areSuggestionsFinished = false
     }
 
     val onDismissAndResetState: () -> Unit = {
@@ -161,7 +161,10 @@ private fun AddNewMemberAndRelateToExistingMember(
 
         HowAreTheyRelatedDialog(
             existingMember = existingMember!!,
-            onRelationSelected = { relationFromExistingMemberPerspective = it },
+            onRelationSelected = { relation, gender ->
+                relationFromExistingMemberPerspective = relation
+                expectedGenderOfNewMember = gender
+            },
             onPrevious = { existingMember = null },
             onDismiss = onDismissAndResetState
         )
@@ -178,6 +181,7 @@ private fun AddNewMemberAndRelateToExistingMember(
             existingMembers = existingMembers,
             memberToRelateTo = existingMember!!,
             relation = relationFromExistingMemberPerspective,
+            expectedGender = expectedGenderOfNewMember,
             onDismiss = onDismissAndResetState
         )
     }
@@ -247,7 +251,6 @@ private fun AddNewMemberAndRelateToExistingMember(
         val connectionAdded = addConnectionToBothMembersInLocalMap(existingMember!!, newMember!!, relationFromExistingMemberPerspective!!)
 
         if (newMemberAdded && connectionAdded) {
-            Toast.makeText(context, HebrewText.SUCCESS_ADDING_MEMBER, Toast.LENGTH_LONG).show()
             wasMemberAdded = true
         }
         else {
@@ -256,16 +259,14 @@ private fun AddNewMemberAndRelateToExistingMember(
     }
 
     // Step 7: offer user to add suggested connections
-    else if (AreSuggesstionsFinished.not()) {
-        SuggestConnections({ AreSuggesstionsFinished = true })
+    else if (areSuggestionsFinished.not()) {
+        SuggestConnections({ areSuggestionsFinished = true })
     }
 
     // Step 8: Inform the user, the member was added successfully, and then dismiss
     else {
-
-        GenericMessageDialogWithOneButton(
-            title = HebrewText.SUCCESS_ADDING_MEMBER,
-            text = newMember!!.getFullName() + " " + HebrewText.WAS_ADDED_SUCCESSFULLY,
+        MemberAddedSuccessfullyDialog(
+            newMember = newMember!!,
             onDismiss = onDismissAndResetState
         )
     }
@@ -296,6 +297,7 @@ private fun AskUserToCreateNewFamilyMember(
     existingMembers: List<FamilyMember>,
     memberToRelateTo: FamilyMember? = null,
     relation: Relations? = null,
+    expectedGender: Boolean? = null,
     onDismiss: () -> Unit
 ) {
 
@@ -312,13 +314,19 @@ private fun AskUserToCreateNewFamilyMember(
     val gender = memberToRelateTo?.getGender()
 
     // Headline for AskUserForMemberDetailsDialog
-    val headLine = if (memberToRelateTo == null || relation == null) {
-        HebrewText.ADD_FAMILY_MEMBER
-    } else {
-        HebrewText.ENTER_DETAILS_FOR + " " + HebrewText.THE +
-                relation.displayAsConnections(!gender!!) +
+    val headLine =
+
+        // For when the tree is empty
+        if (memberToRelateTo == null || relation == null) {
+            HebrewText.ADD_FAMILY_MEMBER
+        }
+
+        // For when the tree is not empty
+        else {
+            HebrewText.ENTER_DETAILS_FOR + " " +
+                relation.displayAsConnections(!gender!!) + " " +
                 memberToRelateTo.getFullName()
-    }
+        }
 
     val resetState: () -> Unit = {
         newMember = null
@@ -331,7 +339,7 @@ private fun AskUserToCreateNewFamilyMember(
     }
 
     // Females can't be of YeshivaMember type
-    if (relation != null && relation.expectedGender(memberToRelateTo!!.getGender()) == false) {
+    if (expectedGender != null && expectedGender.not()) {
         selectedMemberType = MemberType.NonYeshiva
     }
 
@@ -355,7 +363,7 @@ private fun AskUserToCreateNewFamilyMember(
         // Display a dialog for entering member details based on the selected type.
         AskUserForMemberDetailsDialog(
             headLine = headLine,
-            expectedGender = relation?.expectedGender(memberToRelateTo!!.getGender()),
+            expectedGender = expectedGender,
             selectedMemberType = selectedMemberType,
             onFamilyMemberCreation = { member -> newMember = member },
             onPrevious = onPreviousForStepTwoModified,
@@ -370,14 +378,14 @@ private fun AskUserToCreateNewFamilyMember(
         }
         if (memberExists) {
             // Show a dialog to ask the user if they still want to add the new member
-            GenericMessageDialogWithTwoButtons(
-                title = HebrewText.MEMBER_ALREADY_EXISTS,
-                text = HebrewText.DO_YOU_WANT_TO_ADD_ANYWAY,
-                onClick = { newMember?.let { onMemberCreation(it) } },
-                textForOnClick = HebrewText.YES,
-                onDismiss = onDismissAndResetState,
-                textForOnDismiss = HebrewText.NO
+            MemberWithSameNameAlreadyExistsDialog(
+                onApprove = { newMember?.let { onMemberCreation(it) } },
+                onDismiss = onDismissAndResetState
             )
+        }
+        // Else - member doesn't exist
+        else {
+            newMember?.let { onMemberCreation(it) }
         }
     }
 }

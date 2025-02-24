@@ -40,6 +40,7 @@ fun ConnectTwoMembers(
     var memberOne by remember { mutableStateOf<FamilyMember?>(null) }
     var memberTwo by remember { mutableStateOf<FamilyMember?>(null) }
     var relationFromMemberOnePerspective by remember { mutableStateOf<Relations?>(null) }
+    var expectedGenderOfMemberTwo: Boolean by remember { mutableStateOf(true) }
     var wasConnectionAdded by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
@@ -49,6 +50,7 @@ fun ConnectTwoMembers(
         memberOne = null
         memberTwo = null
         relationFromMemberOnePerspective = null
+        expectedGenderOfMemberTwo = true
         wasConnectionAdded = false
     }
 
@@ -72,7 +74,10 @@ fun ConnectTwoMembers(
 
         HowAreTheyRelatedDialog(
             existingMember = memberOne ?: FamilyMember(),
-            onRelationSelected = { relationFromMemberOnePerspective = it },
+            onRelationSelected = { relation, gender ->
+                relationFromMemberOnePerspective = relation
+                expectedGenderOfMemberTwo = gender
+            },
             onPrevious = { memberOne = null },
             onDismiss = onDismissAndResetState
         )

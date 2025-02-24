@@ -1,6 +1,5 @@
 package com.example.familytree.ui.theme.dialogs
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,32 +7,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MenuAnchorType
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.MemberType
+import com.example.familytree.ui.theme.BooleanSelection
+import com.example.familytree.ui.theme.DialogTitle
+import com.example.familytree.ui.theme.TextFieldWithDropdownMenu
+import com.example.familytree.ui.theme.TextField
 import com.example.familytree.ui.theme.HebrewText
+import com.example.familytree.ui.theme.DialogButton
 import com.example.familytree.ui.theme.allMachzorim
 import com.example.familytree.ui.theme.intToMachzor
 import com.example.familytree.ui.theme.machzorToInt
@@ -74,12 +63,12 @@ fun AskUserForMemberDetailsDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(headLine) },
+        title = { DialogTitle(headLine) },
         text = {
             Column(modifier = Modifier.padding(16.dp)) {
 
                 // Input field for first name
-                FreeTextField(
+                TextField(
                     text = HebrewText.FIRST_NAME,
                     value = firstName,
                     onValueChange = { firstName = it }
@@ -88,7 +77,7 @@ fun AskUserForMemberDetailsDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Input field for last name
-                FreeTextField(
+                TextField(
                     text = HebrewText.LAST_NAME,
                     value = lastName,
                     onValueChange = { lastName = it }
@@ -147,15 +136,18 @@ fun AskUserForMemberDetailsDialog(
             ) {
 
                 // Previous button
-                Button(onClick = onPrevious) {
-                    Text(HebrewText.PREVIOUS)
-                }
+                DialogButton(
+                    text = HebrewText.PREVIOUS,
+                    onClick = onPrevious
+                )
 
-                // Next button
-                Button(
+                // OK button
+                DialogButton(
+                    text = HebrewText.OK,
                     onClick = {
-                        onFamilyMemberCreation(
-                            FamilyMember(
+
+                        // Create FamilyMember
+                        val familyMember = FamilyMember(
                                 memberType = selectedMemberType!!,
                                 firstName = firstName,
                                 lastName = lastName,
@@ -164,13 +156,12 @@ fun AskUserForMemberDetailsDialog(
                                 isRabbi = isRabbi,
                                 isYeshivaRabbi = isYeshivaRabbi
                             )
-                        )
+
+                        onFamilyMemberCreation(familyMember)
                     },
                     enabled = firstName.isNotEmpty() && lastName.isNotEmpty() &&
                             (selectedMemberType == MemberType.NonYeshiva || machzor != null)
-                ) {
-                    Text(HebrewText.OK)
-                }
+                )
             }
         }
     )
@@ -185,118 +176,18 @@ fun AskUserForMemberDetailsDialog(
  * @param machzor The currently selected machzor as a string.
  * @param onMachzorChange Callback to update the machzor selection. The selected machzor will be passed as a string.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MachzorInput(machzor: Int?,
-                         onMachzorChange: (Int?) -> Unit) {
-
-    // State to handle dropdown visibility and selected option
-    var expanded by remember { mutableStateOf(false) }
-    var selectedMachzor by remember { mutableStateOf(machzor) }
-
-    // UI layout
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
-    ) {
-        TextField(
-            value = intToMachzor[selectedMachzor] ?: "",
-            onValueChange = {},
-            label = { Text(HebrewText.MACHZOR) },
-            readOnly = true,
-            trailingIcon = {
-                Icon(
-                    imageVector = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
-                    contentDescription = null
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
-                .clickable { expanded = true }
-        )
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            allMachzorim.forEach { machzorOption ->
-                DropdownMenuItem(
-                    text = { Text(machzorOption) },
-                    onClick = {
-                        selectedMachzor = machzorToInt[machzorOption] ?: 0
-                        onMachzorChange(selectedMachzor)
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-}
-
-/**
- * A composable function that renders a boolean selection using radio buttons.
- *
- * This component allows users to choose between two options, typically "Yes" and "No".
- *
- * @param label A descriptive text displayed above the radio buttons.
- * @param optionOne The text label for the `true` selection (default: HebrewText.YES).
- * @param optionTwo The text label for the `false` selection (default: HebrewText.NO).
- * @param selected The currently selected boolean value (default: `true`).
- * @param onChange A callback function triggered when the selection changes.
- */
-@Composable
-private fun BooleanSelection(
-    label: String,
-    optionOne: String = HebrewText.YES,
-    optionTwo: String = HebrewText.NO,
-    selected: Boolean = true,
-    onChange: (Boolean) -> Unit
+private fun MachzorInput(
+    machzor: Int?,
+    onMachzorChange: (Int?) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-        Text(label, modifier = Modifier.padding(bottom = 8.dp))
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.weight(1f).padding(end = 8.dp)
-            ) {
-                RadioButton(
-                    selected = selected,
-                    onClick = { onChange(true) }
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(optionOne)
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.weight(1f)
-            ) {
-                RadioButton(
-                    selected = !selected,
-                    onClick = { onChange(false) }
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(optionTwo)
-            }
+    TextFieldWithDropdownMenu(
+        label = HebrewText.MACHZOR,
+        options = allMachzorim,
+        selectedOption = intToMachzor[machzor],
+        onOptionSelected = { selectedOption ->
+            val selectedMachzor = machzorToInt[selectedOption] ?: 0
+            onMachzorChange(selectedMachzor)
         }
-    }
-}
-
-/**
- * A reusable text input field for free-text entry.
- *
- * @param text The label describing the text field.
- * @param value The current text value entered by the user.
- * @param onValueChange Callback triggered when the text value changes.
- */
-@Composable
-private fun FreeTextField(
-    text: String,
-    value: String,
-    onValueChange: (String) -> Unit
-) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(text) }
     )
 }

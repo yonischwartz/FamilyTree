@@ -1,8 +1,5 @@
 package com.example.familytree.ui.theme.dialogs
 
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.FullConnection
@@ -38,27 +35,17 @@ fun SuggestConnectionDialog(
 
     val title: String =
         HebrewText.DOES + " " + memberTwoName + " " +
-                pronouns + " " + HebrewText.THE +
-                relationString + memberOneName + "?"
+                pronouns + " " + relationString + " " + memberOneName + "?"
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = { },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    DatabaseManager.addConnectionToBothMembersInLocalMap(memberOne, memberTwo, relation)
-                    onDismiss()
-                }
-            ) {
-                Text(HebrewText.YES)
-            }
+    DialogWithTwoButtons(
+        title = title,
+        text = "",
+        onClickForLeft = {
+            DatabaseManager.addConnectionToBothMembersInLocalMap(memberOne, memberTwo, relation)
+            onDismiss()
         },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(HebrewText.NO)
-            }
-        }
+        textForLeft = HebrewText.YES,
+        onClickForRight = onDismiss,
+        textForRight = HebrewText.NO
     )
 }
