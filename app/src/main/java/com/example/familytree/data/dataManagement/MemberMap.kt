@@ -249,6 +249,28 @@ object MemberMap {
     }
 
     /**
+     * Retrieves the relationship between a family member and one of their connections.
+     *
+     * @param memberOne The family member whose connections are being checked.
+     * @param memberTwo The family member to find within the connections of [memberOne].
+     * @return The [Relations] enum representing the relationship between [memberOne] and [memberTwo],
+     *         or null if no such connection exists.
+     */
+    internal fun getRelationBetweenMemberAndOneOfHisConnections(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember
+    ): Relations? {
+
+        for (connection in memberOne.getConnections()) {
+            if (connection.memberId == memberTwo.getId()) {
+                return connection.relationship
+            }
+        }
+        // If memberTwo isn't in memberOne's connections, return null
+        return null
+    }
+
+    /**
      * Finds the shortest path between two family members using a BFS algorithm.
      *
      * @param memberOne The starting family member.
@@ -264,43 +286,46 @@ object MemberMap {
         // Set to keep track of visited members by their ID
         val visited = mutableSetOf<String>()
 
-        // List to store the path from memberOne to memberTwo
-        val path = mutableListOf<FamilyMember>()
-
-        // Queue to handle the BFS traversal while maintaining uniqueness
+        // Queue to handle the BFS traversal
         val queue = UniqueQueue<FamilyMember>()
 
-        // Start BFS with the initial member
+        // Map to track the parent of each visited member for path reconstruction
+        val parentMap = mutableMapOf<String, FamilyMember?>()
+
+        // Initialize BFS with the starting member
         queue.add(memberOne)
+        parentMap[memberOne.getId()] = null
 
         while (queue.isNotEmpty()) {
-
-            // Retrieve and remove the first member from the queue
-            val currentMember = queue.poll()
+            val currentMember = queue.poll() ?: continue
 
             // Check if the target member is reached
-            if (currentMember!!.getId() == memberTwo.getId()) {
-                path.add(currentMember)
-                break
+            if (currentMember.getId() == memberTwo.getId()) {
+                // Reconstruct the path by backtracking using the parent map
+                val path = mutableListOf<FamilyMember>()
+                var member: FamilyMember? = currentMember
+                while (member != null) {
+                    path.add(member)
+                    member = parentMap[member.getId()]
+                }
+                return path.reversed() // The path is constructed in reverse order
             }
 
-            // Skip already visited members
-            if (currentMember.getId() in visited) continue
-
-            // Mark the member as visited
+            // Mark as visited when dequeued, not when enqueued
             visited.add(currentMember.getId())
-            path.add(currentMember)
 
             // Enqueue all unvisited connections of the current member
             for (connection in currentMember.getConnections()) {
                 val member = members[connection.memberId]
-                if (member != null) {
+                if (member != null && member.getId() !in visited && member.getId() !in parentMap) {
                     queue.add(member)
+                    parentMap[member.getId()] = currentMember
                 }
             }
         }
 
-        return path
+        // Return an empty list if no path is found
+        return emptyList()
     }
 
     /**

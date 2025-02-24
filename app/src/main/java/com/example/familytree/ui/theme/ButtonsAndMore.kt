@@ -230,3 +230,42 @@ fun TextFieldWithDropdownMenu(
         }
     }
 }
+
+/**
+ * A row of two customizable confirmation buttons with optional enabled/disabled states.
+ *
+ * @param textForLeftButton The text displayed on the left button.
+ * @param onClickForLeftButton The action to perform when the left button is clicked.
+ * @param enabledForLeftButton Whether the left button is enabled (default is true).
+ * @param textForRightButton The text displayed on the right button.
+ * @param onClickForRightButton The action to perform when the right button is clicked.
+ * @param enabledForRightButton Whether the right button is enabled (default is true).
+ */
+@Composable
+fun TwoConfirmButtons(
+    textForLeftButton: String,
+    onClickForLeftButton: () -> Unit,
+    enabledForLeftButton: Boolean = true,
+    textForRightButton: String,
+    onClickForRightButton: () -> Unit,
+    enabledForRightButton: Boolean = true,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        // Right button
+        DialogButton(
+            text = textForRightButton,
+            onClick = onClickForRightButton,
+            enabled = enabledForRightButton
+        )
+
+        // Left button
+        DialogButton(
+            text = textForLeftButton,
+            onClick = onClickForLeftButton,
+            enabled = enabledForLeftButton
+        )
+    }
+}

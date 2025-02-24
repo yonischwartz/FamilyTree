@@ -13,23 +13,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.platform.LocalLayoutDirection
 import com.example.familytree.data.FamilyMember
+import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.data.dataManagement.DatabaseManager.deleteMemberFromLocalMemberMap
 import com.example.familytree.ui.theme.HebrewText
 import com.example.familytree.ui.theme.DialogButton
-import com.example.familytree.ui.theme.dialogs.errorDialogs.DeleteErrorDialog
+import com.example.familytree.ui.theme.dialogs.errorAndSuccessDialogs.DeleteErrorDialog
 
 /**
  * Composable function that displays a dialog containing a list of all family members.
  * Each member can be clicked to view detailed information.
  *
- * @param existingMembers The list of family members to display.
  * @param onDismiss The action to perform when the dialog is dismissed.
  */
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
-fun MemberListDialog(existingMembers: List<FamilyMember>, onDismiss: () -> Unit) {
+fun MemberListDialog(onDismiss: () -> Unit) {
     // Use state-backed mutable list for dynamic updates
-    val memberList = remember { mutableStateListOf(*existingMembers.toTypedArray()) }
+    val memberList = remember { mutableStateListOf(*DatabaseManager.getAllMembers().toTypedArray()) }
     var selectedMember by remember { mutableStateOf<FamilyMember?>(null) }
     var showDeleteErrorDialog by remember { mutableStateOf(false) }
 

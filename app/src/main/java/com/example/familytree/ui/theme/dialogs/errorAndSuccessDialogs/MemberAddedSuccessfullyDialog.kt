@@ -1,8 +1,9 @@
-package com.example.familytree.ui.theme.dialogs
+package com.example.familytree.ui.theme.dialogs.errorAndSuccessDialogs
 
 import androidx.compose.runtime.Composable
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.ui.theme.HebrewText
+import com.example.familytree.ui.theme.dialogs.DialogWithOneButton
 
 /**
  * Displays a dialog indicating that a new family member was successfully added.

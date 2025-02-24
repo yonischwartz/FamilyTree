@@ -1,4 +1,4 @@
-package com.example.familytree.ui.theme.dialogs.errorDialogs
+package com.example.familytree.ui.theme.dialogs.errorAndSuccessDialogs
 
 import androidx.compose.runtime.Composable
 import com.example.familytree.data.FamilyMember

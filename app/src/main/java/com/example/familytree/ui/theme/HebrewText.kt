@@ -32,6 +32,8 @@ object HebrewText {
     const val CLOSE = "סגור"
     const val CANCEL = "בטל"
     const val OK = "אישור"
+    const val FIND_CONNECTION = "מצא קשר"
+    const val SHOW_REVERSE_CONNECTION = "הצג את הקשר הפוך"
 
     // Relations as a subjective
     const val WIFE_OF = "אשתו של"
@@ -80,6 +82,16 @@ object HebrewText {
     const val HOW = "כיצד"
     const val DOES = "האם"
 
+    // One letter words
+    const val THAT = "ש"
+    const val TO = "ל"
+    const val AS = "כ"
+    const val AND = "ו"
+
+    const val THE_CONNECTION_BETWEEN = "הקשר בין"
+    const val NOT_ENOUGH_MEMBERS_IN_TREE = "אין מספיק בני משפחה בעץ"
+    const val IN_ORDER_TO_FIND_CONNECTION_BETWEEN_MEMBERS_TREE_MUST_HAVE_AT_LEAST_TWO_MEMBERS = "כדי למצוא קשר בין בני משפחה, צריכים להיות בעץ לפחות שני בני משפחה"
+    const val CHOOSE_TWO_MEMBERS_WHOM_YOU_WOULD_LIKE_TO_FIND_THEIR_CONNECTION = "בחר שני בני משפחה שתרצה למצוא קשר ביניהם"
     const val BLANK = "______"
     const val CHOOSE = "בחר"
     const val HOW_IS_OTHER_MEMBER_RELATED_TO = "כיצד בן המשפחה הנוסף קשור ל"
@@ -97,7 +109,6 @@ object HebrewText {
     const val FAMILY_TREE = "עץ משפחה"
     const val CHOOSE_FAMILY_MEMBER = "בחר בן משפחה"
     const val CHOOSE_RELATION = "בחר קשר משפחתי"
-    const val TO = "ל"
     const val FAMILY_MEMBER_LIST = "רשימת בני משפחה"
     const val UNKNOWN = "לא ידוע"
     const val RABBI = "הרב "
@@ -108,7 +119,6 @@ object HebrewText {
     const val EXISTS_ALREADY_FAMILY_RELATION_OF_TYPE = "קיים כבר קשר משפחתי מסוג "
     const val CAN_NOT_ADD = "לא ניתן להוסיף את "
     const val BECAUSE = "מכיוון ש"
-    const val AS = "כ"
     const val HE = "הוא"
     const val SHE = "היא"
     const val CHOOSE_FAMILY_MEMBER_TYPE = "בחר סוג בן משפחה"

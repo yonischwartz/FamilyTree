@@ -9,16 +9,19 @@ import androidx.compose.ui.Modifier
 import com.example.familytree.ui.theme.CustomizedText
 import com.example.familytree.ui.theme.DialogTitle
 import com.example.familytree.ui.theme.DialogButton
+import com.example.familytree.ui.theme.TwoConfirmButtons
 
 /**
- * A customizable dialog with two buttons.
+ * A customizable dialog with two buttons, supporting enabled/disabled states.
  *
  * @param title The title of the dialog displayed at the top.
  * @param text The main content text of the dialog.
- * @param onClickForLeft The action to perform when the confirm button is clicked.
- * @param textForLeft The text displayed on the confirm button.
- * @param onClickForRight The action to perform when the dismiss button is clicked or when the dialog is dismissed.
- * @param textForRight The text displayed on the dismiss button.
+ * @param onClickForLeft The action to perform when the confirm (left) button is clicked.
+ * @param textForLeft The text displayed on the confirm (left) button.
+ * @param enabledForLeftButton Whether the left button is enabled (default is true).
+ * @param onClickForRight The action to perform when the dismiss (right) button is clicked.
+ * @param textForRight The text displayed on the dismiss (right) button.
+ * @param enabledForRightButton Whether the right button is enabled (default is true).
  */
 @Composable
 fun DialogWithTwoButtons(
@@ -26,25 +29,25 @@ fun DialogWithTwoButtons(
     text: String,
     onClickForLeft: () -> Unit,
     textForLeft: String,
+    enabledForLeftButton: Boolean = true,
     onClickForRight: () -> Unit,
-    textForRight: String
+    textForRight: String,
+    enabledForRightButton: Boolean = true,
+    isOnDismissTheRightButton: Boolean = true
 ) {
     AlertDialog(
-        onDismissRequest = onClickForRight,
+        onDismissRequest = if (isOnDismissTheRightButton) { onClickForRight } else { onClickForLeft },
         title = { DialogTitle(title) },
         text = { CustomizedText(text) },
         confirmButton = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-
-                // First button
-                DialogButton(textForRight, onClickForRight)
-
-                // Second button
-                DialogButton(textForLeft, onClickForLeft)
-            }
+            TwoConfirmButtons(
+                textForLeftButton = textForLeft,
+                onClickForLeftButton = onClickForLeft,
+                enabledForLeftButton = enabledForLeftButton,
+                textForRightButton = textForRight,
+                onClickForRightButton = onClickForRight,
+                enabledForRightButton = enabledForRightButton
+            )
         }
     )
 }

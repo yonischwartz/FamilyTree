@@ -26,14 +26,6 @@ object DatabaseManager {
     // functions
 
     /**
-     * Checks if the family tree is empty by verifying if the member map is empty.
-     * @return true if the family tree is empty, false otherwise.
-     */
-    fun isTreeEmpty(): Boolean {
-        return memberMap.getAllMembers().isEmpty()
-    }
-
-    /**
      * Retrieves a family member by their unique ID.
      * @param memberId The ID of the family member.
      * @return The FamilyMember object if found, otherwise null.
@@ -224,6 +216,23 @@ object DatabaseManager {
     ): Boolean {
         memberMap.validateConnection(memberOne, memberTwo, relationFromMemberOnePerspective)
         return true
+    }
+
+    /**
+     * Retrieves the relationship between a family member and one of their connections.
+     *
+     * @param memberOne The family member whose connections are being checked.
+     * @param memberTwo The family member to find within the connections of [memberOne].
+     * @return The [Relations] enum representing the relationship between [memberOne] and [memberTwo],
+     *         or null if no such connection exists.
+     */
+    internal fun getRelationBetweenMemberAndOneOfHisConnections(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember
+    ): Relations? {
+
+        return memberMap.getRelationBetweenMemberAndOneOfHisConnections(memberOne, memberTwo)
+
     }
 
     /**

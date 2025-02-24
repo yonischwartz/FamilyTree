@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.MemberType
 import com.example.familytree.data.Relations
+import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.data.dataManagement.DatabaseManager.addConnectionToBothMembersInLocalMap
 import com.example.familytree.data.dataManagement.DatabaseManager.addNewMemberToLocalMemberMap
 import com.example.familytree.data.dataManagement.DatabaseManager.validateConnection
@@ -17,41 +18,31 @@ import com.example.familytree.data.exceptions.SameSexMarriageException
 import com.example.familytree.ui.theme.HebrewText
 import com.example.familytree.ui.theme.dialogs.AskUserForMemberDetailsDialog
 import com.example.familytree.ui.theme.dialogs.ChooseMemberToRelateToDialog
-import com.example.familytree.ui.theme.dialogs.errorDialogs.GenderErrorDialog
+import com.example.familytree.ui.theme.dialogs.errorAndSuccessDialogs.GenderErrorDialog
 import com.example.familytree.ui.theme.dialogs.HowAreTheyRelatedDialog
 import com.example.familytree.ui.theme.dialogs.ChooseMemberTypeDialog
-import com.example.familytree.ui.theme.dialogs.MemberAddedSuccessfullyDialog
-import com.example.familytree.ui.theme.dialogs.errorDialogs.MemberWithSameNameAlreadyExistsDialog
-import com.example.familytree.ui.theme.dialogs.errorDialogs.MoreThanOneConnectionErrorDialog
+import com.example.familytree.ui.theme.dialogs.errorAndSuccessDialogs.MemberAddedSuccessfullyDialog
+import com.example.familytree.ui.theme.dialogs.errorAndSuccessDialogs.MemberWithSameNameAlreadyExistsDialog
+import com.example.familytree.ui.theme.dialogs.errorAndSuccessDialogs.MoreThanOneConnectionErrorDialog
 import com.example.familytree.ui.theme.dialogs.NewMemberMustBeRelatedDialog
-import com.example.familytree.ui.theme.dialogs.errorDialogs.SameMemberMarriageErrorDialog
+import com.example.familytree.ui.theme.dialogs.errorAndSuccessDialogs.SameMemberMarriageErrorDialog
 
 /**
  * A composable function that displays a dialog for adding a family member to the family tree.
  *
  * @param onDismiss Callback to handle dialog dismissal.
- * @param existingMembers A list of existing family members.
  */
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
-fun AddFamilyMember(
-    existingMembers: List<FamilyMember>,
-    onDismiss: () -> Unit
-) {
+fun AddFamilyMember(onDismiss: () -> Unit) {
 
-    if (existingMembers.isEmpty()) {
+    if (DatabaseManager.getAllMembers().isEmpty()) {
         // Add the first family member of the tree
-        AddNewFamilyMemberToEmptyTree(
-            existingMembers = existingMembers,
-            onDismiss = onDismiss
-        )
+        AddNewFamilyMemberToEmptyTree(onDismiss = onDismiss)
 
     } else {
         // If the tree isn't empty, new members must be related to existing members
-        AddNewMemberAndRelateToExistingMember(
-            existingMembers = existingMembers,
-            onDismiss = onDismiss
-        )
+        AddNewMemberAndRelateToExistingMember(onDismiss = onDismiss)
     }
 }
 
@@ -69,14 +60,12 @@ fun AddFamilyMember(
  */
 @Composable
 private fun AddNewFamilyMemberToEmptyTree(
-    existingMembers: List<FamilyMember>,
     onDismiss: () -> Unit
 ) {
     var newMember: FamilyMember? by remember { mutableStateOf(null) }
 
     AskUserToCreateNewFamilyMember(
         onMemberCreation = { newMember = it },
-        existingMembers = existingMembers,
         onDismiss = onDismiss,
     )
 
@@ -95,12 +84,10 @@ private fun AddNewFamilyMemberToEmptyTree(
  * This function guides the user through the process of selecting an existing member, choosing
  * the relationship, creating the new member, and validating the connection before adding the new member.
  *
- * @param existingMembers A list of existing family members to choose from when selecting an existing member.
  * @param onDismiss A callback function to handle dismissing the dialog or UI component when the process is canceled or completed.
  */
 @Composable
 private fun AddNewMemberAndRelateToExistingMember(
-    existingMembers: List<FamilyMember>,
     onDismiss: () -> Unit
 ) {
     var existingMember: FamilyMember? by remember { mutableStateOf(null) }
@@ -149,7 +136,6 @@ private fun AddNewMemberAndRelateToExistingMember(
     else if (existingMember == null) {
 
         ChooseMemberToRelateToDialog(
-            existingMembers = existingMembers,
             onMemberSelected = { existingMember = it },
             onPrevious = {wasUserInformed = false},
             onDismiss = onDismissAndResetState
@@ -178,7 +164,6 @@ private fun AddNewMemberAndRelateToExistingMember(
             showPreviousButton = true,
             onPreviousForStepOne = { relationFromExistingMemberPerspective = null },
             onPreviousForStepTwo = {relationFromExistingMemberPerspective = null},
-            existingMembers = existingMembers,
             memberToRelateTo = existingMember!!,
             relation = relationFromExistingMemberPerspective,
             expectedGender = expectedGenderOfNewMember,
@@ -294,7 +279,6 @@ private fun AskUserToCreateNewFamilyMember(
     showPreviousButton: Boolean = false,
     onPreviousForStepOne: () -> Unit = {},
     onPreviousForStepTwo: () -> Unit = {},
-    existingMembers: List<FamilyMember>,
     memberToRelateTo: FamilyMember? = null,
     relation: Relations? = null,
     expectedGender: Boolean? = null,
@@ -373,7 +357,7 @@ private fun AskUserToCreateNewFamilyMember(
 
     // Step 3: Member is created and returned.
     else {
-        val memberExists = existingMembers.any {
+        val memberExists = DatabaseManager.getAllMembers().any {
             it.getFullName() == newMember?.getFullName() && it.getMachzor() == newMember?.getMachzor()
         }
         if (memberExists) {

@@ -25,8 +25,9 @@ import com.example.familytree.data.dataManagement.DatabaseManager.loadMembersFro
 import com.example.familytree.data.dataManagement.DatabaseManager.saveLocalMapToFirebase
 import com.example.familytree.ui.theme.homeScreen.functionForButtons.ConnectTwoMembers
 import com.example.familytree.ui.theme.WideBlueButton
+import com.example.familytree.ui.theme.dialogs.ChooseTwoMembersToFindTheirConnectionDialog
 import com.example.familytree.ui.theme.graphicTreeDisplay.ClickableShapesCanvas
-import com.example.familytree.ui.theme.graphicTreeDisplay.MemberGraphicNode
+import com.example.familytree.ui.theme.homeScreen.functionForButtons.FindConnectionsBetweenTwoMembers
 
 /**
  * Composable function that displays the main screen for the family tree application.
@@ -93,7 +94,6 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                     // Show search results in a dialog if not empty
                     if (searchResults.isNotEmpty()) {
                         MemberListDialog(
-                            existingMembers = searchResults,
                             onDismiss = { searchResults = emptyList() }
                         )
                     }
@@ -209,36 +209,27 @@ fun FamilyTreeScreen(modifier: Modifier = Modifier) {
                     // Dialog for adding a new family member
                     if (showAddMemberDialog) {
 
-                        AddFamilyMember(
-                            existingMembers = DatabaseManager.getAllMembers(),
-                            onDismiss = { showAddMemberDialog = false }
-                        )
+                        AddFamilyMember( onDismiss = { showAddMemberDialog = false } )
                     }
 
                     // Dialog for connecting between two existing members
                     if (showAddConnectionDialog) {
 
-                        ConnectTwoMembers(
-                            existingMembers = DatabaseManager.getAllMembers(),
-                            onDismiss = { showAddConnectionDialog = false }
-                        )
+                        ConnectTwoMembers( onDismiss = { showAddConnectionDialog = false } )
                     }
 
                     // Dialog to display the list of all family members
                     if (showFindConnectionDialog) {
 
-//                        FindConnectionDialog(
-//                            existingMembers = DatabaseManager.getAllMembers(),
-//                            onDismiss = { showMemberListDialog = false }
-//                        )
+                        FindConnectionsBetweenTwoMembers(
+                            onDismiss = { showFindConnectionDialog = false }
+                        )
                     }
-
 
                         // Dialog to display the list of all family members
                     if (showMemberListDialog) {
 
                         MemberListDialog(
-                            existingMembers = DatabaseManager.getAllMembers(),
                             onDismiss = { showMemberListDialog = false }
                         )
                     }

@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.familytree.data.FamilyMember
+import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.theme.DialogTitle
 import com.example.familytree.ui.theme.HebrewText
 import com.example.familytree.ui.theme.DialogButton
@@ -28,14 +29,12 @@ import com.example.familytree.ui.theme.DialogButton
 /**
  * Composable function to display a dialog for selecting a family member to relate to.
  *
- * @param existingMembers List of available FamilyMember objects.
  * @param onMemberSelected Callback when a member is selected.
  * @param onPrevious Callback when the previous button is clicked.
  * @param onDismiss Callback when the dialog is dismissed.
  */
 @Composable
 fun ChooseMemberToRelateToDialog(
-    existingMembers: List<FamilyMember>,
     onMemberSelected: (FamilyMember) -> Unit,
     showPreviousButton: Boolean = true,
     onPrevious: () -> Unit = {},
@@ -50,8 +49,8 @@ fun ChooseMemberToRelateToDialog(
         text = {
             Column {
                 LazyColumn {
-                    items(existingMembers.size) { index ->
-                        val member = existingMembers[index]
+                    items(DatabaseManager.getAllMembers().size) { index ->
+                        val member = DatabaseManager.getAllMembers()[index]
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
@@ -92,7 +91,8 @@ fun ChooseMemberToRelateToDialog(
                 DialogButton(
                     text = HebrewText.NEXT,
                     onClick = {
-                        existingMembers.find { it.getId() == checkedMemberId }?.let { onMemberSelected(it) }
+                        DatabaseManager.getAllMembers()
+                            .find { it.getId() == checkedMemberId }?.let { onMemberSelected(it) }
                     },
                     enabled = checkedMemberId != null
                 )

@@ -28,12 +28,10 @@ import com.example.familytree.ui.theme.dialogs.SuggestConnectionDialog
  * 3. Select the second member.
  * 4. Add the connection between the two members.
  *
- * @param existingMembers The list of available family members.
  * @param onDismiss A callback function to execute when the process is canceled or completed.
  */
 @Composable
 fun ConnectTwoMembers(
-    existingMembers: List<FamilyMember>,
     onDismiss:() -> Unit,
 ) {
 
@@ -62,7 +60,6 @@ fun ConnectTwoMembers(
     // First step: choose first member
     if (memberOne == null) {
         ChooseMemberToRelateToDialog(
-            existingMembers = existingMembers,
             onMemberSelected = { memberOne = it },
             showPreviousButton = false,
             onDismiss = onDismissAndResetState
@@ -89,13 +86,11 @@ fun ConnectTwoMembers(
         // Get all members that might be related to memberOne
         val optionalMembersToConnectTo =
             getListOfOptionalMembersToConnectTo(
-                existingMembers = existingMembers,
                 member = memberOne!!,
                 relationFromMembersPerspective = relationFromMemberOnePerspective!!
             )
 
         ChooseMemberToRelateToDialog(
-            existingMembers = optionalMembersToConnectTo,
             onMemberSelected = { memberTwo = it },
             onPrevious = { relationFromMemberOnePerspective = null },
             onDismiss = onDismissAndResetState
@@ -134,13 +129,11 @@ fun ConnectTwoMembers(
  * 2. Members already connected to `member` are excluded.
  * 3. If the relationship requires a specific gender, only members matching that gender are included.
  *
- * @param existingMembers The list of all available family members.
  * @param relationFromMembersPerspective The relationship type being established from the given member's perspective.
  * @param member The family member for whom we are finding possible connections.
  * @return A filtered list of `FamilyMember` objects who can be connected to the given `member`.
  */
 private fun getListOfOptionalMembersToConnectTo(
-    existingMembers: List<FamilyMember>,
     member: FamilyMember,
     relationFromMembersPerspective: Relations
 ): List<FamilyMember> {
@@ -150,7 +143,7 @@ private fun getListOfOptionalMembersToConnectTo(
     val idsOfMembersConnectedToMemberOne = connectionsOfMemberOne.map { it.memberId }
 
     // Id of memberOne and ids of members connected to him shouldn't be displayed
-    var optionalMembersToConnectTo = existingMembers.filter {
+    var optionalMembersToConnectTo = DatabaseManager.getAllMembers().filter {
         it.getId() != member.getId() && it.getId() !in idsOfMembersConnectedToMemberOne
     }
 

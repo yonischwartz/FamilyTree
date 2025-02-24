@@ -1,7 +1,4 @@
-package com.example.familytree.ui.theme.dialogs.errorDialogs
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+package com.example.familytree.ui.theme.dialogs.errorAndSuccessDialogs
 import androidx.compose.runtime.Composable
 import com.example.familytree.ui.theme.HebrewText
 import com.example.familytree.ui.theme.dialogs.DialogWithOneButton
