@@ -1,6 +1,6 @@
 package com.example.familytree.data
 
-import com.example.familytree.ui.theme.HebrewText
+import com.example.familytree.ui.HebrewText
 import java.util.UUID
 
 /**
@@ -157,5 +157,29 @@ class FamilyMember(
      */
     fun getId(): String {
         return id
+    }
+
+    /**
+     * Creates a duplicate instance of this `FamilyMember` with the `machzor` set to 0.
+     * This is specifically used for displaying Yeshiva rabbis in both their original
+     * `machzor` group and in the "machzor 0" group in the UI.
+     *
+     * The duplicate retains all other properties, including the same unique ID and connections.
+     *
+     * @return A new `FamilyMember` instance with `machzor` set to 0.
+     */
+    fun getDuplicateRabbiWithNoMachzor(): FamilyMember {
+
+        return FamilyMember(
+            memberType = this.memberType,
+            firstName = this.firstName,
+            lastName = this.lastName,
+            gender = this.gender,
+            machzor = 0,
+            isRabbi = this.isRabbi,
+            isYeshivaRabbi = this.isYeshivaRabbi,
+            id = this.id, // Keeping the same ID, but if a new ID is needed, use UUID.randomUUID().toString()
+            connections = this.connections.toMutableList()
+        )
     }
 }

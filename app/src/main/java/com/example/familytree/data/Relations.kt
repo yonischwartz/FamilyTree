@@ -1,6 +1,6 @@
 package com.example.familytree.data
 
-import com.example.familytree.ui.theme.HebrewText
+import com.example.familytree.ui.HebrewText
 
 /**
  * Enum class representing different types of family relationships.
@@ -138,7 +138,7 @@ enum class Relations() {
      *
      * @return A formatted Hebrew string for displaying family connections.
      */
-    fun displayAsConnections(gender: Boolean = true): String {
+    fun displayAsRelation(gender: Boolean = true): String {
         return when (this) {
             MARRIAGE -> if (gender) HebrewText.HUSBAND_OF else HebrewText.WIFE_OF
             FATHER -> HebrewText.FATHER_OF

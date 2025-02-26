@@ -1,13 +1,17 @@
 package com.example.familytree.data.dataManagement
 
+import android.util.Log
+import android.widget.Toast
 import com.example.familytree.UniqueQueue
 import com.example.familytree.data.Connection
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.FullConnection
+import com.example.familytree.data.MemberType
 import com.example.familytree.data.Relations
 import com.example.familytree.data.exceptions.InvalidGenderRoleException
 import com.example.familytree.data.exceptions.InvalidMoreThanOneConnection
 import com.example.familytree.data.exceptions.SameSexMarriageException
+import com.example.familytree.data.exceptions.UnsafeDeleteException
 
 /**
  * Object that manages a collection of FamilyMember instances locally.
@@ -56,18 +60,20 @@ object MemberMap {
      * Deletes a member from the members map and updates related connections.
      *
      * This function:
-     * 1. Removes the member from the `members` map.
-     * 2. Adds the member's ID to `deletedMembersIds`.
-     * 3. Iterates through all remaining members and removes any connections to the deleted member.
-     * 4. If a member's connections are updated, their ID is added to `modifiedAndNewAddedMembersIds`.
+     * 1. Checks if the deletion is safe; if not, throws an UnsafeDeleteException.
+     * 2. Removes the member from the `members` map.
+     * 3. Adds the member's ID to `deletedMembersIds`.
+     * 4. Iterates through all remaining members and removes any connections to the deleted member.
+     * 5. If a member's connections are updated, their ID is added to `modifiedAndNewAddedMembersIds`.
      *
      * @param memberToBeRemovedId The ID of the member to be deleted.
+     * @throws UnsafeDeleteException if deleting the member would split the graph.
      */
-    internal fun deleteMember(memberToBeRemovedId: String): Boolean {
+    internal fun deleteMember(memberToBeRemovedId: String) {
 
-        // Check if memberToBeRemovedId can be removed
+        // Check if memberToBeRemovedId can be removed safely
         if (isDeleteSafe(memberToBeRemovedId).not()) {
-            return false
+            throw UnsafeDeleteException(memberToBeRemovedId)
         }
 
         // Remove the member from the map
@@ -78,7 +84,6 @@ object MemberMap {
 
         // Iterate over all remaining members and remove the deleted member from their connections
         for (member in members.values) {
-            // Check if the member has a connection to the deleted member
             val connectionToRemove = member.getConnections().filter { it.memberId == memberToBeRemovedId }
 
             if (connectionToRemove.isNotEmpty()) {
@@ -89,9 +94,6 @@ object MemberMap {
                 modifiedAndNewAddedMembersIds.add(member.getId())
             }
         }
-
-        // Delete succeed
-        return true
     }
 
     /**
@@ -100,6 +102,15 @@ object MemberMap {
      */
     internal fun getAllMembers(): List<FamilyMember> {
         return members.values.toList()
+    }
+
+    /**
+     * Retrieves a list of all family members who are Yeshiva members.
+     *
+     * @return A list of [FamilyMember] objects whose [MemberType] is [MemberType.Yeshiva].
+     */
+    internal fun getAllYeshivaMembers(): List<FamilyMember> {
+        return members.values.filter { it.getMemberType() == MemberType.Yeshiva }
     }
 
     /**
@@ -348,14 +359,15 @@ object MemberMap {
      */
     private fun isDeleteSafe(memberToBeRemovedId: String): Boolean {
         val visited = mutableSetOf<String>()
-        val remainingMembers = members.keys - memberToBeRemovedId
+        val membersWithoutMemberToBeRemoved = members.keys - memberToBeRemovedId
 
-        if (remainingMembers.isEmpty()) return true // If no members remain, it's safe
+        // If no members remain, it's safe
+        if (membersWithoutMemberToBeRemoved.isEmpty()) return true
 
         // Find a starting point different from the one being removed
-        val startMember = remainingMembers.first()
+        val startMember = membersWithoutMemberToBeRemoved.first()
 
-        // Perform BFS or DFS to check connectivity
+        // Perform DFS to check connectivity
         fun dfs(memberId: String) {
             if (memberId in visited) return
             visited.add(memberId)
@@ -368,7 +380,17 @@ object MemberMap {
 
         dfs(startMember)
 
-        return visited.size == remainingMembers.size // If all remaining members are visited, it's safe
+        // Check for any unexpected members in visited
+        if (visited.size != membersWithoutMemberToBeRemoved.size) {
+            val unexpectedMembers = visited - membersWithoutMemberToBeRemoved
+            unexpectedMembers.forEach { memberId ->
+                val memberName = members[memberId]?.getFullName() ?: "MemberId: $memberId"
+                Log.e("FamilyTree", "Unexpected member in graph: $memberName")
+            }
+        }
+
+
+        return visited.size == membersWithoutMemberToBeRemoved.size
     }
 
     // Private functions for validation

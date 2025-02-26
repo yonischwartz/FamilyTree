@@ -1,11 +1,11 @@
 package com.example.familytree.data.dataManagement
 
-import android.util.Log
 import com.example.familytree.data.Connection
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.FullConnection
 import com.example.familytree.data.MemberType
 import com.example.familytree.data.Relations
+import com.example.familytree.data.exceptions.UnsafeDeleteException
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.firestore.QuerySnapshot
@@ -199,6 +199,15 @@ object DatabaseManager {
     }
 
     /**
+     * Retrieves a list of all family members who are Yeshiva members.
+     *
+     * @return A list of [FamilyMember] objects whose [MemberType] is [MemberType.Yeshiva].
+     */
+    fun getAllYeshivaMembers(): List<FamilyMember> {
+        return memberMap.getAllYeshivaMembers()
+    }
+
+    /**
      * Validates the connection between two family members
      *
      * This function checks various types of relationships (e.g., marriage, parent-child, etc.) and
@@ -255,18 +264,19 @@ object DatabaseManager {
      * This function performs the following steps:
      *
      * 1. Deletes the specified member from the `memberMap` and removes them from all other members' connections.
-     *
      * 2. Adds the deleted member's ID to the `deletedMembersIds` list if it is not already included.
-     *
      * 3. Adds the IDs of the members whose connections were updated (from step 1) to the `modifiedAndNewAddedMembersIds` list,
      *    ensuring the list reflects all members affected by the deletion.
      *
      * @param memberToBeRemovedId The ID of the member to remove from the local member map and update connections for.
      * @return `true` if the member was successfully deleted, `false` otherwise.
      */
-    fun deleteMemberFromLocalMemberMap(memberToBeRemovedId: String): Boolean {
-        return memberMap.deleteMember(memberToBeRemovedId)
+    fun removeMemberFromLocalMemberMap(memberToBeRemovedId: String) {
+
+        // Remove member from local map. Throws exception in case of unsafe delete
+        memberMap.deleteMember(memberToBeRemovedId)
     }
+
 
     /**
      * Retrieves and removes the next suggested connection from the queue.

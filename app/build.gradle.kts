@@ -53,7 +53,10 @@ dependencies {
     implementation(libs.jewishDate)
     implementation(libs.kotlinxCoroutines)
     implementation("net.sourceforge.jexcelapi:jxl:2.6.12")
-    implementation(libs.coreKtx)  // Removed duplicate
+    implementation(libs.coreKtx)
+    implementation(libs.navigationRuntimeAndroid)
+    implementation(libs.navigationCompose)
+    implementation(libs.roomKtx)
 
     // Test dependencies
     testImplementation(libs.junit)

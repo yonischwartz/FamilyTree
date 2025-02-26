@@ -10,8 +10,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import com.example.familytree.ui.theme.FamilyTreeTheme
-import com.example.familytree.ui.theme.homeScreen.FamilyTreeScreen
+import androidx.navigation.compose.rememberNavController
+import com.example.familytree.ui.FamilyTreeTheme
+import com.example.familytree.ui.pages.homeScreenPage.FamilyTreeScreen
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.NavHost
+import com.example.familytree.ui.pages.memberListPage.MemberListPage
 
 
 class MainActivity : ComponentActivity() {
@@ -21,12 +25,23 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FamilyTreeTheme {
+                val navController = rememberNavController()
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    // Call your FamilyTreeScreen composable here
-                    FamilyTreeScreen(modifier = Modifier.padding(innerPadding))
+                    NavHost(
+                        navController = navController,
+                        startDestination = "familyTreeScreen",
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        composable("familyTreeScreen") {
+                            FamilyTreeScreen(navController = navController)
+                        }
+                        composable("memberListPage") {
+                            MemberListPage(navController = navController)
+                        }
+                    }
                 }
             }
         }
     }
 }
-
