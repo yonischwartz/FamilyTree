@@ -19,17 +19,16 @@ import com.example.familytree.ui.HebrewText
 import com.example.familytree.ui.pages.homeScreenPage.functionForButtons.AddFamilyMember
 import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.example.familytree.data.dataManagement.DatabaseManager.loadMembersFromFirebaseIntoLocalMap
 import com.example.familytree.data.dataManagement.DatabaseManager.saveLocalMapToFirebase
 import com.example.familytree.ui.FamilyTreeTopBar
 import com.example.familytree.ui.pages.homeScreenPage.functionForButtons.ConnectTwoMembers
 import com.example.familytree.ui.WideBlueButton
-import com.example.familytree.ui.graphicTreeDisplay.ClickableShapesCanvas
 import com.example.familytree.ui.pages.homeScreenPage.functionForButtons.FindConnectionsBetweenTwoMembers
-import com.example.familytree.ui.SearchBar
+import com.example.familytree.ui.MembersSearchBar
 import com.example.familytree.ui.backgroundColor
+import com.example.familytree.ui.dialogs.errorAndSuccessDialogs.NoMembersFoundDialog
 import com.example.familytree.ui.theme.dialogs.MemberListDialog
 
 /**
@@ -86,25 +85,17 @@ fun FamilyTreeScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
 
-                    // Search bar for finding family members
-                    SearchBar(
-                        searchQuery = searchQuery,
-                        onQueryChange = { searchQuery = it },
-                        onSearch = {
-                            searchResults = DatabaseManager.searchForMemberInLocalMap(searchQuery)
-                        }
-                    )
+                    MembersSearchBar()
 
-                    // Show search results in a dialog if not empty
-                    if (searchResults.isNotEmpty()) {
-                        MemberListDialog(
-                            onDismiss = { searchResults = emptyList() },
-                            membersToDisplay = searchResults
-
+                    // Show a dialog if no members are found
+                    if (searchResults.isEmpty() && searchQuery.isNotEmpty()) {
+                        NoMembersFoundDialog(
+                            searchQuery = searchQuery,
+                            onDismiss = {
+                                searchQuery = ""
+                                searchResults = emptyList()
+                            }
                         )
-                    }
-                    else {
-                        // TODO: add message "didn't find family members"
                     }
 
                     Column(

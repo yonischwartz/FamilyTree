@@ -1,21 +1,34 @@
 package com.example.familytree.ui
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -33,14 +46,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextDirection
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import com.example.familytree.data.FamilyMember
+import com.example.familytree.data.dataManagement.DatabaseManager
+import com.example.familytree.ui.dialogs.InfoOnMemberDialog
 
 
+/**
+ * A constant color value representing a beige background color.
+ */
 val backgroundColor = Color(0xFFF5F5DC) // Beige
 
 /**
@@ -368,46 +393,104 @@ fun FamilyTreeTopBar(
     }
 }
 
-/**
- * A composable function that represents a search bar with an input field and a search button.
- *
- * @param searchQuery The current text input in the search field.
- * @param onQueryChange A lambda function to update the search query when the input changes.
- * @param onSearch A lambda function to trigger the search action when the search button is clicked.
- *
- * The search bar consists of:
- * - An [OutlinedTextField] that allows the user to enter a search query, with the text aligned to the right and text direction set to right-to-left (for Hebrew).
- * - A [Button] labeled "חפש" (Search) that triggers the [onSearch] function when clicked.
- */
+
+@RequiresApi(Build.VERSION_CODES.N)
 @Composable
-fun SearchBar(
-    searchQuery: String,
-    onQueryChange: (String) -> Unit,
-    onSearch: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp), // Adds horizontal padding for spacing.
-        verticalAlignment = Alignment.CenterVertically // Centers the children vertically in the row.
-    ) {
-        // TextField for user input
+fun MembersSearchBar() {
+    var searchQuery by remember { mutableStateOf("") }
+    var searchResults by remember { mutableStateOf<List<FamilyMember>>(emptyList()) }
+    var chosenMemberToShowIsInfo by remember { mutableStateOf<FamilyMember?>(null) }
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+    val searchBarPosition = remember { mutableStateOf(Offset.Zero) }
+    val searchBarHeight = with(LocalDensity.current) { 56.dp.toPx() } // Approximate TextField height
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        // The search bar
         OutlinedTextField(
-            value = searchQuery, // Displays the current search query.
-            onValueChange = onQueryChange, // Updates the search query when the text changes.
+            value = searchQuery,
+            onValueChange = { query ->
+                searchQuery = query
+                searchResults = if (query.isEmpty()) {
+                    emptyList()
+                } else {
+                    DatabaseManager.searchForMemberInLocalMap(query)
+                }
+                isDropdownExpanded = searchResults.isNotEmpty()
+            },
             label = { CustomizedText(HebrewText.SEARCH_BY_NAME) },
-            modifier = Modifier.weight(1f), // Makes the text field take up most of the available space.
             textStyle = MaterialTheme.typography.bodyMedium.copy(
-                textAlign = TextAlign.Right, // Aligns text to the right.
-                textDirection = TextDirection.Rtl // Sets the text direction to right-to-left for Hebrew.
-            )
+                textAlign = TextAlign.Right,
+                textDirection = TextDirection.Rtl
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .onGloballyPositioned { coordinates ->
+                    searchBarPosition.value = coordinates.positionInWindow()
+                }
         )
 
-        Spacer(modifier = Modifier.width(8.dp))
+        // Floating dropdown menu under the search bar
+        if (isDropdownExpanded) {
+            Popup(
+                alignment = Alignment.TopStart,
+                offset = IntOffset(
+                    x = searchBarPosition.value.x.toInt(),
+                    y = (searchBarPosition.value.y + searchBarHeight - with(LocalDensity.current) { 64.dp.toPx() }).toInt()
+                )
+            ) {
+                Card(
+                    elevation = CardDefaults.cardElevation(8.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .heightIn(max = 400.dp) // Limit max height
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(Color.White)
+                            .padding(8.dp)
+                    ) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(searchResults) { member ->
+                                DropdownMenuItem(
+                                    text = { Text(text = member.getFullName()) },
+                                    onClick = {
+                                        chosenMemberToShowIsInfo = member
+                                        isDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
 
-        DialogButton(
-            text = HebrewText.SEARCH,
-            onClick = onSearch,
+                        // Close button in the bottom-right corner
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.BottomEnd
+                        ) {
+                            Button(
+                                onClick = { isDropdownExpanded = false },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
+                                contentPadding = PaddingValues(4.dp),
+                                modifier = Modifier.padding(8.dp)
+                            ) {
+                                Text(HebrewText.CLOSE, fontSize = 12.sp, color = Color.White)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Display the member information dialog
+    chosenMemberToShowIsInfo?.let { selectedMember ->
+        InfoOnMemberDialog(
+            member = selectedMember,
+            onDismiss = { chosenMemberToShowIsInfo = null }
         )
     }
 }
