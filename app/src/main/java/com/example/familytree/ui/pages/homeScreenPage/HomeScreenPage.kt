@@ -18,6 +18,8 @@ import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.HebrewText
 import com.example.familytree.ui.pages.homeScreenPage.functionForButtons.AddFamilyMember
 import android.content.Context
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.example.familytree.data.dataManagement.DatabaseManager.loadMembersFromFirebaseIntoLocalMap
 import com.example.familytree.data.dataManagement.DatabaseManager.saveLocalMapToFirebase
@@ -27,6 +29,7 @@ import com.example.familytree.ui.WideBlueButton
 import com.example.familytree.ui.graphicTreeDisplay.ClickableShapesCanvas
 import com.example.familytree.ui.pages.homeScreenPage.functionForButtons.FindConnectionsBetweenTwoMembers
 import com.example.familytree.ui.SearchBar
+import com.example.familytree.ui.backgroundColor
 import com.example.familytree.ui.theme.dialogs.MemberListDialog
 
 /**
@@ -67,7 +70,6 @@ fun FamilyTreeScreen(
         }
     }
 
-    // Scaffold provides a consistent visual structure with a top bar
     Scaffold(
         topBar = { FamilyTreeTopBar(HebrewText.FAMILY_TREE) }
     ) { innerPadding ->
@@ -76,6 +78,7 @@ fun FamilyTreeScreen(
                 modifier = modifier
                     .padding(innerPadding)
                     .fillMaxSize()
+                    .background(backgroundColor)
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -156,29 +159,6 @@ fun FamilyTreeScreen(
                             HebrewText.SHOW_ALL_FAMILY_MEMBERS
                         )
 
-                        // Button to load data from firebase to local DB
-                        WideBlueButton(
-                            onClick = {
-                                loadMembersFromFirebaseIntoLocalMap { success ->
-                                    if (success){
-                                        Toast.makeText(
-                                            context,
-                                            HebrewText.SUCCESS_LOADING_MEMBER_MAP,
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    }
-                                    else {
-                                        Toast.makeText(
-                                            context,
-                                            HebrewText.ERROR_LOADING_MEMBER_MAP,
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    }
-                                }
-                            },
-                            text = HebrewText.LOAD_MEMBERS_FROM_FIREBASE
-                        )
-
                         // Button to save and update data to firebase
                         WideBlueButton(
                             onClick = {
@@ -200,6 +180,29 @@ fun FamilyTreeScreen(
                                 }
                             },
                             text = HebrewText.SAVE_AND_UPDATE_MEMBERS_TO_FIREBASE
+                        )
+
+                        // Button to load data from firebase to local DB
+                        WideBlueButton(
+                            onClick = {
+                                loadMembersFromFirebaseIntoLocalMap { success ->
+                                    if (success){
+                                        Toast.makeText(
+                                            context,
+                                            HebrewText.SUCCESS_LOADING_MEMBER_MAP,
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                    else {
+                                        Toast.makeText(
+                                            context,
+                                            HebrewText.ERROR_LOADING_MEMBER_MAP,
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }
+                            },
+                            text = HebrewText.LOAD_MEMBERS_FROM_FIREBASE
                         )
                     }
 

@@ -3,6 +3,8 @@ package com.example.familytree.ui.dialogs
 import androidx.compose.runtime.Composable
 import com.example.familytree.data.FamilyMember
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
@@ -42,8 +44,8 @@ fun ChooseTwoMembersToFindTheirConnectionDialog(
                 val containerWidth = maxWidth
                 val cubeWidth = calculateCubeWidth(containerWidth)
 
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    members.chunked(3).forEach { rowMembers ->
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(members.chunked(3)) { rowMembers ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)

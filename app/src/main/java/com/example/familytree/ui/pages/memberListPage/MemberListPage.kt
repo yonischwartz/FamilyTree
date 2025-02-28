@@ -32,6 +32,7 @@ import com.example.familytree.ui.intToMachzor
 @Composable
 fun MemberListPage(navController: NavController) {
 
+    var isBackButtonEnabled by remember { mutableStateOf(true) }
     var searchQuery by remember { mutableStateOf("") }
     var searchResults by remember { mutableStateOf<List<FamilyMember>>(emptyList()) }
     var membersToDisplay by remember { mutableStateOf(DatabaseManager.getAllMembers()) }
@@ -39,11 +40,18 @@ fun MemberListPage(navController: NavController) {
     var filterDropdownExpanded by remember { mutableStateOf(false) }
     var chosenMember by remember { mutableStateOf<FamilyMember?>(null) }
 
+
     Scaffold(
         topBar = {
             FamilyTreeTopBar(
                 text = HebrewText.FAMILY_TREE,
-                onClickBack = { navController.popBackStack() }
+                onClickBack = {
+                    // This is to prevent the user clicking the button twice and causing trouble
+                    if (isBackButtonEnabled) {
+                        isBackButtonEnabled = false
+                        navController.popBackStack()
+                    }
+                }
             )
         }
     ) { innerPadding ->
@@ -55,15 +63,15 @@ fun MemberListPage(navController: NavController) {
                 .padding(16.dp)
         ) {
 
-            // Search bar
-            SearchBar(
-                searchQuery = searchQuery,
-                onQueryChange = { searchQuery = it },
-                onSearch = {
-                    searchResults = DatabaseManager.searchForMemberInLocalMap(searchQuery)
-                        .sortedBy { it.getFullName() }
-                }
-            )
+//            // Search bar
+//            SearchBar(
+//                searchQuery = searchQuery,
+//                onQueryChange = { searchQuery = it },
+//                onSearch = {
+//                    searchResults = DatabaseManager.searchForMemberInLocalMap(searchQuery)
+//                        .sortedBy { it.getFullName() }
+//                }
+//            )
 
             PageHeadLine(HebrewText.FAMILY_MEMBERS_LIST)
 

@@ -7,6 +7,8 @@ object HebrewText {
     const val ERROR_LOADING_MEMBER_MAP = "שגיאה בטעינת בני משפחה"
     const val ERROR_ADDING_MEMBER = "שגיאה בהוספת בן משפחה"
     const val ERROR_REMOVING_MEMBER = "שגיאה בהסרת בן משפחה"
+    const val NO_MEMBERS_FOUND = "לא נמצאו בני משפחה"
+    const val WITH_STRING = "עם המחרוזת"
     const val ERROR_CONNECTING_TO_FIREBASE = "שגיאה בגישה ל-firebase, אולי כדאי לבדוק חיבור לאינטרנט"
 
     // Successes

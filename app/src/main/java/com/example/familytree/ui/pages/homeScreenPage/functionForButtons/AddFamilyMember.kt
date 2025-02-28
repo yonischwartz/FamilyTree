@@ -39,7 +39,6 @@ fun AddFamilyMember(
     onDismiss: () -> Unit,
     givenExistingMember: FamilyMember? = null,
 ) {
-
     if (DatabaseManager.getAllMembers().isEmpty()) {
         // Add the first family member of the tree
         AddNewFamilyMemberToEmptyTree(onDismiss = onDismiss)
@@ -136,6 +135,13 @@ private fun AddNewMemberAndRelateToExistingMember(
         wasUserInformed = true
     }
 
+    // If existing member is given, onPrevious should be defined differently
+    val onPreviousForStepThree = if (givenExistingMember != null) {
+        onDismiss
+    } else {
+        { existingMember = null }
+    }
+
     // Step 1: inform user he must relate to an existing member
     if (!wasUserInformed) {
         NewMemberMustBeRelatedDialog(
@@ -163,7 +169,7 @@ private fun AddNewMemberAndRelateToExistingMember(
                 relationFromExistingMemberPerspective = relation
                 expectedGenderOfNewMember = gender
             },
-            onPrevious = { existingMember = null },
+            onPrevious = onPreviousForStepThree,
             onDismiss = onDismissAndResetState
         )
     }

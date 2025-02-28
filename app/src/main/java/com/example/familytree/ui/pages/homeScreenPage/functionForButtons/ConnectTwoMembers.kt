@@ -31,7 +31,7 @@ import com.example.familytree.ui.dialogs.HowAreTheyRelatedDialog
 @Composable
 fun ConnectTwoMembers(
     onDismiss:() -> Unit,
-    givenFirstMember: FamilyMember? = null,
+    givenFirstMember: FamilyMember? = null
 ) {
 
     var memberOne: FamilyMember? by remember { mutableStateOf(givenFirstMember) }
@@ -56,6 +56,13 @@ fun ConnectTwoMembers(
         onDismiss()
     }
 
+    // If existing member is given, onPrevious should be defined differently
+    val onPreviousForStepTwo = if (givenFirstMember != null) {
+        onDismiss
+    } else {
+        { memberOne = null }
+    }
+
     // First step: choose first member
     if (memberOne == null) {
         ChooseMemberToRelateToDialog(
@@ -74,7 +81,7 @@ fun ConnectTwoMembers(
                 relationFromMemberOnePerspective = relation
                 expectedGenderOfMemberTwo = gender
             },
-            onPrevious = { memberOne = null },
+            onPrevious = onPreviousForStepTwo,
             onDismiss = onDismissAndResetState
         )
     }
