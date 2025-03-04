@@ -1,5 +1,7 @@
 package com.example.familytree.ui.dialogs
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,16 +29,30 @@ import com.example.familytree.ui.HebrewText
  * @param onPrevious Callback when the previous button is clicked.
  * @param onDismiss Callback when the dialog is dismissed.
  */
+@RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun ChooseMemberToRelateToDialog(
     listOfMembersToConnectTo: List<FamilyMember> = DatabaseManager.getAllMembers(),
     onMemberSelected: (FamilyMember) -> Unit,
-    showPreviousButton: Boolean = true,
+    showPreviousButton: Boolean = false,
     onPrevious: () -> Unit = {},
     onDismiss: () -> Unit
 ) {
     var selectedMember by remember { mutableStateOf<FamilyMember?>(null) }
     var checkedMemberId by remember { mutableStateOf<String?>(null) }
+
+    val onClickRightButton: () -> Unit
+    val rightButtonText: String
+
+    if (showPreviousButton) {
+        onClickRightButton = onPrevious
+        rightButtonText = HebrewText.PREVIOUS
+    }
+
+    else {
+        onClickRightButton = onDismiss
+        rightButtonText = HebrewText.CLOSE
+    }
 
     // The lambda for when the user clicks the NEXT button
     var getOptionalMembersToConnectTo: () -> Unit = {}
@@ -48,14 +64,13 @@ fun ChooseMemberToRelateToDialog(
     // The condition for enabling the NEXT button
     val didUserChooseMember = checkedMemberId != null
 
-
     DialogWithTwoButtons(
         title = HebrewText.CHOOSE_FAMILY_MEMBER,
         onClickForLeft = getOptionalMembersToConnectTo,
         textForLeft = HebrewText.NEXT,
         enabledForLeftButton = didUserChooseMember,
-        onClickForRight = onPrevious,
-        textForRight = HebrewText.PREVIOUS,
+        onClickForRight = onClickRightButton,
+        textForRight = rightButtonText,
         onDismiss = onDismiss,
         contentOfDialog = {
             Column {

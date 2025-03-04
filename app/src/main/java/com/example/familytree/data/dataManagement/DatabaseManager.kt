@@ -277,7 +277,6 @@ object DatabaseManager {
         memberMap.deleteMember(memberToBeRemovedId)
     }
 
-
     /**
      * Retrieves and removes the next suggested connection from the queue.
      *
@@ -320,5 +319,6 @@ object DatabaseManager {
     fun isQueueOfSuggestedConnectionsNotEmpty(): Boolean {
         return memberMap.isQueueOfSuggestedConnectionsNotEmpty()
     }
+
 }
 

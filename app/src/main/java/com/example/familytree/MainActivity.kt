@@ -15,6 +15,7 @@ import com.example.familytree.ui.FamilyTreeTheme
 import com.example.familytree.ui.pages.homeScreenPage.FamilyTreeScreen
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
+import com.example.familytree.ui.pages.adminPage.AdminPage
 import com.example.familytree.ui.pages.memberListPage.MemberListPage
 
 
@@ -38,6 +39,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("memberListPage") {
                             MemberListPage(navController = navController)
+                        }
+                        composable("adminPage") {
+                            AdminPage(navController = navController)
                         }
                     }
                 }

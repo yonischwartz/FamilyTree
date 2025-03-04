@@ -1,5 +1,7 @@
 package com.example.familytree.ui
 
+import com.example.familytree.data.Relations.NIECE
+
 object HebrewText {
 
     // Errors
@@ -24,6 +26,7 @@ object HebrewText {
     const val SHOW_ALL_FAMILY_MEMBERS = "הצג את כל בני המשפחה"
     const val LOAD_MEMBERS_FROM_FIREBASE = "משוך נתונים מה-firebase"
     const val SAVE_AND_UPDATE_MEMBERS_TO_FIREBASE = "שמור ועדכן שינויים ב-firebase"
+    const val GO_INTO_ADMIN_MODE = "היכנס למצב מנהל"
 
     // Other buttons
     const val YES = "כן"
@@ -78,6 +81,14 @@ object HebrewText {
     const val GRANDDAUGHTER = "נכדה"
     const val COUSIN = "בן דוד / בת דודה"
     const val SIBLING = "אח / אחות"
+    const val GREAT_GRANDMOTHER = "סבתא רבתא"
+    const val GREAT_GRANDFATHER = "סבא רבא"
+    const val GREAT_GRANDSON = "נין"
+    const val GREAT_GRANDDAUGHTER = "נינה"
+    const val UNCLE = "דוד"
+    const val AUNT = "דודה"
+    const val NEPHEW = "אחיין"
+    const val NIECE = "אחיינית"
 
     // FamilyMember details
     const val FIRST_NAME = "שם פרטי"
@@ -97,7 +108,7 @@ object HebrewText {
     const val AS = "כ"
     const val AND = "ו"
 
-
+    const val ADMIN_MODE = "מצב מנהל"
     const val RABBIS_AND_STAFF = "רבנים וצוות הישיבה"
     const val NON_YESHIVA_FAMILY_MEMBERS = "בני משפחה שאינם מהישיבה"
     const val FAMILY_MEMBERS_LIST = "רשימת בני המשפחה"

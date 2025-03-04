@@ -1,6 +1,6 @@
 package com.example.familytree.ui.pages.homeScreenPage
 
-import android.net.ConnectivityManager
+import android.annotation.SuppressLint
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -17,7 +17,6 @@ import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.HebrewText
 import com.example.familytree.ui.pages.homeScreenPage.functionForButtons.AddFamilyMember
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.navigation.NavController
 import com.example.familytree.data.dataManagement.DatabaseManager.loadMembersFromFirebaseIntoLocalMap
@@ -29,6 +28,7 @@ import com.example.familytree.ui.pages.homeScreenPage.functionForButtons.FindCon
 import com.example.familytree.ui.MembersSearchBar
 import com.example.familytree.ui.backgroundColor
 import com.example.familytree.ui.dialogs.errorAndSuccessDialogs.NoMembersFoundDialog
+import com.example.familytree.ui.graphicTreeDisplay.ClickableShapesCanvas
 import com.example.familytree.ui.theme.dialogs.MemberListDialog
 
 /**
@@ -38,6 +38,7 @@ import com.example.familytree.ui.theme.dialogs.MemberListDialog
  *
  * @param modifier Modifier for customizing the layout.
  */
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun FamilyTreeScreen(
@@ -55,11 +56,7 @@ fun FamilyTreeScreen(
 
     var testing by remember { mutableStateOf(false) }
 
-    // Check for network connectivity
     val context = LocalContext.current
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val networkCapabilities = connectivityManager.activeNetwork ?: return
-    val activeNetwork = connectivityManager.getNetworkCapabilities(networkCapabilities)
 
     LaunchedEffect(Unit) {
         loadMembersFromFirebaseIntoLocalMap { success ->
@@ -69,14 +66,10 @@ fun FamilyTreeScreen(
         }
     }
 
-    Scaffold(
-        topBar = { FamilyTreeTopBar(HebrewText.FAMILY_TREE) }
-    ) { innerPadding ->
+    Scaffold() { innerPadding ->
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             Box(
                 modifier = modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
                     .background(backgroundColor)
             ) {
                 Column(
@@ -114,13 +107,19 @@ fun FamilyTreeScreen(
 
                         if (testing) {
                             DatabaseManager.removeMemberFromLocalMemberMap("6e61404d-464f-4a55-b695-61e2834a2b19")
-//                            ClickableShapesCanvas()
+                            ClickableShapesCanvas()
                         }
 
                         // Button for shifting to memberListPage
                         WideBlueButton(
                             onClick = { navController.navigate("memberListPage") },
                             HebrewText.SHOW_ALL_FAMILY_MEMBERS
+                        )
+
+                        // Button for shifting to AdminPage
+                        WideBlueButton(
+                            onClick = { navController.navigate("adminPage") },
+                            HebrewText.GO_INTO_ADMIN_MODE
                         )
 
                         // Button to add a new family member

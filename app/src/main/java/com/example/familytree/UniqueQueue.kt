@@ -30,7 +30,7 @@ class UniqueQueue<T> {
      *
      * @return The first item in the queue, or `null` if the queue is empty.
      */
-    fun poll(): T? {
+    fun pull(): T? {
         return if (queue.isNotEmpty()) {
             val item = queue.removeFirst()
             set.remove(item)

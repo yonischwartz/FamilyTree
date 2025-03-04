@@ -18,7 +18,15 @@ enum class Relations() {
     GRANDSON,
     GRANDDAUGHTER,
     COUSINS,
-    SIBLINGS;
+    SIBLINGS,
+    GREAT_GRANDMOTHER,
+    GREAT_GRANDFATHER,
+    GREAT_GRANDSON,
+    GREAT_GRANDDAUGHTER,
+    UNCLE,
+    AUNT,
+    NEPHEW,
+    NIECE;
 
     /**
      * Companion object providing utility functions for converting Hebrew relation strings,
@@ -39,21 +47,21 @@ enum class Relations() {
          */
         fun relationStringToRelation(relationString: String): Pair<Relations, Boolean> {
             return when (relationString) {
-                HebrewText.WIFE -> Pair(Relations.MARRIAGE, false)
-                HebrewText.HUSBAND -> Pair(Relations.MARRIAGE, true)
-                HebrewText.FATHER -> Pair(Relations.FATHER, true)
-                HebrewText.MOTHER -> Pair(Relations.MOTHER, false)
-                HebrewText.SON -> Pair(Relations.SON, true)
-                HebrewText.DAUGHTER -> Pair(Relations.DAUGHTER, false)
-                HebrewText.GRANDMOTHER -> Pair(Relations.GRANDMOTHER, false)
-                HebrewText.GRANDFATHER -> Pair(Relations.GRANDFATHER, true)
-                HebrewText.GRANDSON -> Pair(Relations.GRANDSON, true)
-                HebrewText.GRANDDAUGHTER -> Pair(Relations.GRANDDAUGHTER, false)
-                HebrewText.MALE_COUSIN -> Pair(Relations.COUSINS, true)
-                HebrewText.FEMALE_COUSIN -> Pair(Relations.COUSINS, false)
-                HebrewText.BROTHER -> Pair(Relations.SIBLINGS, true)
-                HebrewText.SISTER -> Pair(Relations.SIBLINGS, false)
-                else -> Pair(Relations.SIBLINGS, true) // Default case
+                HebrewText.WIFE -> Pair(MARRIAGE, false)
+                HebrewText.HUSBAND -> Pair(MARRIAGE, true)
+                HebrewText.FATHER -> Pair(FATHER, true)
+                HebrewText.MOTHER -> Pair(MOTHER, false)
+                HebrewText.SON -> Pair(SON, true)
+                HebrewText.DAUGHTER -> Pair(DAUGHTER, false)
+                HebrewText.GRANDMOTHER -> Pair(GRANDMOTHER, false)
+                HebrewText.GRANDFATHER -> Pair(GRANDFATHER, true)
+                HebrewText.GRANDSON -> Pair(GRANDSON, true)
+                HebrewText.GRANDDAUGHTER -> Pair(GRANDDAUGHTER, false)
+                HebrewText.MALE_COUSIN -> Pair(COUSINS, true)
+                HebrewText.FEMALE_COUSIN -> Pair(COUSINS, false)
+                HebrewText.BROTHER -> Pair(SIBLINGS, true)
+                HebrewText.SISTER -> Pair(SIBLINGS, false)
+                else -> Pair(SIBLINGS, true) // Default case
             }
         }
 
@@ -151,6 +159,14 @@ enum class Relations() {
             GRANDDAUGHTER -> HebrewText.GRANDDAUGHTER_OF
             COUSINS -> if (gender) HebrewText.MALE_COUSIN_OF else HebrewText.FEMALE_COUSIN_OF
             SIBLINGS -> if (gender) HebrewText.BROTHER_OF else HebrewText.SISTER_OF
+            GREAT_GRANDMOTHER -> HebrewText.GREAT_GRANDMOTHER
+            GREAT_GRANDFATHER -> HebrewText.GREAT_GRANDFATHER
+            GREAT_GRANDSON -> HebrewText.GREAT_GRANDSON
+            GREAT_GRANDDAUGHTER -> HebrewText.GREAT_GRANDDAUGHTER
+            UNCLE -> HebrewText.UNCLE
+            AUNT -> HebrewText.AUNT
+            NEPHEW -> HebrewText.NEPHEW
+            NIECE -> HebrewText.NIECE
         }
     }
 
@@ -166,6 +182,7 @@ enum class Relations() {
             MOTHER, DAUGHTER, GRANDMOTHER, GRANDDAUGHTER -> false
             COUSINS, SIBLINGS -> null
             MARRIAGE -> if (gender != null) !gender else null
+            else -> null
         }
     }
 }

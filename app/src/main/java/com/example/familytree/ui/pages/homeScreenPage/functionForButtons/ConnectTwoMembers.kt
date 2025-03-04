@@ -1,6 +1,8 @@
 package com.example.familytree.ui.pages.homeScreenPage.functionForButtons
 
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +30,7 @@ import com.example.familytree.ui.dialogs.HowAreTheyRelatedDialog
  *
  * @param onDismiss A callback function to execute when the process is canceled or completed.
  */
+@RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun ConnectTwoMembers(
     onDismiss:() -> Unit,
@@ -99,6 +102,7 @@ fun ConnectTwoMembers(
         ChooseMemberToRelateToDialog(
             listOfMembersToConnectTo = optionalMembersToConnectTo,
             onMemberSelected = { memberTwo = it },
+            showPreviousButton = true,
             onPrevious = { relationFromMemberOnePerspective = null },
             onDismiss = onDismissAndResetState
         )
