@@ -22,7 +22,7 @@ import com.example.familytree.ui.HebrewText
 fun DisplayConnectionBetweenTwoMembersDialog(
     memberOne: FamilyMember,
     memberTwo: FamilyMember,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit = {}
 ) {
 
     var firstMember by remember { mutableStateOf(memberOne) }
@@ -43,7 +43,9 @@ fun DisplayConnectionBetweenTwoMembersDialog(
         text = pathAsString,
         onClickForLeft = onDismiss,
         textForLeft = HebrewText.OK,
-        onClickForRight = { val temp = firstMember; firstMember = secondMember; secondMember = temp },
+        onClickForRight = {
+            val temp = firstMember; firstMember = secondMember; secondMember = temp
+        },
         textForRight = HebrewText.SHOW_REVERSE_CONNECTION,
         isOnDismissTheRightButton = false
     )

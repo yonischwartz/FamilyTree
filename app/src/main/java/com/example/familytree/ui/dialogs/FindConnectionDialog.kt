@@ -10,8 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.familytree.data.dataManagement.DatabaseManager
+import com.example.familytree.ui.FamilyMemberCube
 import com.example.familytree.ui.HebrewText
-import com.example.familytree.ui.graphicTreeDisplay.FamilyMemberCube
 
 /**
  * Displays a dialog that allows the user to select two yeshiva members

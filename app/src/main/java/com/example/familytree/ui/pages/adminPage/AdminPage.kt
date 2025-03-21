@@ -37,8 +37,6 @@ fun AdminPage(navController: NavController) {
 
     // State variables for UI components
     var isBackButtonEnabled by remember { mutableStateOf(true) }
-    var searchQuery by remember { mutableStateOf("") }
-    var searchResults by remember { mutableStateOf<List<FamilyMember>>(emptyList()) }
     var showAddMemberDialog by remember { mutableStateOf(false) }
     var showAddConnectionDialog by remember { mutableStateOf(false) }
     var showFindConnectionDialog by remember { mutableStateOf(false) }
@@ -74,141 +72,120 @@ fun AdminPage(navController: NavController) {
                     .background(backgroundColor)
             ) {
                 Column(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
 
                     MembersSearchBar()
 
-                    // Show a dialog if no members are found
-                    if (searchResults.isEmpty() && searchQuery.isNotEmpty()) {
-                        NoMembersFoundDialog(
-                            searchQuery = searchQuery,
-                            onDismiss = {
-                                searchQuery = ""
-                                searchResults = emptyList()
+                    // Test button
+                    WideBlueButton(
+                        onClick = { testing = !testing },
+                        "test"
+                    )
+
+                    if (testing) {
+                        DatabaseManager.removeMemberFromLocalMemberMap("6e61404d-464f-4a55-b695-61e2834a2b19")
+                        ClickableShapesCanvas()
+                    }
+
+                    // Button to add a new family member
+                    WideBlueButton(
+                        onClick = { showAddMemberDialog = true },
+                        HebrewText.ADD_NEW_FAMILY_MEMBER
+                    )
+
+                    // Button to add a new connection
+                    WideBlueButton(
+                        onClick = { showAddConnectionDialog = true },
+                        HebrewText.ADD_CONNECTION_BETWEEN_TWO_EXISTING_MEMBERS
+                    )
+
+                    // Find connection button
+                    WideBlueButton(
+                        onClick = { showFindConnectionDialog = true },
+                        text = HebrewText.FIND_CONNECTION_BETWEEN_TWO_MEMBERS
+                    )
+
+                    // Button to show all family members
+                    WideBlueButton(
+                        onClick = { showMemberListDialog = true },
+                        HebrewText.SHOW_ALL_FAMILY_MEMBERS
+                    )
+
+                    // Button to save and update data to firebase
+                    WideBlueButton(
+                        onClick = {
+                            saveLocalMapToFirebase { success ->
+                                if (success) {
+                                    Toast.makeText(
+                                        context,
+                                        HebrewText.SUCCESS_SAVING_MEMBERS_IN_FIREBASE,
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        HebrewText.ERROR_SAVING_MEMBERS_IN_FIREBASE,
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
                             }
-                        )
-                    }
+                        },
+                        text = HebrewText.SAVE_AND_UPDATE_MEMBERS_TO_FIREBASE
+                    )
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.SpaceBetween,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-
-                        // Test button
-                        WideBlueButton(
-                            onClick = { testing = !testing },
-                            "test"
-                        )
-
-                        if (testing) {
-                            DatabaseManager.removeMemberFromLocalMemberMap("6e61404d-464f-4a55-b695-61e2834a2b19")
-                            ClickableShapesCanvas()
-                        }
-
-                        // Button to add a new family member
-                        WideBlueButton(
-                            onClick = { showAddMemberDialog = true },
-                            HebrewText.ADD_NEW_FAMILY_MEMBER
-                        )
-
-                        // Button to add a new connection
-                        WideBlueButton(
-                            onClick = { showAddConnectionDialog = true },
-                            HebrewText.ADD_CONNECTION_BETWEEN_TWO_EXISTING_MEMBERS
-                        )
-
-                        // Find connection button
-                        WideBlueButton(
-                            onClick = { showFindConnectionDialog = true },
-                            text = HebrewText.FIND_CONNECTION_BETWEEN_TWO_MEMBERS
-                        )
-
-                        // Button to show all family members
-                        WideBlueButton(
-                            onClick = { showMemberListDialog = true },
-                            HebrewText.SHOW_ALL_FAMILY_MEMBERS
-                        )
-
-                        // Button to save and update data to firebase
-                        WideBlueButton(
-                            onClick = {
-                                saveLocalMapToFirebase { success ->
-                                    if (success){
-                                        Toast.makeText(
-                                            context,
-                                            HebrewText.SUCCESS_SAVING_MEMBERS_IN_FIREBASE,
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    }
-                                    else {
-                                        Toast.makeText(
-                                            context,
-                                            HebrewText.ERROR_SAVING_MEMBERS_IN_FIREBASE,
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    }
+                    // Button to load data from firebase to local DB
+                    WideBlueButton(
+                        onClick = {
+                            loadMembersFromFirebaseIntoLocalMap { success ->
+                                if (success) {
+                                    Toast.makeText(
+                                        context,
+                                        HebrewText.SUCCESS_LOADING_MEMBER_MAP,
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        HebrewText.ERROR_LOADING_MEMBER_MAP,
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                 }
-                            },
-                            text = HebrewText.SAVE_AND_UPDATE_MEMBERS_TO_FIREBASE
-                        )
+                            }
+                        },
+                        text = HebrewText.LOAD_MEMBERS_FROM_FIREBASE
+                    )
+                }
 
-                        // Button to load data from firebase to local DB
-                        WideBlueButton(
-                            onClick = {
-                                loadMembersFromFirebaseIntoLocalMap { success ->
-                                    if (success){
-                                        Toast.makeText(
-                                            context,
-                                            HebrewText.SUCCESS_LOADING_MEMBER_MAP,
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    }
-                                    else {
-                                        Toast.makeText(
-                                            context,
-                                            HebrewText.ERROR_LOADING_MEMBER_MAP,
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    }
-                                }
-                            },
-                            text = HebrewText.LOAD_MEMBERS_FROM_FIREBASE
-                        )
-                    }
+                // Dialog for adding a new family member
+                if (showAddMemberDialog) {
 
-                    // Dialog for adding a new family member
-                    if (showAddMemberDialog) {
+                    AddFamilyMember( onDismiss = { showAddMemberDialog = false } )
+                }
 
-                        AddFamilyMember( onDismiss = { showAddMemberDialog = false } )
-                    }
+                // Dialog for connecting between two existing members
+                if (showAddConnectionDialog) {
 
-                    // Dialog for connecting between two existing members
-                    if (showAddConnectionDialog) {
+                    ConnectTwoMembers( onDismiss = { showAddConnectionDialog = false } )
+                }
 
-                        ConnectTwoMembers( onDismiss = { showAddConnectionDialog = false } )
-                    }
+                // Dialog to display the list of all family members
+                if (showFindConnectionDialog) {
 
-                    // Dialog to display the list of all family members
-                    if (showFindConnectionDialog) {
+                    FindConnectionsBetweenTwoMembers(
+                        onDismiss = { showFindConnectionDialog = false }
+                    )
+                }
 
-                        FindConnectionsBetweenTwoMembers(
-                            onDismiss = { showFindConnectionDialog = false }
-                        )
-                    }
+                // Dialog to display the list of all family members
+                if (showMemberListDialog) {
 
-                    // Dialog to display the list of all family members
-                    if (showMemberListDialog) {
-
-                        MemberListDialog(
-                            onDismiss = { showMemberListDialog = false }
-                        )
-                    }
+                    MemberListDialog(
+                        onDismiss = { showMemberListDialog = false }
+                    )
                 }
             }
         }

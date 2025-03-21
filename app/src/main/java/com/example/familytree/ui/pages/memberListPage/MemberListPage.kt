@@ -36,7 +36,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 fun MemberListPage(navController: NavController) {
 
     var isBackButtonEnabled by remember { mutableStateOf(true) }
-    var membersToDisplay by remember { mutableStateOf(DatabaseManager.getAllMembers()) }
+    val membersToDisplay by remember { mutableStateOf(DatabaseManager.getAllMembers()) }
     var displayMembersInfo by remember { mutableStateOf(false) }
     var chosenMember by remember { mutableStateOf<FamilyMember?>(null) }
 

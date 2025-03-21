@@ -2,6 +2,7 @@ package com.example.familytree.ui
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,10 +16,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -50,23 +53,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
+import com.example.familytree.R
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.dialogs.InfoOnMemberDialog
@@ -76,6 +85,20 @@ import com.example.familytree.ui.dialogs.InfoOnMemberDialog
  * A constant color value representing a beige background color.
  */
 val backgroundColor = Color(0xFFF5F5DC) // Beige
+
+/**
+ * A Composable function that displays the YBM logo image.
+ */
+@Composable
+fun YbmLogo() {
+    Image(
+        painter = painterResource(id = R.drawable.ybm),
+        contentDescription = "Family Tree Image",
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(400.dp)
+    )
+}
 
 /**
  * A customized text composable that displays text with certain style.
@@ -108,7 +131,6 @@ fun PageHeadLine(headline: String) {
     )
 }
 
-
 /**
  * Displays a subtitle aligned to the right with consistent styling and an underline.
  *
@@ -133,7 +155,6 @@ fun RightSubTitle(subtitle: String) {
         )
     }
 }
-
 
 /**
  * A Composable function that represents an home screen button.
@@ -516,6 +537,140 @@ fun MembersSearchBar() {
         InfoOnMemberDialog(
             member = selectedMember,
             onDismiss = { chosenMemberToShowIsInfo = null }
+        )
+    }
+}
+
+/**
+ * A large circular button.
+ *
+ * @param onClick Lambda function to execute when the button is clicked.
+ * @param text The label displayed on the button.
+ */
+@Composable
+fun BigRoundButton(onClick: () -> Unit, text: String) {
+    Button(
+        onClick = onClick,
+        shape = CircleShape,
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
+        modifier = Modifier
+            .size(150.dp)
+    ) {
+        Text(
+            text = text,
+            color = Color.White,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+/**
+ * A circular button displaying an image.
+ *
+ * @param imageRes The resource ID of the image to be displayed.
+ * @param onClick The callback function invoked when the button is clicked.
+ */
+@Composable
+fun CircularImageButton(imageRes: Int, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(100.dp)
+            .clip(CircleShape)
+            .clickable(onClick = onClick)
+    ) {
+        Image(
+            painter = painterResource(id = imageRes),
+            contentDescription = "Button Image",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+    }
+}
+
+/**
+ * A Composable function that displays a bidirectional arrow image as a clickable button.
+ *
+ * @param onClick The action to perform when the button is clicked.
+ * @param modifier Optional [Modifier] to customize the appearance and behavior.
+ */
+@Composable
+fun ArrowButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Column(modifier = modifier) {
+        CustomizedText(HebrewText.FIND_CONNECTION)
+        Image(
+            painter = painterResource(id = R.drawable.bidirectional_arrow),
+            contentDescription = "Bidirectional Arrow Button",
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .clickable(onClick = onClick)
+                .size(60.dp)
+        )
+    }
+}
+
+/**
+ * A circular button displaying a question mark image.
+ *
+ * @param onClick The callback function invoked when the button is clicked.
+ */
+@Composable
+fun QuestionMarkButton(onClick: () -> Unit) {
+    CircularImageButton(imageRes = R.drawable.question_mark_button, onClick = onClick)
+}
+
+/**
+ * A circular button displaying a jewish man image.
+ *
+ * @param onClick The callback function invoked when the button is clicked.
+ */
+@Composable
+fun JewishManButton(onClick: () -> Unit) {
+    CircularImageButton(imageRes = R.drawable.jewish_man_button_01, onClick = onClick)
+}
+
+/**
+ * A circular button displaying a jewish woman image.
+ *
+ * @param onClick The callback function invoked when the button is clicked.
+ */
+@Composable
+fun JewishWomanButton(onClick: () -> Unit) {
+    CircularImageButton(imageRes = R.drawable.jewish_woman_button_01, onClick = onClick)
+}
+
+/**
+ * A composable that displays a clickable rectangle representing a family member.
+ *
+ * @param member The family member to display.
+ * @param isSelected Whether the rectangle is currently selected.
+ * @param length The length of the rectangle (height).
+ * @param width The width of the rectangle.
+ * @param onClick Action to perform when the rectangle is clicked.
+ */
+@Composable
+fun FamilyMemberCube(
+    member: FamilyMember,
+    isSelected: Boolean,
+    length: Dp,
+    width: Dp,
+    onClick: () -> Unit
+) {
+    val lightGreen = Color(0xFF90EE90)
+    val color = if (isSelected) lightGreen else Color.Gray
+
+    Box(
+        modifier = Modifier
+            .size(width, length)
+            .clip(RoundedCornerShape(8.dp)) // Rounded edges
+            .background(color)
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        androidx.compose.material.Text(
+            text = member.getFullName(),
+            textAlign = TextAlign.Center,
         )
     }
 }

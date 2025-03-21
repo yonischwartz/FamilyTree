@@ -1,7 +1,5 @@
 package com.example.familytree.ui
 
-import com.example.familytree.data.Relations.NIECE
-
 object HebrewText {
 
     // Errors
@@ -62,15 +60,32 @@ object HebrewText {
     const val FEMALE_COUSIN_OF = "בת דודה של"
     const val BROTHER_OF = "אח של"
     const val SISTER_OF = "אחות של"
+    const val GREAT_GRANDMOTHER_OF = "סבתא רבתא של"
+    const val GREAT_GRANDFATHER_OF = "סבא רבא של"
+    const val GREAT_GRANDSON_OF = "נין של"
+    const val GREAT_GRANDDAUGHTER_OF = "נינה של"
+    const val UNCLE_OF = "דוד של"
+    const val AUNT_OF = "דודה של"
+    const val NEPHEW_OF = "אחיין של"
+    const val NIECE_OF = "אחיינית של"
+    const val HALF_BROTHER_OF = "חצי אח של"
+    const val HALF_SISTER_OF = "חצי אחות של"
 
     // Relations
     const val WIFE = "אשתו"
+    const val SECOND_WIFE = "אשתו השנייה"
+    const val THIRD_WIFE = "אשתו השלישית"
+    const val FORTH_WIFE = "אשתו הרביעית"
     const val HUSBAND = "בעלה"
+    const val SECOND_HUSBAND = "בעלה השני"
+    const val THIRD_HUSBAND = "בעלה השלישי"
+    const val FORTH_HUSBAND = "בעלה הרביעי"
     const val MALE_COUSIN = "בן דוד"
     const val FEMALE_COUSIN = "בת דודה"
     const val BROTHER = "אח"
     const val SISTER = "אחות"
-    const val MARRIAGE = "נישואין"
+    const val HALF_BROTHER = "חצי אח"
+    const val HALF_SISTER = "חצי אחות"
     const val FATHER = "אבא"
     const val MOTHER = "אמא"
     const val SON = "בן"
@@ -79,16 +94,6 @@ object HebrewText {
     const val GRANDFATHER = "סבא"
     const val GRANDSON = "נכד"
     const val GRANDDAUGHTER = "נכדה"
-    const val COUSIN = "בן דוד / בת דודה"
-    const val SIBLING = "אח / אחות"
-    const val GREAT_GRANDMOTHER = "סבתא רבתא"
-    const val GREAT_GRANDFATHER = "סבא רבא"
-    const val GREAT_GRANDSON = "נין"
-    const val GREAT_GRANDDAUGHTER = "נינה"
-    const val UNCLE = "דוד"
-    const val AUNT = "דודה"
-    const val NEPHEW = "אחיין"
-    const val NIECE = "אחיינית"
 
     // FamilyMember details
     const val FIRST_NAME = "שם פרטי"
@@ -108,6 +113,8 @@ object HebrewText {
     const val AS = "כ"
     const val AND = "ו"
 
+
+    const val CHOOSE_TWO_FAMILY_MEMBERS = "בחר שני בני משפחה"
     const val ADMIN_MODE = "מצב מנהל"
     const val RABBIS_AND_STAFF = "רבנים וצוות הישיבה"
     const val NON_YESHIVA_FAMILY_MEMBERS = "בני משפחה שאינם מהישיבה"

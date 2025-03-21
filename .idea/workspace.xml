@@ -9,24 +9,28 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="searchBar displays results with no need to click search button">
+    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="auto connection fixed. added uncle, aunt, and great grandparents connection. add admin mode screen">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/SplashScreenPage.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/UniqueQueue.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/UniqueQueue.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/FullConnection.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/FullConnection.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/Connection.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/Connection.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/Relations.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/Relations.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/DatabaseManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/DatabaseManager.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/MemberMap.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/MemberMap.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/ButtonsAndMore.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/ButtonsAndMore.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/HebrewText.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/HebrewText.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/ChooseMemberToRelateToDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/ChooseMemberToRelateToDialog.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/SuggestedConnectionDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/SuggestedConnectionDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/DisplayConnectionBetweenTwoMembersDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/DisplayConnectionBetweenTwoMembersDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/FindConnectionDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/FindConnectionDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/graphicTreeDisplay/ButtonsAndMoreForGraphicTreeDisplay.kt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/adminPage/AdminPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/adminPage/AdminPage.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/HomeScreenPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/HomeScreenPage.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/functionForButtons/ConnectTwoMembers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/functionForButtons/ConnectTwoMembers.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/YbmLogo.kt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/memberListPage/MemberListPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/memberListPage/MemberListPage.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/libs.versions.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,6 +91,7 @@
         <option value="Kotlin Object" />
         <option value="Kotlin Class" />
         <option value="Kotlin File" />
+        <option value="resourceFile" />
       </list>
     </option>
   </component>
@@ -140,11 +145,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\res\drawable" />
       <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\java\com\example\familytree\ui1\pages\memberListPage" />
       <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\java\com\example\familytree\ui1\pages" />
       <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\java\com\example\familytree\ui1" />
       <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\java\com\example\familytree\ui\theme\appPage\memberListPage" />
-      <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\java\com\example\familytree\ui\theme\appPage\homeScreenPage\functionForButtons" />
     </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
       <recent name="com.example.familytree.ui1" />
@@ -498,7 +503,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740750943321</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="auto connection fixed. added uncle, aunt, and great grandparents connection. add admin mode screen">
+      <option name="closed" value="true" />
+      <created>1741092654694</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1741092654694</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -513,7 +526,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Confirms user doesn't exist already" />
     <MESSAGE value="doesn't ask for yeshiva member's gender" />
     <MESSAGE value="remove user works" />
     <MESSAGE value="remove user works??" />
@@ -538,7 +550,8 @@
     <MESSAGE value="find connection button works" />
     <MESSAGE value="commit before trying to change searchBar" />
     <MESSAGE value="searchBar displays results with no need to click search button" />
-    <option name="LAST_COMMIT_MESSAGE" value="searchBar displays results with no need to click search button" />
+    <MESSAGE value="auto connection fixed. added uncle, aunt, and great grandparents connection. add admin mode screen" />
+    <option name="LAST_COMMIT_MESSAGE" value="auto connection fixed. added uncle, aunt, and great grandparents connection. add admin mode screen" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>
@@ -558,12 +571,12 @@
       <map>
         <entry key="com.example.familytree">
           <value>
-            <CheckInfo lastCheckTimestamp="1739736782179" />
+            <CheckInfo lastCheckTimestamp="1742458137483" />
           </value>
         </entry>
         <entry key="com.example.familytree.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1739736782158" />
+            <CheckInfo lastCheckTimestamp="1742458137486" />
           </value>
         </entry>
       </map>

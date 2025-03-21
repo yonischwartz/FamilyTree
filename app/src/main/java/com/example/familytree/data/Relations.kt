@@ -9,6 +9,9 @@ import com.example.familytree.ui.HebrewText
  */
 enum class Relations() {
     MARRIAGE,
+//    SECOND_MARRIAGE,
+//    THIRD_MARRIAGE,
+//    FORTH_MARRIAGE,
     FATHER,
     MOTHER,
     SON,
@@ -19,6 +22,7 @@ enum class Relations() {
     GRANDDAUGHTER,
     COUSINS,
     SIBLINGS,
+    HALF_SIBLINGS,
     GREAT_GRANDMOTHER,
     GREAT_GRANDFATHER,
     GREAT_GRANDSON,
@@ -61,6 +65,8 @@ enum class Relations() {
                 HebrewText.FEMALE_COUSIN -> Pair(COUSINS, false)
                 HebrewText.BROTHER -> Pair(SIBLINGS, true)
                 HebrewText.SISTER -> Pair(SIBLINGS, false)
+                HebrewText.HALF_BROTHER -> Pair(HALF_SIBLINGS, true)
+                HebrewText.HALF_SISTER -> Pair(HALF_SIBLINGS, false)
                 else -> Pair(SIBLINGS, true) // Default case
             }
         }
@@ -92,14 +98,29 @@ enum class Relations() {
          * @return A list of relationship options in Hebrew as [String] values.
          */
         private fun relationOptions(member: FamilyMember): List<String> {
-            val spouse = if (member.getGender()) {
-                HebrewText.WIFE
+
+            val spouse: String
+//            val secondSpouse: String
+//            val thirdSpouse: String
+//            val forthSpouse: String
+
+            if (member.getGender()) {
+                spouse = HebrewText.WIFE
+//                secondSpouse = HebrewText.SECOND_WIFE
+//                thirdSpouse = HebrewText.THIRD_WIFE
+//                forthSpouse = HebrewText.FORTH_WIFE
             } else {
-                HebrewText.HUSBAND
+                spouse = HebrewText.HUSBAND
+//                secondSpouse = HebrewText.SECOND_HUSBAND
+//                thirdSpouse = HebrewText.THIRD_HUSBAND
+//                forthSpouse = HebrewText.FORTH_HUSBAND
             }
 
             return listOf(
                 spouse,
+//                secondSpouse,
+//                thirdSpouse,
+//                forthSpouse,
                 HebrewText.FATHER,
                 HebrewText.MOTHER,
                 HebrewText.SON,
@@ -111,30 +132,56 @@ enum class Relations() {
                 HebrewText.MALE_COUSIN,
                 HebrewText.FEMALE_COUSIN,
                 HebrewText.BROTHER,
-                HebrewText.SISTER
+                HebrewText.SISTER,
+                HebrewText.HALF_BROTHER,
+                HebrewText.HALF_SISTER,
             )
         }
 
         /**
-         * Checks which relationship types are not valid for a given family member.
+         * Determines which relationship types are not valid for a given family member.
          *
-         * A family member can have only one connection of the following types:
-         * - MARRIAGE: A member cannot be married to more than one person.
-         * - FATHER: A member cannot have more than one father.
-         * - MOTHER: A member cannot have more than one mother.
+         * **Validation Rules:**
+         * - **MARRIAGE** → Invalid **only if** no `MARRIAGE` connection exists.
+         * - **SECOND_MARRIAGE** → Invalid in either of these cases:
+         *   1. No `MARRIAGE` connection exists.
+         *   2. A `SECOND_MARRIAGE` connection already exists.
+         * - **THIRD_MARRIAGE** → Invalid in either of these cases:
+         *   1. No `SECOND_MARRIAGE` connection exists.
+         *   2. A `THIRD_MARRIAGE` connection already exists.
+         * - **FORTH_MARRIAGE** → Invalid **only if**:
+         *   1. A `THIRD_MARRIAGE` connection exists.
+         *   2. A `FORTH_MARRIAGE` connection already exists.
+         * - **FATHER & MOTHER** → Only one of each is allowed.
          *
          * @param member The [FamilyMember] whose connections are being validated.
          * @return A set of invalid [Relations] types for the given member.
-         *
          */
         private fun getInvalidRelationsOfMember(member: FamilyMember): Set<Relations> {
             val setOfInvalidRelations = mutableSetOf<Relations>()
 
+            // Track which marriage relations exist
+            var hasMarriage = false
+            var hasSecondMarriage = false
+            var hasThirdMarriage = false
+            var hasForthMarriage = false
+
             for (connection in member.getConnections()) {
-                if (connection.relationship in setOf(Relations.MARRIAGE, Relations.FATHER, Relations.MOTHER)) {
-                    setOfInvalidRelations.add(connection.relationship)
+                when (connection.relationship) {
+                    MARRIAGE -> hasMarriage = true
+//                    SECOND_MARRIAGE -> hasSecondMarriage = true
+//                    THIRD_MARRIAGE -> hasThirdMarriage = true
+//                    FORTH_MARRIAGE -> hasForthMarriage = true
+                    FATHER, MOTHER -> setOfInvalidRelations.add(connection.relationship) // Only one allowed
+                    else -> {} // Other relationships are allowed
                 }
             }
+
+            // Apply validation rules
+            if (!hasMarriage) setOfInvalidRelations.add(MARRIAGE)
+//            if (!hasMarriage || hasSecondMarriage) setOfInvalidRelations.add(SECOND_MARRIAGE)
+//            if (!hasSecondMarriage || hasThirdMarriage) setOfInvalidRelations.add(THIRD_MARRIAGE)
+//            if (hasThirdMarriage && hasForthMarriage) setOfInvalidRelations.add(FORTH_MARRIAGE)
 
             return setOfInvalidRelations
         }
@@ -148,7 +195,9 @@ enum class Relations() {
      */
     fun displayAsRelation(gender: Boolean = true): String {
         return when (this) {
-            MARRIAGE -> if (gender) HebrewText.HUSBAND_OF else HebrewText.WIFE_OF
+            MARRIAGE,
+//            SECOND_MARRIAGE, THIRD_MARRIAGE, FORTH_MARRIAGE
+                 -> if (gender) HebrewText.HUSBAND_OF else HebrewText.WIFE_OF
             FATHER -> HebrewText.FATHER_OF
             MOTHER -> HebrewText.MOTHER_OF
             SON -> HebrewText.SON_OF
@@ -159,14 +208,15 @@ enum class Relations() {
             GRANDDAUGHTER -> HebrewText.GRANDDAUGHTER_OF
             COUSINS -> if (gender) HebrewText.MALE_COUSIN_OF else HebrewText.FEMALE_COUSIN_OF
             SIBLINGS -> if (gender) HebrewText.BROTHER_OF else HebrewText.SISTER_OF
-            GREAT_GRANDMOTHER -> HebrewText.GREAT_GRANDMOTHER
-            GREAT_GRANDFATHER -> HebrewText.GREAT_GRANDFATHER
-            GREAT_GRANDSON -> HebrewText.GREAT_GRANDSON
-            GREAT_GRANDDAUGHTER -> HebrewText.GREAT_GRANDDAUGHTER
-            UNCLE -> HebrewText.UNCLE
-            AUNT -> HebrewText.AUNT
-            NEPHEW -> HebrewText.NEPHEW
-            NIECE -> HebrewText.NIECE
+            HALF_SIBLINGS -> if (gender) HebrewText.HALF_BROTHER_OF else HebrewText.HALF_SISTER_OF
+            GREAT_GRANDMOTHER -> HebrewText.GREAT_GRANDMOTHER_OF
+            GREAT_GRANDFATHER -> HebrewText.GREAT_GRANDFATHER_OF
+            GREAT_GRANDSON -> HebrewText.GREAT_GRANDSON_OF
+            GREAT_GRANDDAUGHTER -> HebrewText.GREAT_GRANDDAUGHTER_OF
+            UNCLE -> HebrewText.UNCLE_OF
+            AUNT -> HebrewText.AUNT_OF
+            NEPHEW -> HebrewText.NEPHEW_OF
+            NIECE -> HebrewText.NIECE_OF
         }
     }
 
@@ -180,8 +230,10 @@ enum class Relations() {
         return when (this) {
             FATHER, SON, GRANDFATHER, GRANDSON -> true
             MOTHER, DAUGHTER, GRANDMOTHER, GRANDDAUGHTER -> false
-            COUSINS, SIBLINGS -> null
-            MARRIAGE -> if (gender != null) !gender else null
+            MARRIAGE,
+//            SECOND_MARRIAGE, THIRD_MARRIAGE, FORTH_MARRIAGE
+                ->
+                if (gender != null) !gender else null
             else -> null
         }
     }

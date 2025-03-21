@@ -24,17 +24,3 @@ data class Connection(
     }
 }
 
-
-
-//    /**
-//     * Retrieves the full name of the family member associated with this connection from Firebase.
-//     *
-//     * This is a suspending function and should be called from a coroutine.
-//     *
-//     * @return The full name of the family member, or null if not found.
-//     */
-//    suspend fun getFullName(): String? {
-//        val documentSnapshot = db.collection("memberMap").document(memberId).get().await()
-//        return documentSnapshot.getString("fullname")
-//    }
-

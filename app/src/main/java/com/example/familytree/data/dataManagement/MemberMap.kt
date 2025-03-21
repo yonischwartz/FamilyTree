@@ -46,6 +46,19 @@ object MemberMap {
         modifiedAndNewAddedMembersIds.add(member.getId())
     }
 
+//    /**
+//     * Updates the member map with a new list of members.
+//     * Clears the existing map and replaces it with the new members.
+//     *
+//     * @param newMembers The new list of FamilyMember objects to be stored.
+//     */
+//    internal fun updateMembers(newMembers: List<FamilyMember>) {
+//        members.clear()  // Clear the existing data
+//        newMembers.forEach { member ->
+//            members[member.getId()] = member
+//        }
+//    }
+
     /**
      * Retrieves a family member by their unique ID.
      * @param memberId The ID of the family member.
@@ -161,6 +174,11 @@ object MemberMap {
 
             Relations.NEPHEW, Relations.NIECE ->
                 addUncleAuntNephewNieceConnection(memberOne, memberTwo)
+
+            Relations.HALF_SIBLINGS ->
+                addHalfSiblingsConnection(memberOne, memberTwo)
+
+            else -> Unit
         }
     }
 
@@ -685,6 +703,20 @@ object MemberMap {
         // Add each other's children as nieces or nephews to the sibling
         addUncleAuntNephewNieceConnectionAfterAddingSiblingsConnection(memberOne, memberTwo)
         addUncleAuntNephewNieceConnectionAfterAddingSiblingsConnection(memberTwo, memberOne)
+    }
+
+    /**
+     * Establishes a half sibling connection between two family members.
+     *
+     * @param memberOne The first sibling.
+     * @param memberTwo The second sibling.
+     */
+    private fun addHalfSiblingsConnection(
+        memberOne: FamilyMember,
+        memberTwo: FamilyMember
+    ) {
+        // Add the members themself to each others connection
+        addMutualConnectionToMap(memberOne, memberTwo, Relations.HALF_SIBLINGS)
     }
 
     /**

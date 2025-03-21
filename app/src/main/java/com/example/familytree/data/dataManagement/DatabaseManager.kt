@@ -1,5 +1,6 @@
 package com.example.familytree.data.dataManagement
 
+import android.util.Log
 import com.example.familytree.data.Connection
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.FullConnection
@@ -9,6 +10,9 @@ import com.example.familytree.data.exceptions.UnsafeDeleteException
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.firestore.QuerySnapshot
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * FamilyTreeData is responsible for managing family tree data,
@@ -22,6 +26,10 @@ object DatabaseManager {
 
     // MemberMap instance
     private val memberMap = MemberMap
+
+    // Create a MutableStateFlow to hold the list of members
+    private val _membersFlow = MutableStateFlow<List<FamilyMember>>(emptyList())
+    val membersFlow: StateFlow<List<FamilyMember>> = _membersFlow.asStateFlow()
 
     // functions
 
@@ -198,6 +206,25 @@ object DatabaseManager {
         return memberMap.getAllMembers()
     }
 
+//    /**
+//     * Fetches all family members from the "memberMap" collection in Firebase Firestore
+//     * and updates both the local state and the MemberMap instance.
+//     */
+//    fun fetchMembers() {
+//        firebase.collection("memberMap")
+//            .get()
+//            .addOnSuccessListener { snapshot ->
+//                val members = snapshot.documents.mapNotNull { doc ->
+//                    doc.toObject(FamilyMember::class.java)
+//                }
+//                _membersFlow.value = members
+//                memberMap.updateMembers(members) // Ensure local map is also updated
+//            }
+//            .addOnFailureListener {
+//                Log.e("DatabaseManager", "Failed to fetch members", it)
+//            }
+//    }
+
     /**
      * Retrieves a list of all family members who are Yeshiva members.
      *
@@ -319,6 +346,5 @@ object DatabaseManager {
     fun isQueueOfSuggestedConnectionsNotEmpty(): Boolean {
         return memberMap.isQueueOfSuggestedConnectionsNotEmpty()
     }
-
 }
 
