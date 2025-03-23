@@ -16,6 +16,7 @@ import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.HebrewText
 import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.navigation.NavController
 import com.example.familytree.ui.ArrowButton
 import com.example.familytree.ui.BigRoundButton
@@ -23,13 +24,16 @@ import com.example.familytree.ui.CustomizedText
 import com.example.familytree.ui.FamilyMemberCube
 import com.example.familytree.ui.JewishManButton
 import com.example.familytree.ui.JewishWomanButton
+import com.example.familytree.ui.MembersHomeScreenSearchBar
 import com.example.familytree.ui.WideBlueButton
 import com.example.familytree.ui.MembersSearchBar
 import com.example.familytree.ui.QuestionMarkButton
 import com.example.familytree.ui.YbmLogo
+import com.example.familytree.ui.allMachzorim
 import com.example.familytree.ui.backgroundColor
 import com.example.familytree.ui.dialogs.DisplayConnectionBetweenTwoMembersDialog
 import com.example.familytree.ui.graphicTreeDisplay.ClickableShapesCanvas
+import com.example.familytree.ui.machzorToInt
 
 /**
  * Composable function that displays the home screen of the family tree application.
@@ -45,8 +49,13 @@ fun HomeScreenPage(
     navController: NavController
 ) {
 
-    // Get all family members from the database
-    val members = DatabaseManager.getAllMembers()
+    // Retrieve members sorted by machzor order
+    val members = allMachzorim.flatMap { machzor ->
+        DatabaseManager.getMembersByMachzor(machzorToInt[machzor])
+    } + DatabaseManager.getMembersByMachzor(null)
+
+    // State to hold filtered members based on search input
+    var filteredMembers by remember { mutableStateOf(members) }
 
     // Boolean to determine if the "Find Connection" button was clicked
     var findConnectionButtonClicked by remember { mutableStateOf(false) }
@@ -58,17 +67,8 @@ fun HomeScreenPage(
     // Function to handle clicking on a family member cube
     val onClickCube: (FamilyMember) -> Unit
 
-    // Small buttons to display when the "Find Connection" button is clicked
-    var firstSmallButton by remember { mutableStateOf<@Composable () -> Unit> (
-        { QuestionMarkButton(onClick = { findConnectionButtonClicked = !findConnectionButtonClicked }) } )
-    }
-    var secondSmallButton by remember { mutableStateOf<@Composable () -> Unit> (
-        { QuestionMarkButton(onClick = { findConnectionButtonClicked = !findConnectionButtonClicked }) } )
-    }
-
     // Boolean to determine if the connection dialog should be displayed
     var showConnectionDialog: Boolean by remember { mutableStateOf(false) }
-
 
     var testing by remember { mutableStateOf(false) }
 
@@ -213,7 +213,11 @@ fun HomeScreenPage(
                         .fillMaxWidth()
                         .weight(2f)) {
 
-                        MembersSearchBar()
+                        // Search Bar
+                        MembersHomeScreenSearchBar(
+                            members = members,
+                            onSearchResults = { filteredMembers = it }
+                        )
 
                         BoxWithConstraints(
                             modifier = Modifier.fillMaxSize()
@@ -221,18 +225,24 @@ fun HomeScreenPage(
                             val containerHeight = maxHeight
                             val cubeLength = containerHeight / 5  // Dividing the height into 5 parts (4 members + spacing)
 
+                            val groupedMembers = filteredMembers.groupBy { it.getMachzor() } // Group members by machzor
+
                             LazyRow(
                                 modifier = Modifier.fillMaxWidth(),
-                                contentPadding = PaddingValues(horizontal = 16.dp), // Ensures first & last column are away from edges
-                                horizontalArrangement = Arrangement.spacedBy(2.dp) // Ensures spacing between columns
+                                contentPadding = PaddingValues(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
-                                val columns = members.chunked(4)
+                                val sortedMachzorKeys = groupedMembers.keys.filterNotNull().sorted() + listOf(null) // Sort machzorim & include null
+                                val columns = sortedMachzorKeys.flatMap { machzor ->
+                                    groupedMembers[machzor]?.chunked(4) ?: emptyList() // Split each machzor group into chunks of 4
+                                }
 
-                                items(columns.size) { columnIndex -> // Iterate over chunk indices
-                                    val columnMembers = columns[columnIndex] // Get the chunk at index
+                                items(columns.size) { columnIndex ->
+                                    val columnMembers = columns[columnIndex]
+
                                     Column(
-                                        modifier = Modifier.padding(vertical = 8.dp), // Keeps columns away from top & bottom edges
-                                        verticalArrangement = Arrangement.spacedBy(2.dp) // Ensures spacing between cubes
+                                        modifier = Modifier.padding(vertical = 8.dp),
+                                        verticalArrangement = Arrangement.spacedBy(2.dp)
                                     ) {
                                         columnMembers.forEach { member ->
                                             val isSelected = member == firstSelectedMember || member == secondSelectedMember

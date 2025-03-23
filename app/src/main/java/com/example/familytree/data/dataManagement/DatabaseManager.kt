@@ -206,25 +206,6 @@ object DatabaseManager {
         return memberMap.getAllMembers()
     }
 
-//    /**
-//     * Fetches all family members from the "memberMap" collection in Firebase Firestore
-//     * and updates both the local state and the MemberMap instance.
-//     */
-//    fun fetchMembers() {
-//        firebase.collection("memberMap")
-//            .get()
-//            .addOnSuccessListener { snapshot ->
-//                val members = snapshot.documents.mapNotNull { doc ->
-//                    doc.toObject(FamilyMember::class.java)
-//                }
-//                _membersFlow.value = members
-//                memberMap.updateMembers(members) // Ensure local map is also updated
-//            }
-//            .addOnFailureListener {
-//                Log.e("DatabaseManager", "Failed to fetch members", it)
-//            }
-//    }
-
     /**
      * Retrieves a list of all family members who are Yeshiva members.
      *
@@ -232,6 +213,16 @@ object DatabaseManager {
      */
     fun getAllYeshivaMembers(): List<FamilyMember> {
         return memberMap.getAllYeshivaMembers()
+    }
+
+    /**
+     * Retrieves a list of family members who belong to a specific machzor.
+     *
+     * @param machzor The machzor number to filter by. If null, members who didn't learn in the yeshiva will be returned.
+     * @return A list of [FamilyMember] instances that match the given machzor.
+     */
+    fun getMembersByMachzor(machzor: Int?): List<FamilyMember> {
+        return memberMap.getMembersByMachzor(machzor)
     }
 
     /**

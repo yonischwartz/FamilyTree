@@ -46,19 +46,6 @@ object MemberMap {
         modifiedAndNewAddedMembersIds.add(member.getId())
     }
 
-//    /**
-//     * Updates the member map with a new list of members.
-//     * Clears the existing map and replaces it with the new members.
-//     *
-//     * @param newMembers The new list of FamilyMember objects to be stored.
-//     */
-//    internal fun updateMembers(newMembers: List<FamilyMember>) {
-//        members.clear()  // Clear the existing data
-//        newMembers.forEach { member ->
-//            members[member.getId()] = member
-//        }
-//    }
-
     /**
      * Retrieves a family member by their unique ID.
      * @param memberId The ID of the family member.
@@ -123,6 +110,16 @@ object MemberMap {
      */
     internal fun getAllYeshivaMembers(): List<FamilyMember> {
         return members.values.filter { it.getMemberType() == MemberType.Yeshiva }
+    }
+
+    /**
+     * Retrieves a list of family members who belong to a specific machzor.
+     *
+     * @param machzor The machzor number to filter by. If null, members who didn't learn in the yeshiva will be returned.
+     * @return A list of [FamilyMember] instances that match the given machzor.
+     */
+    internal fun getMembersByMachzor(machzor: Int?): List<FamilyMember> {
+        return members.values.filter { it.getMachzor() == machzor }
     }
 
     /**

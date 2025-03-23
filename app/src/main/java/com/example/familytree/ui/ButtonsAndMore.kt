@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -45,6 +46,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -433,6 +435,49 @@ fun FamilyTreeTopBar(
                 }
             }
         }
+    }
+}
+
+/**
+ * Composable function that provides a search bar to filter members by name.
+ *
+ * @param members The list of FamilyMember objects to search through.
+ * @param onSearchResults A callback function that returns the filtered list of members based on the search query.
+ */
+@RequiresApi(Build.VERSION_CODES.N)
+@Composable
+fun MembersHomeScreenSearchBar(
+    members: List<FamilyMember>,
+    onSearchResults: (List<FamilyMember>) -> Unit
+) {
+    var searchText by remember { mutableStateOf("") }
+
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        TextField(
+            value = searchText,
+            onValueChange = {
+                searchText = it
+                val filteredMembers = if (searchText.isBlank()) {
+                    members
+                } else {
+                    members.filter { member ->
+                        member.getFullName().contains(searchText, ignoreCase = true)
+                    }
+                }
+                onSearchResults(filteredMembers)
+            },
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { CustomizedText(HebrewText.SEARCH_BY_NAME) },
+            leadingIcon = {
+                Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon")
+            },
+            singleLine = true,
+            shape = RoundedCornerShape(8.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            )
+        )
     }
 }
 

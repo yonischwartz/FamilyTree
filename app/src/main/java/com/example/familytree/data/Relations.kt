@@ -178,10 +178,10 @@ enum class Relations() {
             }
 
             // Apply validation rules
-            if (!hasMarriage) setOfInvalidRelations.add(MARRIAGE)
-//            if (!hasMarriage || hasSecondMarriage) setOfInvalidRelations.add(SECOND_MARRIAGE)
-//            if (!hasSecondMarriage || hasThirdMarriage) setOfInvalidRelations.add(THIRD_MARRIAGE)
-//            if (hasThirdMarriage && hasForthMarriage) setOfInvalidRelations.add(FORTH_MARRIAGE)
+            if (hasMarriage) setOfInvalidRelations.add(MARRIAGE)
+//            if (hasSecondMarriage) setOfInvalidRelations.add(SECOND_MARRIAGE)
+//            if (hasThirdMarriage) setOfInvalidRelations.add(THIRD_MARRIAGE)
+//            if (hasForthMarriage) setOfInvalidRelations.add(FORTH_MARRIAGE)
 
             return setOfInvalidRelations
         }
