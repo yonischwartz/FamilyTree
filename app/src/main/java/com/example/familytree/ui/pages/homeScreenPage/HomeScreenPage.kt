@@ -156,10 +156,16 @@ fun HomeScreenPage(
                                         }
                                     }
 
+                                    // Arrow button (or placeholder)
                                     if (firstSelectedMember != null && secondSelectedMember != null) {
                                         ArrowButton(
                                             onClick = { showConnectionDialog = true }
                                         )
+                                    }
+
+                                    // Reserve space for the arrow button
+                                    else {
+                                        Spacer(modifier = Modifier.size(48.dp))
                                     }
 
                                     if (showConnectionDialog) {
