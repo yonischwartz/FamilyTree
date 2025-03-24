@@ -20,12 +20,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ArrowForward
@@ -34,7 +31,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -69,8 +65,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
@@ -112,6 +106,27 @@ fun CustomizedText(text: String) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium
+    )
+}
+
+/**
+ * A customized text composable that displays a name with a fixed width.
+ * If the name is too long, it wraps into two lines instead of shifting UI elements.
+ *
+ * @param text The name to be displayed.
+ */
+@Composable
+fun CustomizedTextHomeScreenTwoLinesDisplay(text: String) {
+    val words = text.split(" ") // Split the name into words
+
+    val firstLine = words.dropLast(1).joinToString(" ") // All words except the last
+    val secondLine = words.last() // The last word
+
+    Text(
+        text = "$firstLine\n$secondLine",
+        style = MaterialTheme.typography.bodyMedium,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.width(100.dp)
     )
 }
 
@@ -642,7 +657,10 @@ fun CircularImageButton(imageRes: Int, onClick: () -> Unit) {
  */
 @Composable
 fun ArrowButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         CustomizedText(HebrewText.FIND_CONNECTION)
         Image(
             painter = painterResource(id = R.drawable.bidirectional_arrow),

@@ -25,6 +25,7 @@ object HebrewText {
     const val LOAD_MEMBERS_FROM_FIREBASE = "משוך נתונים מה-firebase"
     const val SAVE_AND_UPDATE_MEMBERS_TO_FIREBASE = "שמור ועדכן שינויים ב-firebase"
     const val GO_INTO_ADMIN_MODE = "היכנס למצב מנהל"
+    const val CLICK_TO_FIND_CONNECTION = "לחץ למציאת קשר"
 
     // Other buttons
     const val YES = "כן"
