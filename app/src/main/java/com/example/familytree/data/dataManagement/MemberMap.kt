@@ -773,6 +773,9 @@ object MemberMap {
         // Look for children in parent connections and add to their connections the child as sibling
         addSiblingConnectionToMembersChild(child, parent)
 
+        // Look for siblings in parent connections and add the child as a niece or nephew
+        addUncleAuntNephewNieceConnectionAfterAddingChildParentConnection(child, parent)
+
         // Add to QueueOfSuggestedConnections optional connections
         addSuggestionConnectionsAfterAddingChildParentConnection(child, parent)
     }
@@ -855,6 +858,9 @@ object MemberMap {
 
         // Add uncle's or aunt's children as cousins to nephew or niece
         addCousinsConnectionAfterAddingUncleOrAuntConnections(uncleOrAunt, nephewOrNiece)
+
+        // Add uncleOrAunt's spouse as uncleOrAunt to nephewOrNiece
+        addUncleOrAuntsSpouseAsAuntOrUncleToNephewOrNiece(uncleOrAunt, nephewOrNiece)
 
         // Add both members' IDs to the list of modified members
         modifiedAndNewAddedMembersIds.add(uncleOrAunt.getId())
@@ -1424,6 +1430,9 @@ object MemberMap {
 
         // Add suggested child-parent or nephewNiece uncleAunt connections
         addSuggestionOfChildParentOrNephewUncleConnectionAfterAddingChildParentConnection(child, parent)
+
+        // Add suggested child-parent connection of parent's spouse and child
+        addSuggestionOfChildParentConnectionAfterAddingChildParentConnection(child, parent)
     }
 
     /**
@@ -1564,6 +1573,40 @@ object MemberMap {
                 // Add the suggested connection to queue
                 QueueOfSuggestedConnections.add(suggestedConnection)
             }
+        }
+    }
+
+    /**
+     * Suggests an additional child-parent connection for the spouse of the existing parent.
+     *
+     * When a **child-parent** relationship is established, this function checks if
+     * the `parent` has a **spouse**. If so, it suggests the `child` as a child of the spouse as well.
+     *
+     * @param child The family member being suggested as a child.
+     * @param parent The existing parent whose spouse is being checked.
+     */
+    private fun addSuggestionOfChildParentConnectionAfterAddingChildParentConnection(
+        child: FamilyMember,
+        parent: FamilyMember
+    ) {
+        // Look for a spouse of the parent
+        val spouseConnection = parent.getConnections().find {
+            it.relationship == Relations.MARRIAGE
+        }
+
+        // If a spouse exists, retrieve their FamilyMember object
+        val spouse = spouseConnection?.memberId?.let { members[it] }
+
+        // If spouse exists and the child is not already connected as their child, suggest the connection
+        if (spouse != null && spouse.getConnections().none { it.memberId == child.getId() }) {
+            // Determine the parent relationship (FATHER or MOTHER) based on spouse's gender
+            val parentRelation = if (spouse.getGender()) Relations.FATHER else Relations.MOTHER
+
+            // Create the suggested connection
+            val suggestedConnection = FullConnection(child, spouse, parentRelation)
+
+            // Add the suggested connection to queue
+            QueueOfSuggestedConnections.add(suggestedConnection)
         }
     }
 
@@ -2006,6 +2049,45 @@ object MemberMap {
     }
 
     /**
+     * Establishes an uncle/aunt relationship when a new parent-child connection is added.
+     *
+     * When a child is added to a parent, the parent's siblings become the child's uncles or aunts.
+     * This function identifies the parent's siblings and ensures a **UNCLE/AUNT** connection
+     * is established between them and the child.
+     *
+     * ### Functionality:
+     * - Iterates through the parent's connections to find siblings.
+     * - Ensures that the child is not already connected to the sibling as an uncle/aunt.
+     * - Establishes a bidirectional **UNCLE/AUNT** relationship between the parent's sibling and the child.
+     *
+     * @param child The family member being added as a child.
+     * @param parent The family member whose siblings (child's uncles/aunts) are being linked.
+     */
+    private fun addUncleAuntNephewNieceConnectionAfterAddingChildParentConnection(
+        child: FamilyMember,
+        parent: FamilyMember,
+    ) {
+        for (connection in parent.getConnections().toList()) {
+            if (connection.relationship == Relations.SIBLINGS
+            ) {
+
+                val uncleOrAunt: FamilyMember = members[connection.memberId]!!
+
+                // Make sure the connection doesn't already exist
+                if (uncleOrAunt.getId() in child.getConnections().map { it.memberId }) {
+                    continue
+                }
+
+                // Add the niece or nephew connection to the sibling
+                addUncleAuntNephewNieceConnection(
+                    uncleOrAunt = uncleOrAunt,
+                    nephewOrNiece = child
+                )
+            }
+        }
+    }
+
+    /**
      * Establishes cousin connections after adding an uncle/aunt relationship.
      *
      * When a new uncle/aunt connection is added, this function finds their children
@@ -2040,6 +2122,42 @@ object MemberMap {
 
                 // Add the cousin connection to the nephewOrNiece
                 addConnectionToBothMembers(cousin!!, nephewOrNiece, Relations.COUSINS)
+            }
+        }
+    }
+
+    /**
+     * Establishes an uncle/aunt relationship for the spouse of an existing uncle or aunt.
+     *
+     * When an uncle or aunt is added, their spouse should also be considered an uncle or aunt
+     * to the `nephewOrNiece`. This function finds the spouse of `uncleOrAunt` and creates
+     * a bidirectional **UNCLE/AUNT** relationship between them and the `nephewOrNiece`.
+     *
+     * ### Functionality:
+     * - Finds the spouse of the `uncleOrAunt` from their existing connections.
+     * - Ensures the spouse is not already an uncle/aunt before adding the relationship.
+     * - Establishes a bidirectional **UNCLE/AUNT** connection between the spouse and the `nephewOrNiece`.
+     *
+     * @param uncleOrAunt The family member who is an uncle or aunt.
+     * @param nephewOrNiece The family member whose uncle/aunt connections are being updated.
+     */
+    private fun addUncleOrAuntsSpouseAsAuntOrUncleToNephewOrNiece(
+        uncleOrAunt: FamilyMember,
+        nephewOrNiece: FamilyMember
+    ) {
+        for (connection in uncleOrAunt.getConnections()) {
+            if (connection.relationship == Relations.MARRIAGE) {
+                val spouse = members[connection.memberId] ?: continue
+
+                // Check if the spouse is already listed as an uncle or aunt
+                if (spouse.getConnections().any { it.memberId == nephewOrNiece.getId() }) {
+                    continue
+                }
+
+                addUncleAuntNephewNieceConnection(
+                    uncleOrAunt = spouse,
+                    nephewOrNiece = nephewOrNiece
+                )
             }
         }
     }
