@@ -1625,7 +1625,7 @@ object MemberMap {
         memberTwo: FamilyMember
     ) {
 
-        for (connection in memberOne.getConnections()) {
+        for (connection in memberOne.getConnections().toList()) {
 
             // These relations are not mutual for siblings
             if (connection.relationship == Relations.MARRIAGE ||
@@ -1885,7 +1885,7 @@ object MemberMap {
         relation: Relations
     ) {
 
-        for (connection in memberOne.getConnections()) {
+        for (connection in memberOne.getConnections().toList()) {
             if (connection.relationship == Relations.SIBLINGS) {
                 val sibling = members[connection.memberId]!!
 
@@ -1918,7 +1918,7 @@ object MemberMap {
         parent: FamilyMember,
     ) {
 
-        for (connection in parent.getConnections()) {
+        for (connection in parent.getConnections().toList()) {
 
             if (connection.relationship == Relations.SON ||
                 connection.relationship == Relations.DAUGHTER) {
@@ -2107,7 +2107,7 @@ object MemberMap {
         nephewOrNiece: FamilyMember
     ) {
 
-        for (connection in uncleOrAunt.getConnections()) {
+        for (connection in uncleOrAunt.getConnections().toList()) {
 
             if (connection.relationship == Relations.SON ||
                 connection.relationship == Relations.DAUGHTER) {
@@ -2145,7 +2145,7 @@ object MemberMap {
         uncleOrAunt: FamilyMember,
         nephewOrNiece: FamilyMember
     ) {
-        for (connection in uncleOrAunt.getConnections()) {
+        for (connection in uncleOrAunt.getConnections().toList()) {
             if (connection.relationship == Relations.MARRIAGE) {
                 val spouse = members[connection.memberId] ?: continue
 

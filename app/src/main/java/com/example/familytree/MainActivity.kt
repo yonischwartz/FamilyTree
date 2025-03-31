@@ -14,6 +14,7 @@ import com.example.familytree.ui.FamilyTreeTheme
 import com.example.familytree.ui.pages.homeScreenPage.HomeScreenPage
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
+import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.data.dataManagement.DatabaseManager.loadMembersFromFirebaseIntoLocalMap
 import com.example.familytree.ui.pages.AdminPage
 import com.example.familytree.ui.pages.FamilyTreeGraphPage
@@ -25,8 +26,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Load members from Firebase before setting the UI
-        loadMembersFromFirebaseIntoLocalMap {
+        // Load family members and image URL before setting the UI
+        loadDataBeforeUI {
             runOnUiThread {
                 setContent {
                     FamilyTreeTheme {
@@ -56,5 +57,32 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+}
+
+/**
+ * Loads both family members and the family tree graph image from Firebase,
+ * ensuring both are available before launching the UI.
+ */
+private fun loadDataBeforeUI(onComplete: () -> Unit) {
+    var isMembersLoaded = false
+    var isImageLoaded = false
+
+    fun checkIfReady() {
+        if (isMembersLoaded && isImageLoaded) {
+            onComplete()
+        }
+    }
+
+    // Load family members
+    loadMembersFromFirebaseIntoLocalMap {
+        isMembersLoaded = true
+        checkIfReady()
+    }
+
+    // Load image URL
+    DatabaseManager.loadFamilyTreeGraphImageWithUrlFromFirebase {
+        isImageLoaded = true
+        checkIfReady()
     }
 }

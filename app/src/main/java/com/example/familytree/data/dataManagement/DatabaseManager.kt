@@ -13,6 +13,7 @@ import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.tasks.await
 
 /**
  * FamilyTreeData is responsible for managing family tree data,
@@ -26,6 +27,8 @@ object DatabaseManager {
 
     // MemberMap instance
     private val memberMap = MemberMap
+
+    private var familyTreeGraphImage: String = ""
 
     // Create a MutableStateFlow to hold the list of members
     private val _membersFlow = MutableStateFlow<List<FamilyMember>>(emptyList())
@@ -93,6 +96,26 @@ object DatabaseManager {
             }
             .addOnFailureListener {
                 onComplete(false)
+            }
+    }
+
+    /**
+     * Fetches the family tree graph image URL from Firestore and stores it in [familyTreeGraphImage].
+     * Ensures that the URL is loaded before continuing by invoking [onComplete] when finished.
+     *
+     * @param onComplete A callback function that is executed once the image URL has been retrieved (or failed).
+     */
+    fun loadFamilyTreeGraphImageWithUrlFromFirebase(onComplete: () -> Unit) {
+        firebase.collection("images").document("family_tree_graph")
+            .get()
+            .addOnSuccessListener { document ->
+                familyTreeGraphImage = document.getString("url") ?: ""
+            }
+            .addOnFailureListener { exception ->
+                exception.printStackTrace()
+            }
+            .addOnCompleteListener {
+                onComplete()
             }
     }
 
@@ -337,5 +360,23 @@ object DatabaseManager {
     fun isQueueOfSuggestedConnectionsNotEmpty(): Boolean {
         return memberMap.isQueueOfSuggestedConnectionsNotEmpty()
     }
+
+    /**
+     * Fetches the family tree graph image URL from Firestore.
+     * @return The image URL if found, or null if an error occurs.
+     */
+    private fun getFamilyTreeGraphImage(): String {
+        return familyTreeGraphImage
+    }
+
+//    suspend fun getFamilyTreeGraphImage(): String? {
+//        return try {
+//            val document = firebase.collection("images").document("family_tree_graph").get().await()
+//            document.getString("url")
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            null
+//        }
+//    }
 }
 
