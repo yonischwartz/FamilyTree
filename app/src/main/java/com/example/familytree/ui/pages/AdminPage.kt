@@ -1,4 +1,4 @@
-package com.example.familytree.ui.pages.adminPage
+package com.example.familytree.ui.pages
 
 import android.os.Build
 import android.widget.Toast
@@ -12,8 +12,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.platform.LocalLayoutDirection
-import com.example.familytree.data.FamilyMember
-import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.HebrewText
 import com.example.familytree.ui.pages.homeScreenPage.functionForButtons.AddFamilyMember
 import androidx.compose.foundation.background
@@ -24,10 +22,8 @@ import com.example.familytree.ui.FamilyTreeTopBar
 import com.example.familytree.ui.pages.homeScreenPage.functionForButtons.ConnectTwoMembers
 import com.example.familytree.ui.WideBlueButton
 import com.example.familytree.ui.pages.homeScreenPage.functionForButtons.FindConnectionsBetweenTwoMembers
-import com.example.familytree.ui.MembersSearchBar
+import com.example.familytree.ui.MembersSearchBar_2
 import com.example.familytree.ui.backgroundColor
-import com.example.familytree.ui.dialogs.errorAndSuccessDialogs.NoMembersFoundDialog
-import com.example.familytree.ui.graphicTreeDisplay.ClickableShapesCanvas
 import com.example.familytree.ui.theme.dialogs.MemberListDialog
 
 
@@ -41,8 +37,6 @@ fun AdminPage(navController: NavController) {
     var showAddConnectionDialog by remember { mutableStateOf(false) }
     var showFindConnectionDialog by remember { mutableStateOf(false) }
     var showMemberListDialog by remember { mutableStateOf(false) }
-
-    var testing by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
 
@@ -78,18 +72,7 @@ fun AdminPage(navController: NavController) {
                     verticalArrangement = Arrangement.Center
                 ) {
 
-                    MembersSearchBar()
-
-                    // Test button
-                    WideBlueButton(
-                        onClick = { testing = !testing },
-                        "test"
-                    )
-
-                    if (testing) {
-                        DatabaseManager.removeMemberFromLocalMemberMap("6e61404d-464f-4a55-b695-61e2834a2b19")
-                        ClickableShapesCanvas()
-                    }
+                    MembersSearchBar_2()
 
                     // Button to add a new family member
                     WideBlueButton(

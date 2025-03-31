@@ -15,23 +15,27 @@ import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.HebrewText
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.navigation.NavController
 import com.example.familytree.ui.ArrowButton
 import com.example.familytree.ui.BigRoundButton
-import com.example.familytree.ui.CustomizedText
 import com.example.familytree.ui.CustomizedTextHomeScreenTwoLinesDisplay
 import com.example.familytree.ui.FamilyMemberCube
 import com.example.familytree.ui.JewishManButton
 import com.example.familytree.ui.JewishWomanButton
-import com.example.familytree.ui.MembersHomeScreenSearchBar
+import com.example.familytree.ui.MembersSearchBar
+import com.example.familytree.ui.PageHeadLine
 import com.example.familytree.ui.WideBlueButton
 import com.example.familytree.ui.QuestionMarkButton
-import com.example.familytree.ui.YbmLogo
+import com.example.familytree.ui.RightSubTitle
 import com.example.familytree.ui.allMachzorim
 import com.example.familytree.ui.backgroundColor
 import com.example.familytree.ui.dialogs.DisplayConnectionBetweenTwoMembersDialog
-import com.example.familytree.ui.graphicTreeDisplay.ClickableShapesCanvas
+import com.example.familytree.ui.dialogs.InfoOnMemberDialog
+import com.example.familytree.ui.intToMachzor
 import com.example.familytree.ui.machzorToInt
 
 /**
@@ -56,6 +60,19 @@ fun HomeScreenPage(
     // State to hold filtered members based on search input
     var filteredMembers by remember { mutableStateOf(members) }
 
+    // Filter out members that are yeshiva rabbis with a machzor
+    val modifiedMembersToDisplay = filteredMembers.flatMap { member ->
+        if (member.getIsYeshivaRabbi() && member.getMachzor() != 0) {
+            listOf(member, member.getDuplicateRabbiWithNoMachzor())
+        } else {
+            listOf(member)
+        }
+    }
+
+    // Group members by machzor
+    val groupedMembers = modifiedMembersToDisplay.groupBy { it.getMachzor() }
+        .toSortedMap(compareBy { it ?: Int.MAX_VALUE })
+
     // Boolean to determine if the "Find Connection" button was clicked
     var findConnectionButtonClicked by remember { mutableStateOf(false) }
 
@@ -63,13 +80,17 @@ fun HomeScreenPage(
     var firstSelectedMember by remember { mutableStateOf<FamilyMember?>(null) }
     var secondSelectedMember by remember { mutableStateOf<FamilyMember?>(null) }
 
+    // State to hold the member that was clicked
+    var clickedMemberOnList by remember { mutableStateOf<FamilyMember?>(null) }
+
+    // State to hold whether to display member's info dialog
+    var displayMembersInfo by remember { mutableStateOf(false) }
+
     // Function to handle clicking on a family member cube
     val onClickCube: (FamilyMember) -> Unit
 
     // Boolean to determine if the connection dialog should be displayed
     var showConnectionDialog: Boolean by remember { mutableStateOf(false) }
-
-    var testing by remember { mutableStateOf(false) }
 
     // Update the small buttons to display the selected family members
     if (findConnectionButtonClicked) {
@@ -104,9 +125,7 @@ fun HomeScreenPage(
                     // Top 1/4 of the screen
 
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
+                        modifier = Modifier.fillMaxWidth().weight(1f),
                         contentAlignment = Alignment.Center
                     ) {
                         if (findConnectionButtonClicked) {
@@ -118,7 +137,7 @@ fun HomeScreenPage(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.Center
                                 ) {
-                                    CustomizedText(HebrewText.CHOOSE_TWO_FAMILY_MEMBERS)
+                                    PageHeadLine(HebrewText.CHOOSE_TWO_FAMILY_MEMBERS)
                                 }
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
@@ -220,49 +239,107 @@ fun HomeScreenPage(
 
                     // Middle 2/4 of ths screen
 
-                    Column(modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(2f)) {
+                    Column(modifier = Modifier.fillMaxWidth().weight(2f)) {
+
+                        // Headline text
+                        PageHeadLine(HebrewText.FAMILY_TREE_MEMBERS)
 
                         // Search Bar
-                        MembersHomeScreenSearchBar(
+                        MembersSearchBar(
                             members = members,
                             onSearchResults = { filteredMembers = it }
                         )
 
-                        BoxWithConstraints(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            val containerHeight = maxHeight
-                            val cubeLength = containerHeight / 5  // Dividing the height into 5 parts (4 members + spacing)
-
-                            val groupedMembers = filteredMembers.groupBy { it.getMachzor() } // Group members by machzor
-
-                            LazyRow(
-                                modifier = Modifier.fillMaxWidth(),
-                                contentPadding = PaddingValues(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(2.dp)
+                        // If the "Find Connection" button was clicked, display members as blocks
+                        if (findConnectionButtonClicked) {
+                            BoxWithConstraints(
+                                modifier = Modifier.fillMaxSize()
                             ) {
-                                val sortedMachzorKeys = groupedMembers.keys.filterNotNull().sorted() + listOf(null) // Sort machzorim & include null
-                                val columns = sortedMachzorKeys.flatMap { machzor ->
-                                    groupedMembers[machzor]?.chunked(4) ?: emptyList() // Split each machzor group into chunks of 4
+                                val containerHeight = maxHeight
+                                val cubeLength = containerHeight / 5 // Dividing the height into 5 parts (4 members + spacing)
+
+
+//                                // This is when i tried to split the cubes by machzor
+//                                val groupedMembers =
+//                                    filteredMembers.groupBy { it.getMachzor() } // Group members by machzor
+//
+//                                LazyRow(
+//                                    modifier = Modifier.fillMaxWidth(),
+//                                    contentPadding = PaddingValues(horizontal = 16.dp),
+//                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+//                                ) {
+//                                    val sortedMachzorKeys = groupedMembers.keys.filterNotNull()
+//                                        .sorted() + listOf(null) // Sort machzorim & include null
+//                                    val columns = sortedMachzorKeys.flatMap { machzor ->
+//                                        groupedMembers[machzor]?.chunked(4)
+//                                            ?: emptyList() // Split each machzor group into chunks of 4
+//                                    }
+
+
+                                LazyRow(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentPadding = PaddingValues(horizontal = 16.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    val columns = filteredMembers.chunked(4) // Properly chunk the list once
+
+                                    items(columns.size) { columnIndex ->
+                                        val columnMembers = columns[columnIndex]
+
+                                        Column(
+                                            modifier = Modifier.padding(vertical = 8.dp),
+                                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                                        ) {
+                                            columnMembers.forEach { member ->
+                                                val isSelected = member == firstSelectedMember || member == secondSelectedMember
+                                                FamilyMemberCube(
+                                                    member = member,
+                                                    isSelected = isSelected,
+                                                    length = cubeLength,
+                                                    width = 80.dp,
+                                                    onClick = { onClickCube(member) }
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
+                            }
 
-                                items(columns.size) { columnIndex ->
-                                    val columnMembers = columns[columnIndex]
 
-                                    Column(
-                                        modifier = Modifier.padding(vertical = 8.dp),
-                                        verticalArrangement = Arrangement.spacedBy(2.dp)
-                                    ) {
-                                        columnMembers.forEach { member ->
-                                            val isSelected = member == firstSelectedMember || member == secondSelectedMember
-                                            FamilyMemberCube(
-                                                member = member,
-                                                isSelected = isSelected,
-                                                length = cubeLength,
-                                                width = 80.dp,
-                                                onClick = { onClickCube(member) }
+                        }
+
+                        // If the "Find Connection" button wasn't clicked, display members as a list
+                        else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp)
+                            ) {
+                                groupedMembers.forEach { (group, members) ->
+                                    val subTitle: String = when {
+                                        group == null -> HebrewText.NON_YESHIVA_FAMILY_MEMBERS
+                                        group == 0 -> HebrewText.RABBIS_AND_STAFF
+                                        else -> "${HebrewText.MACHZOR} ${intToMachzor[group]}"
+                                    }.toString()
+
+                                    item {
+                                        RightSubTitle(subTitle)
+                                    }
+
+                                    items(members.sortedBy { it.getFullName() }) { member ->
+                                        Text(
+                                            text = member.getFullName(),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    clickedMemberOnList = member
+                                                    displayMembersInfo = true
+                                                },
+                                            style = MaterialTheme.typography.bodyLarge
+                                        )
+
+                                        if (displayMembersInfo) {
+                                            InfoOnMemberDialog(
+                                                member = clickedMemberOnList!!,
+                                                onDismiss = { displayMembersInfo = false }
                                             )
                                         }
                                     }
@@ -280,16 +357,10 @@ fun HomeScreenPage(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        WideBlueButton(onClick = { testing = !testing }, text = "test")
-                        WideBlueButton(onClick = { navController.navigate("memberListPage") }, text = HebrewText.SHOW_ALL_FAMILY_MEMBERS)
+                        WideBlueButton(onClick = { navController.navigate("familyTreeGraphPage") }, text = HebrewText.SHOW_FAMILY_TREE_GRAPH)
                         WideBlueButton(onClick = { navController.navigate("adminPage") }, text = HebrewText.GO_INTO_ADMIN_MODE)
 
-                        YbmLogo()
-                    }
-
-                    if (testing) {
-                        DatabaseManager.removeMemberFromLocalMemberMap("6e61404d-464f-4a55-b695-61e2834a2b19")
-                        ClickableShapesCanvas()
+//                        YbmLogo()
                     }
                 }
             }

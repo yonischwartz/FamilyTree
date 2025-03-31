@@ -5,12 +5,15 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,13 +23,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -42,9 +45,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +55,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -60,6 +64,7 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -81,6 +86,20 @@ import com.example.familytree.ui.dialogs.InfoOnMemberDialog
  * A constant color value representing a beige background color.
  */
 val backgroundColor = Color(0xFFF5F5DC) // Beige
+
+/**
+ * Returns the default text style used in the app.
+ *
+ * This function provides a consistent typography style for text elements
+ * by using `MaterialTheme.typography.bodyMedium`. It ensures that the text
+ * follows the app's theme settings.
+ *
+ * @return A [TextStyle] representing the app's default text appearance.
+ */
+@Composable
+fun appTextStyle(): TextStyle {
+    return MaterialTheme.typography.bodyMedium
+}
 
 /**
  * A Composable function that displays the YBM logo image.
@@ -105,7 +124,7 @@ fun YbmLogo() {
 fun CustomizedText(text: String) {
     Text(
         text = text,
-        style = MaterialTheme.typography.bodyMedium
+        style = appTextStyle()
     )
 }
 
@@ -139,10 +158,10 @@ fun CustomizedTextHomeScreenTwoLinesDisplay(text: String) {
 fun PageHeadLine(headline: String) {
     Text(
         text = headline,
-        style = MaterialTheme.typography.headlineMedium,
+        style = appTextStyle(),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp),
+            .padding(vertical = 4.dp),
         fontSize = 24.sp,
         textAlign = TextAlign.Center
     )
@@ -182,7 +201,7 @@ fun RightSubTitle(subtitle: String) {
 @Composable
 fun WideBlueButton(onClick: () -> Unit, text: String) {
     Button(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         onClick = onClick
     ) {
         Text(
@@ -461,14 +480,14 @@ fun FamilyTreeTopBar(
  */
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
-fun MembersHomeScreenSearchBar(
+fun MembersSearchBar(
     members: List<FamilyMember>,
     onSearchResults: (List<FamilyMember>) -> Unit
 ) {
     var searchText by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        TextField(
+        OutlinedTextField(
             value = searchText,
             onValueChange = {
                 searchText = it
@@ -481,17 +500,14 @@ fun MembersHomeScreenSearchBar(
                 }
                 onSearchResults(filteredMembers)
             },
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { CustomizedText(HebrewText.SEARCH_BY_NAME) },
-            leadingIcon = {
-                Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon")
-            },
-            singleLine = true,
-            shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface
-            )
+            label = { CustomizedText(HebrewText.SEARCH_BY_NAME) },
+            textStyle = appTextStyle().copy(
+                textAlign = TextAlign.Right,
+                textDirection = TextDirection.Rtl
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 2.dp)
         )
     }
 }
@@ -502,7 +518,7 @@ fun MembersHomeScreenSearchBar(
  */
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
-fun MembersSearchBar() {
+fun MembersSearchBar_2() {
     var searchQuery by remember { mutableStateOf("") }
     var searchResults by remember { mutableStateOf<List<FamilyMember>>(emptyList()) }
     var chosenMemberToShowIsInfo by remember { mutableStateOf<FamilyMember?>(null) }
@@ -524,7 +540,7 @@ fun MembersSearchBar() {
                 isDropdownExpanded = searchResults.isNotEmpty()
             },
             label = { CustomizedText(HebrewText.SEARCH_BY_NAME) },
-            textStyle = MaterialTheme.typography.bodyMedium.copy(
+            textStyle = appTextStyle().copy(
                 textAlign = TextAlign.Right,
                 textDirection = TextDirection.Rtl
             ),
@@ -736,4 +752,31 @@ fun FamilyMemberCube(
             textAlign = TextAlign.Center,
         )
     }
+}
+
+/**
+ * A Composable function that displays a horizontally scrollable family tree graph.
+ *
+ * This function uses an Image Composable to display the family tree graph stored as a drawable resource.
+ * A horizontal scroll state is used to enable scrolling when the image is wider than the screen.
+ *
+ * @receiver A Composable function that renders the family tree graph with horizontal scrolling.
+ */
+@Composable
+fun ScrollableFamilyTreeGraph() {
+    val scrollState = rememberScrollState()
+
+    // This makes the image initial display at the right part of the image
+    LaunchedEffect(Unit) {
+        scrollState.scrollTo(scrollState.maxValue)
+    }
+
+    Image(
+        painter = painterResource(id = R.drawable.family_tree_graph),
+        contentDescription = "Scrollable Image",
+        modifier = Modifier.
+        horizontalScroll(scrollState).
+        fillMaxHeight(),
+        contentScale = ContentScale.FillHeight
+    )
 }

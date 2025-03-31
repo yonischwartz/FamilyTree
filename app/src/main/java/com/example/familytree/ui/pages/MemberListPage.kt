@@ -1,4 +1,4 @@
-package com.example.familytree.ui.pages.memberListPage
+package com.example.familytree.ui.pages
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -9,14 +9,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.navigation.NavController
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.dataManagement.DatabaseManager
@@ -27,18 +32,28 @@ import com.example.familytree.ui.PageHeadLine
 import com.example.familytree.ui.RightSubTitle
 import com.example.familytree.ui.dialogs.InfoOnMemberDialog
 import com.example.familytree.ui.intToMachzor
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.runtime.CompositionLocalProvider
 
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun MemberListPage(navController: NavController) {
 
+    // State variable for UI components
     var isBackButtonEnabled by remember { mutableStateOf(true) }
+
+    // State to hold all family members
     val membersToDisplay by remember { mutableStateOf(DatabaseManager.getAllMembers()) }
+
+    // State to hold whether to display member's info dialog
     var displayMembersInfo by remember { mutableStateOf(false) }
+
+    // State to hold the member that was clicked
     var chosenMember by remember { mutableStateOf<FamilyMember?>(null) }
+
+    // Get all family members
+    val members = DatabaseManager.getAllMembers()
+
+    // State to hold filtered members based on search input
+    var filteredMembers by remember { mutableStateOf(members) }
 
     Scaffold(
         topBar = {
@@ -62,13 +77,17 @@ fun MemberListPage(navController: NavController) {
                     .padding(innerPadding)
                     .padding(16.dp)
             ) {
-                MembersSearchBar()
+                // Search Bar
+                MembersSearchBar(
+                    members = members,
+                    onSearchResults = { filteredMembers = it }
+                )
                 PageHeadLine(HebrewText.FAMILY_MEMBERS_LIST)
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    val modifiedMembersToDisplay = membersToDisplay.flatMap { member ->
+                    val modifiedMembersToDisplay = filteredMembers.flatMap { member ->
                         if (member.getIsYeshivaRabbi() && member.getMachzor() != 0) {
                             listOf(member, member.getDuplicateRabbiWithNoMachzor())
                         } else {
@@ -90,8 +109,8 @@ fun MemberListPage(navController: NavController) {
                             RightSubTitle(subTitle)
                         }
 
-                        items(members.sortedBy { it.getFullName() }) { member ->
-                            Text(
+                        items(items = members.sortedBy { it.getFullName() }) { member ->
+                        Text(
                                 text = member.getFullName(),
                                 modifier = Modifier
                                     .fillMaxWidth()

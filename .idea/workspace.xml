@@ -9,11 +9,18 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="round member buttons in home screen are aligned">
+    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="fixed a few bugs regarding uncle nephew connection">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/FamilyTreeGraphPage.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/MemberListPage.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/MemberMap.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/MemberMap.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/ButtonsAndMore.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/ButtonsAndMore.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/HebrewText.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/HebrewText.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/adminPage/AdminPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/AdminPage.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/HomeScreenPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/HomeScreenPage.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/memberListPage/MemberListPage.kt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,8 +80,8 @@
         <option value="Kotlin Enum" />
         <option value="Kotlin Object" />
         <option value="Kotlin Class" />
-        <option value="Kotlin File" />
         <option value="resourceFile" />
+        <option value="Kotlin File" />
       </list>
     </option>
   </component>
@@ -128,11 +135,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\java\com\example\familytree\ui\pages" />
       <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\res\drawable" />
       <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\java\com\example\familytree\ui1\pages\memberListPage" />
       <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\java\com\example\familytree\ui1\pages" />
       <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\java\com\example\familytree\ui1" />
-      <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\java\com\example\familytree\ui\theme\appPage\memberListPage" />
     </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
       <recent name="com.example.familytree.ui1" />
@@ -526,7 +533,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742837961942</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="fixed a few bugs regarding uncle nephew connection">
+      <option name="closed" value="true" />
+      <created>1742909396663</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1742909396663</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -541,7 +556,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="last commit before changing the code so that the adjacency list is a field of FamilyMember class" />
     <MESSAGE value="onDismiss works good" />
     <MESSAGE value="commit before trying to fix the add new member and relate to existing one" />
     <MESSAGE value="adding new family member with his connection works successfully :)" />
@@ -566,7 +580,8 @@
     <MESSAGE value="searchBar in homeScreen is modified" />
     <MESSAGE value="space is reserved for the arrow button" />
     <MESSAGE value="round member buttons in home screen are aligned" />
-    <option name="LAST_COMMIT_MESSAGE" value="round member buttons in home screen are aligned" />
+    <MESSAGE value="fixed a few bugs regarding uncle nephew connection" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed a few bugs regarding uncle nephew connection" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>

@@ -25,6 +25,7 @@ object HebrewText {
     const val LOAD_MEMBERS_FROM_FIREBASE = "משוך נתונים מה-firebase"
     const val SAVE_AND_UPDATE_MEMBERS_TO_FIREBASE = "שמור ועדכן שינויים ב-firebase"
     const val GO_INTO_ADMIN_MODE = "היכנס למצב מנהל"
+    const val SHOW_FAMILY_TREE_GRAPH = "הצג את עץ המשפחה בגרף"
     const val CLICK_TO_FIND_CONNECTION = "לחץ למציאת קשר"
 
     // Other buttons
@@ -115,6 +116,7 @@ object HebrewText {
     const val AND = "ו"
 
 
+    const val FAMILY_TREE_MEMBERS = "בני המשפחה"
     const val CHOOSE_TWO_FAMILY_MEMBERS = "בחר שני בני משפחה"
     const val ADMIN_MODE = "מצב מנהל"
     const val RABBIS_AND_STAFF = "רבנים וצוות הישיבה"
