@@ -1,19 +1,27 @@
 package com.example.familytree.data.dataManagement
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
+import androidx.core.net.toUri
 import com.example.familytree.data.Connection
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.FullConnection
 import com.example.familytree.data.MemberType
 import com.example.familytree.data.Relations
-import com.example.familytree.data.exceptions.UnsafeDeleteException
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageException
+import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.tasks.await
+import java.io.File
 
 /**
  * FamilyTreeData is responsible for managing family tree data,
@@ -25,16 +33,78 @@ object DatabaseManager {
     // Firebase Firestore instance
     private val firebase by lazy { Firebase.firestore }
 
+    // Firebase Storage instance
+    private val storage = Firebase.storage
+
     // MemberMap instance
     private val memberMap = MemberMap
 
-    private var familyTreeGraphImage: String = ""
-
-    // Create a MutableStateFlow to hold the list of members
-    private val _membersFlow = MutableStateFlow<List<FamilyMember>>(emptyList())
-    val membersFlow: StateFlow<List<FamilyMember>> = _membersFlow.asStateFlow()
+    // A const that holds the name of the family tree graph file in Firebase Storage
+    private const val FAMILY_TREE_GRAPH_FILE_NAME = "family_tree_graph.png"
+    private const val PREFIX_GRAPH_FILE_NAME = "family_tree_graph"
+    private const val SUFFIX_GRAPH_FILE_NAME = ".png"
 
     // functions
+
+    // TODO: the image of the graph does not display on offline mode
+
+    /**
+     * Downloads the family tree image from Firebase Storage and saves it locally.
+     * If the download fails (e.g., due to lack of internet), this function falls back
+     * to using the previously downloaded image from the app's local storage.
+     *
+     * @param context Context used to access internal file storage.
+     * @param onFinished Callback invoked with the downloaded or cached [File] object, or null if unavailable.
+     */
+    fun downloadFamilyTreeImageToCache(
+        context: Context,
+        onFinished: (File?) -> Unit
+    ) {
+        val localDir = context.filesDir
+        val cachedFile = File(localDir, FAMILY_TREE_GRAPH_FILE_NAME)
+
+        val storageRef = FirebaseStorage.getInstance().reference.child(FAMILY_TREE_GRAPH_FILE_NAME)
+
+        // Attempt to download the image from Firebase Storage
+        storageRef.getFile(cachedFile)
+            .addOnSuccessListener {
+
+                // Download successful - return the cached file
+                onFinished(cachedFile)
+            }
+            .addOnFailureListener {
+                it.printStackTrace()
+
+                // Fallback: if we have a cached file from a previous run, use it
+                if (cachedFile.exists()) {
+                    onFinished(cachedFile)
+                } else {
+                    // No file available - return null
+                    onFinished(null)
+                }
+            }
+    }
+
+    fun downloadFamilyTreeImageWithProgress(
+        onProgress: (Int) -> Unit,
+        onFinished: (File?) -> Unit
+    ) {
+        val storageRef = FirebaseStorage.getInstance().reference.child(FAMILY_TREE_GRAPH_FILE_NAME)
+        val localFile = File.createTempFile(PREFIX_GRAPH_FILE_NAME, SUFFIX_GRAPH_FILE_NAME)
+
+        storageRef.getFile(localFile)
+            .addOnProgressListener { taskSnapshot ->
+                val progress = (100.0 * taskSnapshot.bytesTransferred / taskSnapshot.totalByteCount).toInt()
+                onProgress(progress)
+            }
+            .addOnSuccessListener {
+                onFinished(localFile)
+            }
+            .addOnFailureListener {
+                it.printStackTrace()
+                onFinished(null)
+            }
+    }
 
     /**
      * Retrieves a family member by their unique ID.
@@ -96,26 +166,6 @@ object DatabaseManager {
             }
             .addOnFailureListener {
                 onComplete(false)
-            }
-    }
-
-    /**
-     * Fetches the family tree graph image URL from Firestore and stores it in [familyTreeGraphImage].
-     * Ensures that the URL is loaded before continuing by invoking [onComplete] when finished.
-     *
-     * @param onComplete A callback function that is executed once the image URL has been retrieved (or failed).
-     */
-    fun loadFamilyTreeGraphImageWithUrlFromFirebase(onComplete: () -> Unit) {
-        firebase.collection("images").document("family_tree_graph")
-            .get()
-            .addOnSuccessListener { document ->
-                familyTreeGraphImage = document.getString("url") ?: ""
-            }
-            .addOnFailureListener { exception ->
-                exception.printStackTrace()
-            }
-            .addOnCompleteListener {
-                onComplete()
             }
     }
 
@@ -342,41 +392,5 @@ object DatabaseManager {
 
         return memberMap.getShortestPathBetweenTwoMembers(memberOne, memberTwo)
     }
-
-    /**
-     * Retrieves without removing the next suggested connection from the queue.
-     *
-     * @return The next `FullConnection` from the queue, or `null` if the queue is empty.
-     */
-    fun getNextSuggestedConnection(): FullConnection? {
-        return memberMap.popNextSuggestedConnection()
-    }
-
-    /**
-     * Checks if the queue of suggested connections is empty.
-     *
-     * @return `false` if the queue is empty, `true` otherwise.
-     */
-    fun isQueueOfSuggestedConnectionsNotEmpty(): Boolean {
-        return memberMap.isQueueOfSuggestedConnectionsNotEmpty()
-    }
-
-    /**
-     * Fetches the family tree graph image URL from Firestore.
-     * @return The image URL if found, or null if an error occurs.
-     */
-    private fun getFamilyTreeGraphImage(): String {
-        return familyTreeGraphImage
-    }
-
-//    suspend fun getFamilyTreeGraphImage(): String? {
-//        return try {
-//            val document = firebase.collection("images").document("family_tree_graph").get().await()
-//            document.getString("url")
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            null
-//        }
-//    }
 }
 

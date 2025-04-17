@@ -115,7 +115,9 @@ object HebrewText {
     const val AS = "כ"
     const val AND = "ו"
 
-
+    const val HE_IS_NOT_FROM_THE_YESHIVA = "אינו בוגר הישיבה"
+    const val SHE_IS_NOT_FROM_THE_YESHIVA = "אינה מן הישיבה"
+    const val NAME = "שם"
     const val FAMILY_TREE_MEMBERS = "בני המשפחה"
     const val CHOOSE_TWO_FAMILY_MEMBERS = "בחר שני בני משפחה"
     const val ADMIN_MODE = "מצב מנהל"

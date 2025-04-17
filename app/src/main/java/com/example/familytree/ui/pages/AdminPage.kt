@@ -72,8 +72,6 @@ fun AdminPage(navController: NavController) {
                     verticalArrangement = Arrangement.Center
                 ) {
 
-                    MembersSearchBar_2()
-
                     // Button to add a new family member
                     WideBlueButton(
                         onClick = { showAddMemberDialog = true },

@@ -23,7 +23,9 @@ import androidx.navigation.NavController
 import com.example.familytree.ui.ArrowButton
 import com.example.familytree.ui.BigRoundButton
 import com.example.familytree.ui.CustomizedTextHomeScreenTwoLinesDisplay
+import com.example.familytree.ui.Display
 import com.example.familytree.ui.FamilyMemberCube
+import com.example.familytree.ui.InlineDropdown
 import com.example.familytree.ui.JewishManButton
 import com.example.familytree.ui.JewishWomanButton
 import com.example.familytree.ui.MembersSearchBar
@@ -31,6 +33,7 @@ import com.example.familytree.ui.PageHeadLine
 import com.example.familytree.ui.WideBlueButton
 import com.example.familytree.ui.QuestionMarkButton
 import com.example.familytree.ui.RightSubTitle
+import com.example.familytree.ui.TextFieldWithDropdownMenu
 import com.example.familytree.ui.allMachzorim
 import com.example.familytree.ui.backgroundColor
 import com.example.familytree.ui.dialogs.DisplayConnectionBetweenTwoMembersDialog
@@ -51,6 +54,9 @@ fun HomeScreenPage(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
+
+    // Display options for the members
+    var displayOption by remember { mutableStateOf(Display.LIST) }
 
     // Retrieve members sorted by machzor order
     val members = allMachzorim.flatMap { machzor ->
@@ -251,47 +257,110 @@ fun HomeScreenPage(
                         )
 
                         // If the "Find Connection" button was clicked, display members as blocks
-                        if (findConnectionButtonClicked) {
+
+                        if (displayOption == Display.CUBES_IN_COLUMN_SORTED) {
                             BoxWithConstraints(
                                 modifier = Modifier.fillMaxSize()
                             ) {
                                 val containerHeight = maxHeight
-                                val cubeLength = containerHeight / 5 // Dividing the height into 5 parts (4 members + spacing)
+                                val cubeLength = containerHeight / 5
+
+//                                // Group members by machzor
+//                                val grouped = filteredMembers.groupBy { it.getMachzor() }
+//                                    .toSortedMap(compareBy<Any?> { it == null }.thenBy { it as? Int })
 
 
-//                                // This is when i tried to split the cubes by machzor
-//                                val groupedMembers =
-//                                    filteredMembers.groupBy { it.getMachzor() } // Group members by machzor
-//
-//                                LazyRow(
-//                                    modifier = Modifier.fillMaxWidth(),
-//                                    contentPadding = PaddingValues(horizontal = 16.dp),
-//                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
-//                                ) {
-//                                    val sortedMachzorKeys = groupedMembers.keys.filterNotNull()
-//                                        .sorted() + listOf(null) // Sort machzorim & include null
-//                                    val columns = sortedMachzorKeys.flatMap { machzor ->
-//                                        groupedMembers[machzor]?.chunked(4)
-//                                            ?: emptyList() // Split each machzor group into chunks of 4
-//                                    }
 
-
-                                LazyRow(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    contentPadding = PaddingValues(horizontal = 16.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                                LazyColumn(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentPadding = PaddingValues(vertical = 16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    val columns = filteredMembers.chunked(4) // Properly chunk the list once
 
-                                    items(columns.size) { columnIndex ->
-                                        val columnMembers = columns[columnIndex]
 
-                                        Column(
-                                            modifier = Modifier.padding(vertical = 8.dp),
-                                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                                    groupedMembers.forEach { (group, members) ->
+                                        val subTitle: String = when {
+                                            group == null -> HebrewText.NON_YESHIVA_FAMILY_MEMBERS
+                                            group == 0 -> HebrewText.RABBIS_AND_STAFF
+                                            else -> "${HebrewText.MACHZOR} ${intToMachzor[group]}"
+                                        }.toString()
+
+
+//                                    grouped.forEach { (machzor, membersInGroup) ->
+//                                        val subtitle = when {
+//                                            machzor == null -> HebrewText.NON_YESHIVA_FAMILY_MEMBERS
+//                                            machzor == 0 -> HebrewText.RABBIS_AND_STAFF
+//                                            else -> "${HebrewText.MACHZOR} ${intToMachzor[machzor]}"
+//                                        }
+
+                                        item {
+                                            RightSubTitle(
+                                                text = subTitle,
+                                                modifier = Modifier.padding(horizontal = 16.dp)
+                                            )
+                                        }
+
+                                        val rows = members.sortedBy { it.getFullName() }.chunked(4)
+
+                                        items(rows.size) { rowIndex ->
+                                            val rowMembers = rows[rowIndex]
+
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(horizontal = 16.dp),
+                                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                            ) {
+                                                rowMembers.forEach { member ->
+                                                    val isSelected = member == firstSelectedMember || member == secondSelectedMember
+                                                    FamilyMemberCube(
+                                                        member = member,
+                                                        isSelected = isSelected,
+                                                        length = cubeLength,
+                                                        width = 80.dp,
+                                                        onClick = { onClickCube(member) }
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        else if (displayOption == Display.CUBES_IN_COLUMN) {
+                            BoxWithConstraints(
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                val containerHeight = maxHeight
+                                val cubeLength =
+                                    containerHeight / 5 // Dividing the height into 5 parts (4 members + spacing)
+
+                                // Sort filteredMembers by machzor before chunking
+                                val sortedMembers = filteredMembers.sortedWith(
+                                    compareBy<FamilyMember> { it.getMachzor() == null }
+                                        .thenBy { it.getMachzor() }
+                                )
+                                val rows = sortedMembers.chunked(4)
+
+                                LazyColumn(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentPadding = PaddingValues(vertical = 16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+
+                                    items(rows.size) { rowIndex ->
+                                        val rowMembers = rows[rowIndex]
+
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 16.dp),
+                                            horizontalArrangement = Arrangement.spacedBy(4.dp)
                                         ) {
-                                            columnMembers.forEach { member ->
-                                                val isSelected = member == firstSelectedMember || member == secondSelectedMember
+                                            rowMembers.forEach { member ->
+                                                val isSelected =
+                                                    member == firstSelectedMember || member == secondSelectedMember
                                                 FamilyMemberCube(
                                                     member = member,
                                                     isSelected = isSelected,
@@ -304,12 +373,51 @@ fun HomeScreenPage(
                                     }
                                 }
                             }
-
-
                         }
 
-                        // If the "Find Connection" button wasn't clicked, display members as a list
-                        else {
+                        else if (displayOption == Display.CUBES_IN_ROW) {
+
+                            BoxWithConstraints(
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+
+                                val containerHeight = maxHeight
+                                val cubeLength =
+                                    containerHeight / 5 // Dividing the height into 5 parts (4 members + spacing)
+
+                                LazyRow(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentPadding = PaddingValues(horizontal = 16.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    val columns =
+                                        filteredMembers.chunked(4) // Properly chunk the list once
+
+                                    items(columns.size) { columnIndex ->
+                                        val columnMembers = columns[columnIndex]
+
+                                        Column(
+                                            modifier = Modifier.padding(vertical = 8.dp),
+                                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                                        ) {
+                                            columnMembers.forEach { member ->
+                                                val isSelected =
+                                                    member == firstSelectedMember || member == secondSelectedMember
+                                                FamilyMemberCube(
+                                                    member = member,
+                                                    isSelected = isSelected,
+                                                    length = cubeLength,
+                                                    width = 80.dp,
+                                                    onClick = { onClickCube(member) }
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        else if (displayOption == Display.LIST) {
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp)
                             ) {
@@ -357,6 +465,14 @@ fun HomeScreenPage(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
+
+                        TextFieldWithDropdownMenu(
+                            label = "בחר תצוגה",
+                            options = Display.entries.map { it.name },
+                            selectedOption = displayOption.toString(),
+                            onOptionSelected = { displayOption = Display.valueOf(it!!) }
+                        )
+
                         WideBlueButton(onClick = { navController.navigate("familyTreeGraphPage") }, text = HebrewText.SHOW_FAMILY_TREE_GRAPH)
                         WideBlueButton(onClick = { navController.navigate("adminPage") }, text = HebrewText.GO_INTO_ADMIN_MODE)
 
@@ -367,3 +483,5 @@ fun HomeScreenPage(
         }
     }
 }
+
+

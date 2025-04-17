@@ -13,6 +13,7 @@ import com.example.familytree.data.FamilyMember
 import androidx.compose.ui.unit.dp
 import com.example.familytree.data.MemberType
 import com.example.familytree.ui.CustomizedText
+import com.example.familytree.ui.CustomizedTitleText
 import com.example.familytree.ui.HebrewText
 import com.example.familytree.ui.WideBlueButton
 import com.example.familytree.ui.intToMachzor
@@ -38,11 +39,13 @@ fun InfoOnMemberDialog(
         textForButton = HebrewText.CLOSE ,
         onClick = onDismiss,
         contentOfDialog = {
-            Column(modifier = Modifier.padding(8.dp)) {
+            Column(modifier = Modifier.padding(4.dp)) {
 
                 var showAddNewMemberDialog by remember { mutableStateOf(false) }
                 var showConnectExistingMemberDialog by remember { mutableStateOf(false) }
                 var showFindConnectionToAnotherMember by remember { mutableStateOf(false) }
+
+                val machzorToDisplay: String
 
                 // Add rabbi to name in case member is a rabbi
                 val firstNameDisplay = when {
@@ -51,66 +54,110 @@ fun InfoOnMemberDialog(
                     else -> member.getFirstName()
                 }
 
-                // סוג בן משפחה
-                CustomizedText("${HebrewText.FAMILY_MEMBER_TYPE}: ${member.getMemberType()}")
+//                // סוג בן משפחה
+//
+//                CustomizedTitleText(
+//                    title = HebrewText.FAMILY_MEMBER_TYPE,
+//                    text = member.getMemberType().toString()
+//                )
 
-                // שם פרטי
-                CustomizedText("${HebrewText.FIRST_NAME}: $firstNameDisplay")
+                // שם מלא
+                CustomizedTitleText(
+                    title = HebrewText.NAME,
+                    text = member.getFullName()
+                )
 
-                // שם משפחה
-                CustomizedText("${HebrewText.LAST_NAME}: ${member.getLastName()}")
+//                // שם פרטי
+//
+//                CustomizedTitleText(
+//                    title = HebrewText.FIRST_NAME,
+//                    text = firstNameDisplay
+//                )
+//
+//                // שם משפחה
+//
+//                CustomizedTitleText(
+//                    title = HebrewText.LAST_NAME,
+//                    text = member.getLastName()
+//                )
 
                 // מין
-                CustomizedText("${HebrewText.SEX}: ${if (member.getGender()) HebrewText.MALE else HebrewText.FEMALE}")
+
+                CustomizedTitleText(
+                    title = HebrewText.SEX,
+                    text = if (member.getGender()) HebrewText.MALE else HebrewText.FEMALE
+                )
 
                 // מחזור
-                // Only for yeshiva members
-                if (member.getMemberType() == MemberType.Yeshiva) {
 
-                    if (member.getMachzor() == 0) {
-                        CustomizedText("${HebrewText.MACHZOR}: ${HebrewText.RABBIS_AND_STAFF}")
+                // If the member is not from the yeshiva, display the appropriate text
+                if (member.getMemberType() == MemberType.NonYeshiva) {
+
+                    // Different text for male and for female
+                    if (member.getGender()) {
+                        machzorToDisplay = HebrewText.HE_IS_NOT_FROM_THE_YESHIVA
                     }
                     else {
-                        CustomizedText("${HebrewText.MACHZOR}: ${intToMachzor[member.getMachzor()]}")
+                        machzorToDisplay = HebrewText.SHE_IS_NOT_FROM_THE_YESHIVA
                     }
                 }
 
-                WideBlueButton(
-                    text = "${HebrewText.ADD_NEW_MEMBER_THAT_IS_RELATED_TO}${member.getFullName()}",
-                    onClick = { showAddNewMemberDialog = true }
-                )
-
-                WideBlueButton(
-                    text = "${HebrewText.ADD_CONNECTION_BETWEEN_EXISTING_MEMBER_AND} ${member.getFullName()}",
-                    onClick = { showConnectExistingMemberDialog = true }
-                )
-
-                WideBlueButton(
-                    text = "${HebrewText.FIND_CONNECTION_BETWEEN} ${member.getFullName()} ${HebrewText.AND_ANOTHER_MEMBER}",
-                    onClick = { showFindConnectionToAnotherMember = true }
-                )
-
-                if (showAddNewMemberDialog) {
-                    AddFamilyMember(
-                        onDismiss = { showAddNewMemberDialog = false },
-                        givenExistingMember = member
-                    )
+                // If the member is a rabbi or a staff member, display the appropriate text
+                else if (member.getMachzor() == 0) {
+                    machzorToDisplay = HebrewText.RABBIS_AND_STAFF
                 }
 
-                if (showConnectExistingMemberDialog) {
-                    ConnectTwoMembers(
-                        onDismiss = { showConnectExistingMemberDialog = false },
-                        givenFirstMember = member
-                    )
+                // If the member is from the yeshiva, display the machzor
+                else {
+                    machzorToDisplay = intToMachzor[member.getMachzor()].toString()
                 }
 
-                if (showFindConnectionToAnotherMember) {
-                    FindConnectionsBetweenTwoMembers(
-                        onDismiss = { showFindConnectionToAnotherMember = false },
-                        givenFirstMember = member
-                    )
-                }
+                CustomizedTitleText(
+                    title = HebrewText.MACHZOR,
+                    text = machzorToDisplay
+                )
             }
+
+//                WideBlueButton(
+//                    text = "${HebrewText.ADD_NEW_MEMBER_THAT_IS_RELATED_TO}${member.getFullName()}",
+//                    onClick = { showAddNewMemberDialog = true }
+//                )
+//
+//                Spacer(modifier = Modifier.height(8.dp))
+//
+//                WideBlueButton(
+//                    text = "${HebrewText.ADD_CONNECTION_BETWEEN_EXISTING_MEMBER_AND} ${member.getFullName()}",
+//                    onClick = { showConnectExistingMemberDialog = true }
+//                )
+//
+//                Spacer(modifier = Modifier.height(8.dp))
+//
+//                WideBlueButton(
+//                    text = "${HebrewText.FIND_CONNECTION_BETWEEN} ${member.getFullName()} ${HebrewText.AND_ANOTHER_MEMBER}",
+//                    onClick = { showFindConnectionToAnotherMember = true }
+//                )
+
+//                if (showAddNewMemberDialog) {
+//                    AddFamilyMember(
+//                        onDismiss = { showAddNewMemberDialog = false },
+//                        givenExistingMember = member
+//                    )
+//                }
+//
+//                if (showConnectExistingMemberDialog) {
+//                    ConnectTwoMembers(
+//                        onDismiss = { showConnectExistingMemberDialog = false },
+//                        givenFirstMember = member
+//                    )
+//                }
+//
+//                if (showFindConnectionToAnotherMember) {
+//                    FindConnectionsBetweenTwoMembers(
+//                        onDismiss = { showFindConnectionToAnotherMember = false },
+//                        givenFirstMember = member
+//                    )
+//                }
+//            }
         }
     )
 }

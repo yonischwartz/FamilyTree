@@ -1,19 +1,18 @@
 package com.example.familytree.ui
 
+import android.graphics.PointF
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,17 +22,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -47,7 +47,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,7 +54,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -75,12 +73,20 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Popup
 import com.example.familytree.R
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.dialogs.InfoOnMemberDialog
-
+import java.io.File
+import android.net.Uri
+import androidx.compose.foundation.layout.offset
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
+import androidx.compose.material3.CircularProgressIndicator
+import com.davemorrissey.labs.subscaleview.ImageSource
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 
 /**
  * A constant color value representing a beige background color.
@@ -129,6 +135,33 @@ fun CustomizedText(text: String) {
 }
 
 /**
+ * A customized text composable that displays a title and text in the same line.
+ * The title is bold and followed by a colon and the text.
+ *
+ * @param title The bold title string.
+ * @param text The normal text string.
+ */
+@Composable
+fun CustomizedTitleText(title: String, text: String) {
+    Row {
+        Text(
+            text = "$title:",
+            style = appTextStyle().copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
+            modifier = Modifier.alignByBaseline()
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            text = text,
+            style = appTextStyle(),
+            modifier = Modifier.alignByBaseline()
+        )
+    }
+}
+
+
+/**
  * A customized text composable that displays a name with a fixed width.
  * If the name is too long, it wraps into two lines instead of shifting UI elements.
  *
@@ -170,18 +203,21 @@ fun PageHeadLine(headline: String) {
 /**
  * Displays a subtitle aligned to the right with consistent styling and an underline.
  *
- * @param subtitle The text to be displayed as the subtitle.
+ * @param text The text to be displayed as the subtitle.
  */
 @Composable
-fun RightSubTitle(subtitle: String) {
+fun RightSubTitle(
+    text: String,
+    modifier: Modifier = Modifier
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.Start
     ) {
         Text(
-            text = subtitle,
+            text = text,
             style = MaterialTheme.typography.titleMedium.copy(
                 textDecoration = TextDecoration.Underline
             ),
@@ -313,6 +349,61 @@ fun BooleanSelection(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(optionTwo)
+            }
+        }
+    }
+}
+
+/**
+ * A lightweight inline dropdown menu for use inside text lines.
+ *
+ * This composable allows embedding a clickable dropdown selector within a line of text,
+ * making it ideal for sentences like: "I like [options] very much".
+ *
+ * @param options A list of strings to display as dropdown options.
+ * @param selectedOption The currently selected option to display. If null, a placeholder will be shown.
+ * @param onOptionSelected Callback invoked when the user selects an option from the dropdown.
+ * @param textStyle Optional styling for the displayed text. Defaults to [LocalTextStyle] with primary color.
+ */
+@Composable
+fun InlineDropdown(
+    options: List<String>,
+    selectedOption: String?,
+    onOptionSelected: (String?) -> Unit,
+    textStyle: TextStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.primary)
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var selected by remember { mutableStateOf(selectedOption) }
+
+    Box {
+        Text(
+            text = selected ?: HebrewText.CHOOSE,
+            modifier = Modifier
+                .clickable { expanded = true }
+                .padding(horizontal = 4.dp)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .padding(horizontal = 6.dp, vertical = 2.dp),
+            style = textStyle,
+            textAlign = TextAlign.Center
+        )
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    onClick = {
+                        selected = option
+                        onOptionSelected(option)
+                        expanded = false
+                    }
+                )
             }
         }
     }
@@ -505,6 +596,19 @@ fun MembersSearchBar(
                 textAlign = TextAlign.Right,
                 textDirection = TextDirection.Rtl
             ),
+            trailingIcon = {
+                if (searchText.isNotEmpty()) {
+                    IconButton(onClick = {
+                        searchText = ""
+                        onSearchResults(members)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "Clear"
+                        )
+                    }
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 2.dp)
@@ -628,7 +732,7 @@ fun BigRoundButton(onClick: () -> Unit, text: String) {
     Button(
         onClick = onClick,
         shape = CircleShape,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
         modifier = Modifier
             .size(150.dp)
     ) {
@@ -755,28 +859,152 @@ fun FamilyMemberCube(
 }
 
 /**
- * A Composable function that displays a horizontally scrollable family tree graph.
+ * A Composable function that displays a centered circular loading spinner.
  *
- * This function uses an Image Composable to display the family tree graph stored as a drawable resource.
- * A horizontal scroll state is used to enable scrolling when the image is wider than the screen.
+ * This is typically used to indicate that a loading process is occurring,
+ * such as when downloading data or rendering content.
  *
- * @receiver A Composable function that renders the family tree graph with horizontal scrolling.
+ * @param modifier Optional [Modifier] for customizing layout behavior.
  */
 @Composable
-fun ScrollableFamilyTreeGraph() {
-    val scrollState = rememberScrollState()
-
-    // This makes the image initial display at the right part of the image
-    LaunchedEffect(Unit) {
-        scrollState.scrollTo(scrollState.maxValue)
+fun CenteredLoadingIndicator(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
     }
+}
 
-    Image(
-        painter = painterResource(id = R.drawable.family_tree_graph),
-        contentDescription = "Scrollable Image",
-        modifier = Modifier.
-        horizontalScroll(scrollState).
-        fillMaxHeight(),
-        contentScale = ContentScale.FillHeight
-    )
+/**
+ * A Composable function that displays a zoomable image using SubsamplingScaleImageView,
+ * with navigation buttons to jump to the left or right edges.
+ *
+ * @param imageFile The [File] containing the image to be displayed.
+ */
+@Composable
+fun ZoomableFamilyTreeImage(imageFile: File) {
+    var imageView by remember { mutableStateOf<SubsamplingScaleImageView?>(null) }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = { context ->
+                SubsamplingScaleImageView(context).apply {
+                    setImage(ImageSource.uri(Uri.fromFile(imageFile)))
+                    setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP)
+                    setPanLimit(SubsamplingScaleImageView.PAN_LIMIT_INSIDE)
+
+                    setOnImageEventListener(object : SubsamplingScaleImageView.OnImageEventListener {
+                        override fun onReady() {
+                            val targetScale = height.toFloat() / sHeight
+                            setScaleAndCenter(targetScale, PointF(sWidth / 2f, sHeight / 2f))
+                            minScale = targetScale * 0.8f
+                            maxScale = targetScale * 5f
+                        }
+
+                        override fun onImageLoaded() {}
+                        override fun onImageLoadError(e: Exception) {}
+                        override fun onPreviewLoadError(e: Exception) {}
+                        override fun onTileLoadError(e: Exception) {}
+                        override fun onPreviewReleased() {}
+                    })
+
+                    imageView = this
+                }
+            }
+        )
+
+        // Place each button in its corner with padding
+        ScrollToStartButton(
+            onClick = { imageView?.scrollToStart() },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 12.dp, top = 12.dp)
+                .offset(y = (-16).dp)
+        )
+
+        ScrollToEndButton(
+            onClick = { imageView?.scrollToEnd() },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(end = 12.dp, top = 12.dp)
+                .offset(y = (-16).dp)
+        )
+
+    }
+}
+
+/**
+ * Scrolls the image to the left edge.
+ */
+private fun SubsamplingScaleImageView.scrollToStart() {
+    if (isReady) {
+        val scale = scale
+        val centerY = sHeight / 2f
+        setScaleAndCenter(scale, PointF(0f, centerY))
+    }
+}
+
+/**
+ * Scrolls the image to the right edge.
+ */
+private fun SubsamplingScaleImageView.scrollToEnd() {
+    if (isReady) {
+        val scale = scale
+        val centerY = sHeight / 2f
+        setScaleAndCenter(scale, PointF(sWidth.toFloat(), centerY))
+    }
+}
+
+/**
+ * A Composable function that displays a scroll-to-start button.
+ *
+ * This button shows a double left arrow icon and calls [onClick] when pressed.
+ * Use it inside a Box and pass an aligned modifier (e.g., Modifier.align(Alignment.TopStart)).
+ *
+ * @param onClick Lambda to be invoked when the button is clicked.
+ * @param modifier Modifier for layout positioning (e.g., alignment and padding).
+ */
+@Composable
+private fun ScrollToStartButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = Icons.Default.KeyboardDoubleArrowLeft,
+            contentDescription = "Scroll to start"
+        )
+    }
+}
+
+/**
+ * A Composable function that displays a scroll-to-end button.
+ *
+ * This button shows a double right arrow icon and calls [onClick] when pressed.
+ * Use it inside a Box and pass an aligned modifier (e.g., Modifier.align(Alignment.TopEnd)).
+ *
+ * @param onClick Lambda to be invoked when the button is clicked.
+ * @param modifier Modifier for layout positioning (e.g., alignment and padding).
+ */
+@Composable
+private fun ScrollToEndButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = Icons.Default.KeyboardDoubleArrowRight,
+            contentDescription = "Scroll to end"
+        )
+    }
 }

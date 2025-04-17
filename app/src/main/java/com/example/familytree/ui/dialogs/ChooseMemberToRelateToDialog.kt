@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.HebrewText
+import com.example.familytree.ui.MembersSearchBar
 
 /**
  * Composable function to display a dialog for selecting a family member to relate to.
@@ -38,6 +39,13 @@ fun ChooseMemberToRelateToDialog(
     onPrevious: () -> Unit = {},
     onDismiss: () -> Unit
 ) {
+
+    // Sort members by their full name
+    val sortedMembers = listOfMembersToConnectTo.sortedBy { it.getFullName() }
+
+    // State to hold filtered members based on search input
+    var filteredMembers by remember { mutableStateOf(sortedMembers) }
+
     var selectedMember by remember { mutableStateOf<FamilyMember?>(null) }
     var checkedMemberId by remember { mutableStateOf<String?>(null) }
 
@@ -57,7 +65,7 @@ fun ChooseMemberToRelateToDialog(
     // The lambda for when the user clicks the NEXT button
     var getOptionalMembersToConnectTo: () -> Unit = {}
     getOptionalMembersToConnectTo = {
-        listOfMembersToConnectTo
+        sortedMembers
             .find { it.getId() == checkedMemberId }?.let { onMemberSelected(it) }
     }
 
@@ -74,9 +82,15 @@ fun ChooseMemberToRelateToDialog(
         onDismiss = onDismiss,
         contentOfDialog = {
             Column {
+
+                MembersSearchBar(
+                    members = sortedMembers,
+                    onSearchResults = { filteredMembers = it }
+                )
+
                 LazyColumn {
-                    items(listOfMembersToConnectTo.size) { index ->
-                        val member = listOfMembersToConnectTo[index]
+                    items(filteredMembers.size) { index ->
+                        val member = filteredMembers[index]
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier

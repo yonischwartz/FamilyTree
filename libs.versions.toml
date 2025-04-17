@@ -15,6 +15,7 @@ navigationRuntimeAndroid = "2.9.0-alpha09"
 navigation = "2.8.9"
 roomKtx = "2.6.1"
 coil = "2.6.0"
+firebaseStorageKtx = "21.0.1"
 
 [libraries]
 composeUi = { module = "androidx.compose.ui:ui", version.ref = "compose" }
@@ -33,7 +34,8 @@ navigationCompose = { module = "androidx.navigation:navigation-compose", version
 navigationRuntimeAndroid = { group = "androidx.navigation", name = "navigation-runtime-android", version.ref = "navigationRuntimeAndroid" }
 roomKtx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 androidxSplash = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
-coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+coilCompose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+firebaseStorageKtx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 
 
 [plugins]

@@ -48,6 +48,9 @@ dependencies {
     implementation("androidx.compose.material:material-icons-core:1.7.8")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
 
+    // Image Loading with Coil
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
     // Other dependencies
     implementation(libs.gson)
     implementation(libs.jewishDate)
@@ -60,6 +63,10 @@ dependencies {
 
     // AndroidX Splash Screen API
     implementation(libs.androidxSplash)
+    implementation(libs.firebaseStorageKtx)
+
+    // Subsampling Scale Image View (for zoomable/pannable large images)
+    implementation("com.davemorrissey.labs:subsampling-scale-image-view:3.10.0")
 
     // Test dependencies
     testImplementation(libs.junit)

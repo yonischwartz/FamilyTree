@@ -1,7 +1,9 @@
 package com.example.familytree.ui.dialogs
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -15,7 +17,7 @@ import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.Relations
 import com.example.familytree.ui.CustomizedText
 import com.example.familytree.ui.HebrewText
-import com.example.familytree.ui.TextFieldWithDropdownMenu
+import com.example.familytree.ui.InlineDropdown
 
 /**
  * Displays a dialog for selecting the relationship between an existing family member and a new member.
@@ -70,24 +72,26 @@ fun HowAreTheyRelatedDialog(
                     .padding(16.dp),
             ) {
 
-                CustomizedText(text)
+                CustomizedText(HebrewText.THE_OTHER_MEMBER_IS + ":")
 
-                // Dropdown menu listing all relation options.
-                TextFieldWithDropdownMenu(
-                    label = "",
-                    modifier = Modifier.width(150.dp),
-                    options = validRelationOptions,
-                    selectedOption = chosenRelation,
-                    onOptionSelected = { selectedOption ->
-                        selectedOption?.let { relation ->
-                            selectedRelation =
-                                Relations.relationStringToRelation(relation).first
-                            selectedRelationGender =
-                                Relations.relationStringToRelation(relation).second
-                            chosenRelation = relation
+                Row() {
+
+                    InlineDropdown(
+                        options = validRelationOptions,
+                        selectedOption = chosenRelation,
+                        onOptionSelected = { selectedOption ->
+                            selectedOption?.let { relation ->
+                                selectedRelation =
+                                    Relations.relationStringToRelation(relation).first
+                                selectedRelationGender =
+                                    Relations.relationStringToRelation(relation).second
+                                chosenRelation = relation
+                            }
                         }
-                    }
-                )
+                    )
+
+                    CustomizedText("${HebrewText.OF} ${existingMember.getFullName()}")
+                }
             }
         }
     )

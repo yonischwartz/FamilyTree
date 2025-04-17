@@ -9,13 +9,24 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="family tree graph is in place">
+    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="fixed bug in adding member">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/Display.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/FamilyTreeViewModel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/MainActivity.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/DatabaseManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/DatabaseManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/MemberMap.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/MemberMap.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/ButtonsAndMore.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/ButtonsAndMore.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/HebrewText.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/HebrewText.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/ChooseMemberToRelateToDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/ChooseMemberToRelateToDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/HowAreTheyRelatedDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/HowAreTheyRelatedDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/InfoOnMemberDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/InfoOnMemberDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/MemberListDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/MemberListDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/AdminPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/AdminPage.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/FamilyTreeGraphPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/FamilyTreeGraphPage.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/HomeScreenPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/HomeScreenPage.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/libs.versions.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -73,11 +84,11 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Kotlin Enum" />
         <option value="Kotlin Object" />
-        <option value="Kotlin Class" />
         <option value="resourceFile" />
         <option value="Kotlin File" />
+        <option value="Kotlin Class" />
+        <option value="Kotlin Enum" />
       </list>
     </option>
   </component>
@@ -107,28 +118,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Android App.app.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "ScreenRecorder.SavePath": "C:\\Users\\yoni schwartz\\Desktop",
-    "ToolWindow.Device Explorer.ShowToolbar": "false",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "com.android.tools.idea.streaming.emulator.frame.visible": "false",
-    "com.google.services.firebase.aqiPopupShown": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/yoni schwartz/Desktop",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.17",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "experimental"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Android App.app.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;ScreenRecorder.SavePath&quot;: &quot;C:\\Users\\yoni schwartz\\Desktop&quot;,
+    &quot;ToolWindow.Device Explorer.ShowToolbar&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;com.android.tools.idea.streaming.emulator.frame.visible&quot;: &quot;false&quot;,
+    &quot;com.google.services.firebase.aqiPopupShown&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/yoni schwartz/Desktop&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;experimental&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\yoni schwartz\AndroidStudioProjects\FamilyTree\app\src\main\java\com\example\familytree\ui\pages" />
@@ -545,7 +556,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743403828343</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="fixed bug in adding member">
+      <option name="closed" value="true" />
+      <created>1743433147813</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1743433147813</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -560,7 +579,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="commit before trying to fix the add new member and relate to existing one" />
     <MESSAGE value="adding new family member with his connection works successfully :)" />
     <MESSAGE value="retrieve successfully all members with their connections from firebase and populating them in the local DB" />
     <MESSAGE value="upload successfully all members with their connections to firebase" />
@@ -585,7 +603,8 @@
     <MESSAGE value="round member buttons in home screen are aligned" />
     <MESSAGE value="fixed a few bugs regarding uncle nephew connection" />
     <MESSAGE value="family tree graph is in place" />
-    <option name="LAST_COMMIT_MESSAGE" value="family tree graph is in place" />
+    <MESSAGE value="fixed bug in adding member" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed bug in adding member" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>

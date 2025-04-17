@@ -18,6 +18,7 @@ import com.example.familytree.data.dataManagement.DatabaseManager.removeMemberFr
 import com.example.familytree.data.exceptions.UnsafeDeleteException
 import com.example.familytree.ui.DialogButton
 import com.example.familytree.ui.HebrewText
+import com.example.familytree.ui.MembersSearchBar
 import com.example.familytree.ui.dialogs.InfoOnMemberDialog
 import com.example.familytree.ui.dialogs.errorAndSuccessDialogs.DeleteErrorDialog
 
@@ -34,8 +35,12 @@ fun MemberListDialog(
     onDismiss: () -> Unit,
     membersToDisplay: List<FamilyMember> = DatabaseManager.getAllMembers()
 ) {
+
+    val sortedMembers = remember { membersToDisplay.sortedBy { it.getFullName() }.toMutableStateList() }
+    val filteredMembers = remember { mutableStateListOf<FamilyMember>().apply { addAll(sortedMembers) } }
+
     // Use state-backed mutable list for dynamic updates
-    val memberList = remember { mutableStateListOf(*membersToDisplay.toTypedArray()) }
+//    val memberList = remember { mutableStateListOf(*filteredMembers.toTypedArray()) }
     var selectedMember by remember { mutableStateOf<FamilyMember?>(null) }
     var showDeleteErrorDialog by remember { mutableStateOf(false) }
 
@@ -47,38 +52,49 @@ fun MemberListDialog(
                 Text(HebrewText.FAMILY_MEMBER_LIST, style = MaterialTheme.typography.titleMedium)
             },
             text = {
-                LazyColumn(modifier = Modifier.fillMaxHeight()) {
-                    items(memberList) { member ->
-                        Row(modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)) {
-                            Text(
-                                text = member.getFullName(),
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clickable { selectedMember = member }
-                            )
-                            DialogButton(
-                                text = HebrewText.REMOVE,
-                                onClick = {
-                                    // Remove member from dialog only if removal was successful
-                                    try {
-                                        removeMemberFromLocalMemberMap(member.getId())
-                                        memberList.remove(member)
-                                    }
-                                    catch (e: UnsafeDeleteException) {
-                                        showDeleteErrorDialog = true
-                                    }
-                                }
-                            )
+                Column {
 
-                            // Inform user that removal is invalid
-                            if (showDeleteErrorDialog) {
-                                DeleteErrorDialog { showDeleteErrorDialog = false }
+                    MembersSearchBar(
+                        members = filteredMembers,
+                        onSearchResults = { results ->
+                            filteredMembers.clear()
+                            filteredMembers.addAll(results)
+                        }
+                    )
+
+                    LazyColumn(modifier = Modifier.fillMaxHeight()) {
+                        items(sortedMembers) { member ->
+                            Row(modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)) {
+                                Text(
+                                    text = member.getFullName(),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clickable { selectedMember = member }
+                                )
+                                DialogButton(
+                                    text = HebrewText.REMOVE,
+                                    onClick = {
+                                        try {
+                                            removeMemberFromLocalMemberMap(member.getId())
+                                            sortedMembers.remove(member)
+                                        }
+                                        catch (e: UnsafeDeleteException) {
+                                            showDeleteErrorDialog = true
+                                        }
+                                    }
+                                )
+
+                                // Inform user that removal is invalid
+                                if (showDeleteErrorDialog) {
+                                    DeleteErrorDialog { showDeleteErrorDialog = false }
+                                }
                             }
                         }
                     }
+
                 }
             },
             confirmButton = {
