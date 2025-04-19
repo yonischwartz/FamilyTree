@@ -91,6 +91,7 @@ private fun AddNewFamilyMemberToEmptyTree(
  *
  * @param onDismiss A callback function to handle dismissing the dialog or UI component when the process is canceled or completed.
  */
+@RequiresApi(Build.VERSION_CODES.N)
 @Composable
 private fun AddNewMemberAndRelateToExistingMember(
     givenExistingMember: FamilyMember? = null,
@@ -155,6 +156,7 @@ private fun AddNewMemberAndRelateToExistingMember(
 
         ChooseMemberToRelateToDialog(
             onMemberSelected = { existingMember = it },
+            showPreviousButton = true,
             onPrevious = {wasUserInformed = false},
             onDismiss = onDismissAndResetState
         )

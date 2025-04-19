@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.familytree"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -31,11 +31,12 @@ android {
 }
 
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
 
     // Firebase
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation(libs.firebaseFirestore)
+    implementation("com.google.firebase:firebase-auth-ktx")
 
     // Jetpack Compose
     implementation(libs.composeUi)
@@ -44,7 +45,7 @@ dependencies {
     implementation(libs.uiToolingPreviewAndroid)
     implementation("androidx.activity:activity-compose:1.10.1")
     implementation("androidx.compose.ui:ui:1.7.8")
-    implementation("androidx.compose.material3:material3:1.3.1")
+    implementation("androidx.compose.material3:material3:1.3.2")
     implementation("androidx.compose.material:material-icons-core:1.7.8")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
 

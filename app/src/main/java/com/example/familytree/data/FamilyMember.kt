@@ -17,13 +17,13 @@ import java.util.UUID
  * @property connections A list of relationships the member has with other family members.
  */
 class FamilyMember(
-    private val memberType: MemberType = MemberType.NonYeshiva,
-    private val firstName: String = "",
-    private val lastName: String = "",
+    private var memberType: MemberType = MemberType.NonYeshiva,
+    private var firstName: String = "",
+    private var lastName: String = "",
     private val gender: Boolean = true,
-    private val machzor: Int? = null,  // machzor is 0 for non-student yeshiva members
+    private var machzor: Int? = null,  // machzor is 0 for non-student yeshiva members
     private var isRabbi: Boolean = false,
-    private val isYeshivaRabbi: Boolean = false,
+    private var isYeshivaRabbi: Boolean = false,
     private val id: String = UUID.randomUUID().toString(), // Auto-generate unique ID
     private val connections: MutableList<Connection> = mutableListOf()
 ) {
@@ -181,5 +181,28 @@ class FamilyMember(
             id = this.id, // Keeping the same ID, but if a new ID is needed, use UUID.randomUUID().toString()
             connections = this.connections.toMutableList()
         )
+    }
+
+    /**
+     * Updates the editable properties of this FamilyMember based on another instance,
+     * excluding immutable fields and connection data.
+     *
+     * This function copies over the following fields:
+     * - firstName
+     * - lastName
+     * - machzor
+     * - isRabbi
+     * - isYeshivaRabbi
+     * - memberType
+     *
+     * @param updated A FamilyMember instance whose editable values will overwrite this member’s corresponding fields.
+     */
+    fun updateMember(updated: FamilyMember) {
+        firstName = updated.firstName
+        lastName = updated.lastName
+        machzor = updated.machzor
+        isRabbi = updated.isRabbi
+        isYeshivaRabbi = updated.isYeshivaRabbi
+        memberType = updated.memberType
     }
 }

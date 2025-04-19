@@ -47,6 +47,18 @@ object MemberMap {
     }
 
     /**
+     * Updates an existing family member in the map.
+     * @param idOfMemberToBeUpdated The ID of the member to be updated.
+     * @param updatedMember The FamilyMember object with updated information.
+     */
+    internal fun updateMember(idOfMemberToBeUpdated: String, updatedMember: FamilyMember) {
+        members[idOfMemberToBeUpdated]?.updateMember(updatedMember)
+
+        // Add the updated member to the modified list
+        modifiedAndNewAddedMembersIds.add(idOfMemberToBeUpdated)
+    }
+
+    /**
      * Retrieves a family member by their unique ID.
      * @param memberId The ID of the family member.
      * @return The FamilyMember object if found, otherwise null.

@@ -15,29 +15,32 @@ import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.HebrewText
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
-import com.example.familytree.ui.ArrowButton
 import com.example.familytree.ui.BigRoundButton
 import com.example.familytree.ui.CustomizedTextHomeScreenTwoLinesDisplay
 import com.example.familytree.ui.Display
 import com.example.familytree.ui.FamilyMemberCube
-import com.example.familytree.ui.InlineDropdown
 import com.example.familytree.ui.JewishManButton
 import com.example.familytree.ui.JewishWomanButton
 import com.example.familytree.ui.MembersSearchBar
 import com.example.familytree.ui.PageHeadLine
-import com.example.familytree.ui.WideBlueButton
+import com.example.familytree.ui.ButtonForPage
+import com.example.familytree.ui.FindConnectionButton
 import com.example.familytree.ui.QuestionMarkButton
 import com.example.familytree.ui.RightSubTitle
 import com.example.familytree.ui.TextFieldWithDropdownMenu
 import com.example.familytree.ui.allMachzorim
-import com.example.familytree.ui.backgroundColor
+import com.example.familytree.ui.ScreenBackgroundColor
 import com.example.familytree.ui.dialogs.DisplayConnectionBetweenTwoMembersDialog
 import com.example.familytree.ui.dialogs.InfoOnMemberDialog
+import com.example.familytree.ui.dialogs.AdminPasswordDialog
 import com.example.familytree.ui.intToMachzor
 import com.example.familytree.ui.machzorToInt
 
@@ -56,7 +59,10 @@ fun HomeScreenPage(
 ) {
 
     // Display options for the members
-    var displayOption by remember { mutableStateOf(Display.LIST) }
+    var displayOption by remember { mutableStateOf(Display.CUBES_IN_COLUMN_SORTED) }
+
+    // State to hold the password dialog visibility
+    var showPasswordDialog by remember { mutableStateOf(false) }
 
     // Retrieve members sorted by machzor order
     val members = allMachzorim.flatMap { machzor ->
@@ -87,18 +93,17 @@ fun HomeScreenPage(
     var secondSelectedMember by remember { mutableStateOf<FamilyMember?>(null) }
 
     // State to hold the member that was clicked
-    var clickedMemberOnList by remember { mutableStateOf<FamilyMember?>(null) }
+    var memberToShowHisInfoDialog by remember { mutableStateOf<FamilyMember?>(null) }
 
     // State to hold whether to display member's info dialog
     var displayMembersInfo by remember { mutableStateOf(false) }
 
-    // Function to handle clicking on a family member cube
-    val onClickCube: (FamilyMember) -> Unit
-
     // Boolean to determine if the connection dialog should be displayed
     var showConnectionDialog: Boolean by remember { mutableStateOf(false) }
 
-    // Update the small buttons to display the selected family members
+    val onClickCube: (FamilyMember) -> Unit
+
+    // Function to handle clicking on a family member cube
     if (findConnectionButtonClicked) {
         onClickCube = { clickedMember ->
             when {
@@ -109,18 +114,15 @@ fun HomeScreenPage(
                 else -> {} // Do nothing if both are already taken and a different member is clicked
             }
         }
-    }
-
-    // ???
-    else {
-        onClickCube = { }
+    } else {
+        onClickCube = {}
     }
 
     Scaffold() {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             Box(
                 modifier = modifier
-                    .background(backgroundColor)
+                    .background(ScreenBackgroundColor)
                     .fillMaxSize()
             ) {
                 Column(
@@ -139,12 +141,16 @@ fun HomeScreenPage(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
+
+                                // Headline text
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.Center
                                 ) {
                                     PageHeadLine(HebrewText.CHOOSE_TWO_FAMILY_MEMBERS)
                                 }
+
+                                // Display two question marks or the two selected family members
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceAround,
@@ -158,7 +164,7 @@ fun HomeScreenPage(
 
                                         // If member one isn't selected yet, display a question mark button
                                         if (firstSelectedMember == null) {
-                                            QuestionMarkButton(onClick = { findConnectionButtonClicked = !findConnectionButtonClicked })
+                                            QuestionMarkButton(onClick = { })
 
                                             // Placeholder for the name display to maintain alignment
                                             Spacer(modifier = Modifier.height(40.dp))
@@ -170,36 +176,67 @@ fun HomeScreenPage(
                                             if (firstSelectedMember!!.getGender()) {
 
                                                 // Display a man's button
-                                                JewishManButton(onClick = { findConnectionButtonClicked = !findConnectionButtonClicked })
+                                                JewishManButton(onClick = { })
                                             }
 
                                             else {
 
                                                 // Display a woman's button
-                                                JewishWomanButton(onClick = { findConnectionButtonClicked = !findConnectionButtonClicked })
+                                                JewishWomanButton(onClick = { })
                                             }
 
                                             CustomizedTextHomeScreenTwoLinesDisplay(firstSelectedMember!!.getFullName())
                                         }
                                     }
 
-                                    // Arrow button (or placeholder)
-                                    if (firstSelectedMember != null && secondSelectedMember != null) {
-                                        ArrowButton(
-                                            onClick = { showConnectionDialog = true }
+                                    // Arrow button and prev button
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+
+                                        // Spacer to push the findConnection button down
+                                        Spacer(modifier = Modifier.height(30.dp))
+
+                                        // This box holds the findConnection button
+                                        Box(
+                                            modifier = Modifier
+                                                .height(56.dp)
+                                                .wrapContentWidth(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            if (firstSelectedMember != null && secondSelectedMember != null) {
+
+                                                FindConnectionButton(
+                                                    onClick = { showConnectionDialog = true }
+                                                )
+                                            }
+                                        }
+//
+//                                                ArrowButton(
+//                                                    onClick = { showConnectionDialog = true }
+//                                                )
+//                                            }
+
+                                        if (showConnectionDialog) {
+                                            DisplayConnectionBetweenTwoMembersDialog(
+                                                memberOne = firstSelectedMember!!,
+                                                memberTwo = secondSelectedMember!!,
+                                                onDismiss = { showConnectionDialog = false }
+                                            )
+                                        }
+
+                                        // Prev button
+                                        ButtonForPage(
+                                            onClick = {
+                                                findConnectionButtonClicked = false
+                                                firstSelectedMember = null
+                                                secondSelectedMember = null
+                                            },
+                                            text = HebrewText.PREVIOUS,
+                                            modifier = Modifier
+                                                .wrapContentWidth()
+                                                .padding(horizontal = 8.dp)
                                         )
-                                    }
-
-                                    // Reserve space for the arrow button
-                                    else {
-                                        Spacer(modifier = Modifier.size(48.dp))
-                                    }
-
-                                    if (showConnectionDialog) {
-                                        DisplayConnectionBetweenTwoMembersDialog(
-                                            memberOne =  firstSelectedMember!!,
-                                            memberTwo = secondSelectedMember!!,
-                                            onDismiss = { showConnectionDialog = false } )
                                     }
 
                                     // Second button
@@ -209,7 +246,7 @@ fun HomeScreenPage(
 
                                         // If member two isn't selected yet, display a question mark button
                                         if (secondSelectedMember == null) {
-                                            QuestionMarkButton(onClick = { findConnectionButtonClicked = !findConnectionButtonClicked })
+                                            QuestionMarkButton(onClick = { })
 
                                             // Placeholder for the name display to maintain alignment
                                             Spacer(modifier = Modifier.height(40.dp))
@@ -221,13 +258,13 @@ fun HomeScreenPage(
                                             if (secondSelectedMember!!.getGender()) {
 
                                                 // Display a man's button
-                                                JewishManButton(onClick = { findConnectionButtonClicked = !findConnectionButtonClicked })
+                                                JewishManButton(onClick = { })
                                             }
 
                                             else {
 
                                                 // Display a woman's button
-                                                JewishWomanButton(onClick = { findConnectionButtonClicked = !findConnectionButtonClicked })
+                                                JewishWomanButton(onClick = { })
                                             }
 
                                             CustomizedTextHomeScreenTwoLinesDisplay(secondSelectedMember!!.getFullName())
@@ -243,9 +280,17 @@ fun HomeScreenPage(
                         }
                     }
 
+                    // Divider line between top and middle
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1.dp),
+                        color = Color.Black
+                    )
+
                     // Middle 2/4 of ths screen
 
-                    Column(modifier = Modifier.fillMaxWidth().weight(2f)) {
+                    Column(modifier = Modifier.fillMaxWidth().weight(2.47f)) {
 
                         // Headline text
                         PageHeadLine(HebrewText.FAMILY_TREE_MEMBERS)
@@ -253,45 +298,33 @@ fun HomeScreenPage(
                         // Search Bar
                         MembersSearchBar(
                             members = members,
-                            onSearchResults = { filteredMembers = it }
+                            onSearchResults = { filteredMembers = it },
+                            modifier = Modifier.padding(start = 16.dp, end = 16.dp)
                         )
-
-                        // If the "Find Connection" button was clicked, display members as blocks
 
                         if (displayOption == Display.CUBES_IN_COLUMN_SORTED) {
                             BoxWithConstraints(
                                 modifier = Modifier.fillMaxSize()
                             ) {
-                                val containerHeight = maxHeight
-                                val cubeLength = containerHeight / 5
-
-//                                // Group members by machzor
-//                                val grouped = filteredMembers.groupBy { it.getMachzor() }
-//                                    .toSortedMap(compareBy<Any?> { it == null }.thenBy { it as? Int })
-
-
+                                val cubesInRow = 4
+                                val totalHorizontalPadding = 32.dp
+                                val spacingBetweenCubes = 4.dp
+                                val totalSpacing = spacingBetweenCubes * (cubesInRow - 1)
+                                val availableWidth = maxWidth - totalHorizontalPadding - totalSpacing
+                                val cubeWidth = availableWidth / cubesInRow
+                                val cubeHeight = 70.dp
 
                                 LazyColumn(
                                     modifier = Modifier.fillMaxSize(),
                                     contentPadding = PaddingValues(vertical = 16.dp),
                                     verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-
-
                                     groupedMembers.forEach { (group, members) ->
                                         val subTitle: String = when {
                                             group == null -> HebrewText.NON_YESHIVA_FAMILY_MEMBERS
                                             group == 0 -> HebrewText.RABBIS_AND_STAFF
                                             else -> "${HebrewText.MACHZOR} ${intToMachzor[group]}"
-                                        }.toString()
-
-
-//                                    grouped.forEach { (machzor, membersInGroup) ->
-//                                        val subtitle = when {
-//                                            machzor == null -> HebrewText.NON_YESHIVA_FAMILY_MEMBERS
-//                                            machzor == 0 -> HebrewText.RABBIS_AND_STAFF
-//                                            else -> "${HebrewText.MACHZOR} ${intToMachzor[machzor]}"
-//                                        }
+                                        }
 
                                         item {
                                             RightSubTitle(
@@ -300,7 +333,7 @@ fun HomeScreenPage(
                                             )
                                         }
 
-                                        val rows = members.sortedBy { it.getFullName() }.chunked(4)
+                                        val rows = members.sortedBy { it.getFullName() }.chunked(cubesInRow)
 
                                         items(rows.size) { rowIndex ->
                                             val rowMembers = rows[rowIndex]
@@ -309,16 +342,17 @@ fun HomeScreenPage(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .padding(horizontal = 16.dp),
-                                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                                horizontalArrangement = Arrangement.spacedBy(spacingBetweenCubes)
                                             ) {
                                                 rowMembers.forEach { member ->
                                                     val isSelected = member == firstSelectedMember || member == secondSelectedMember
                                                     FamilyMemberCube(
                                                         member = member,
                                                         isSelected = isSelected,
-                                                        length = cubeLength,
-                                                        width = 80.dp,
-                                                        onClick = { onClickCube(member) }
+                                                        length = cubeHeight,
+                                                        width = cubeWidth,
+                                                        onClick = { onClickCube(member) },
+                                                        onExclamationClick = { memberToShowHisInfoDialog = member }
                                                     )
                                                 }
                                             }
@@ -332,23 +366,25 @@ fun HomeScreenPage(
                             BoxWithConstraints(
                                 modifier = Modifier.fillMaxSize()
                             ) {
-                                val containerHeight = maxHeight
-                                val cubeLength =
-                                    containerHeight / 5 // Dividing the height into 5 parts (4 members + spacing)
+                                val cubesInRow = 4
+                                val totalHorizontalPadding = 32.dp
+                                val spacingBetweenCubes = 4.dp
+                                val totalSpacing = spacingBetweenCubes * (cubesInRow - 1)
+                                val availableWidth = maxWidth - totalHorizontalPadding - totalSpacing
+                                val cubeWidth = availableWidth / cubesInRow
+                                val cubeHeight = 70.dp
 
-                                // Sort filteredMembers by machzor before chunking
                                 val sortedMembers = filteredMembers.sortedWith(
                                     compareBy<FamilyMember> { it.getMachzor() == null }
                                         .thenBy { it.getMachzor() }
                                 )
-                                val rows = sortedMembers.chunked(4)
+                                val rows = sortedMembers.chunked(cubesInRow)
 
                                 LazyColumn(
                                     modifier = Modifier.fillMaxSize(),
                                     contentPadding = PaddingValues(vertical = 16.dp),
                                     verticalArrangement = Arrangement.spacedBy(4.dp)
                                 ) {
-
                                     items(rows.size) { rowIndex ->
                                         val rowMembers = rows[rowIndex]
 
@@ -356,7 +392,7 @@ fun HomeScreenPage(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .padding(horizontal = 16.dp),
-                                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                            horizontalArrangement = Arrangement.spacedBy(spacingBetweenCubes)
                                         ) {
                                             rowMembers.forEach { member ->
                                                 val isSelected =
@@ -364,9 +400,10 @@ fun HomeScreenPage(
                                                 FamilyMemberCube(
                                                     member = member,
                                                     isSelected = isSelected,
-                                                    length = cubeLength,
-                                                    width = 80.dp,
-                                                    onClick = { onClickCube(member) }
+                                                    length = cubeHeight,
+                                                    width = cubeWidth,
+                                                    onClick = { onClickCube(member) },
+                                                    onExclamationClick = { memberToShowHisInfoDialog = member }
                                                 )
                                             }
                                         }
@@ -408,7 +445,8 @@ fun HomeScreenPage(
                                                     isSelected = isSelected,
                                                     length = cubeLength,
                                                     width = 80.dp,
-                                                    onClick = { onClickCube(member) }
+                                                    onClick = { onClickCube(member) },
+                                                    onExclamationClick = { memberToShowHisInfoDialog = member }
                                                 )
                                             }
                                         }
@@ -438,43 +476,67 @@ fun HomeScreenPage(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .clickable {
-                                                    clickedMemberOnList = member
+                                                    memberToShowHisInfoDialog = member
                                                     displayMembersInfo = true
                                                 },
                                             style = MaterialTheme.typography.bodyLarge
                                         )
-
-                                        if (displayMembersInfo) {
-                                            InfoOnMemberDialog(
-                                                member = clickedMemberOnList!!,
-                                                onDismiss = { displayMembersInfo = false }
-                                            )
-                                        }
                                     }
                                 }
                             }
                         }
                     }
 
+                    memberToShowHisInfoDialog?.let { selectedMember ->
+                        InfoOnMemberDialog(
+                            member = selectedMember,
+                            onDismiss = { memberToShowHisInfoDialog = null }
+                        )
+                    }
+
+                    // Divider line middle top and bottom
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1.dp),
+                        color = Color.Black
+                    )
+
                     // Bottom 1/4 of ths screen
 
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(1f),
+                            .weight(0.53f),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
 
-                        TextFieldWithDropdownMenu(
-                            label = "בחר תצוגה",
-                            options = Display.entries.map { it.name },
-                            selectedOption = displayOption.toString(),
-                            onOptionSelected = { displayOption = Display.valueOf(it!!) }
-                        )
 
-                        WideBlueButton(onClick = { navController.navigate("familyTreeGraphPage") }, text = HebrewText.SHOW_FAMILY_TREE_GRAPH)
-                        WideBlueButton(onClick = { navController.navigate("adminPage") }, text = HebrewText.GO_INTO_ADMIN_MODE)
+                        // part of the beta to see what display is the best
+//                        TextFieldWithDropdownMenu(
+//                            label = "בחר תצוגה",
+//                            options = Display.entries.map { it.name },
+//                            selectedOption = displayOption.toString(),
+//                            onOptionSelected = { displayOption = Display.valueOf(it!!) }
+//                        )
+
+                        ButtonForPage(onClick = { navController.navigate("familyTreeGraphPage") }, text = HebrewText.SHOW_FAMILY_TREE_GRAPH)
+                        ButtonForPage(onClick = { showPasswordDialog = true }, text = HebrewText.GO_INTO_ADMIN_MODE)
+
+                        if (showPasswordDialog) {
+                            AdminPasswordDialog(
+                                onDismiss = { showPasswordDialog = false },
+                                onPasswordCorrect = {
+                                    showPasswordDialog = false
+                                    navController.navigate("adminPage?isRealAdmin=true")
+                                },
+                                onDemoPasswordCorrect = {
+                                    showPasswordDialog = false
+                                    navController.navigate("adminPage?isRealAdmin=false")
+                                }
+                            )
+                        }
 
 //                        YbmLogo()
                     }
@@ -483,5 +545,3 @@ fun HomeScreenPage(
         }
     }
 }
-
-

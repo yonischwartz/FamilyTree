@@ -42,6 +42,43 @@ enum class Relations() {
     companion object {
 
         /**
+         * Priority order used to sort relationships in a logical display sequence.
+         * Lower numbers are shown first.
+         */
+        val relationPriority = mapOf(
+            MARRIAGE to 1,
+
+            SON to 2,
+            DAUGHTER to 2,
+
+            FATHER to 3,
+            MOTHER to 3,
+
+            SIBLINGS to 4,
+            HALF_SIBLINGS to 4,
+
+            GRANDSON to 5,
+            GRANDDAUGHTER to 5,
+
+            GRANDFATHER to 6,
+            GRANDMOTHER to 6,
+
+            GREAT_GRANDSON to 7,
+            GREAT_GRANDDAUGHTER to 7,
+
+            GREAT_GRANDFATHER to 8,
+            GREAT_GRANDMOTHER to 8,
+
+            COUSINS to 9,
+
+            UNCLE to 10,
+            AUNT to 10,
+
+            NEPHEW to 11,
+            NIECE to 11
+        )
+
+        /**
          * Converts a Hebrew relation string to a pair of [Relations] enum and a boolean indicating gender.
          *
          * @param relationString The Hebrew relation string from the [HebrewText] object.
@@ -237,4 +274,37 @@ enum class Relations() {
             else -> null
         }
     }
+
+    /**
+     * Returns the Hebrew term for this relationship, adjusted for gender when relevant.
+     *
+     * @param gender true = male, false = female
+     * @return The Hebrew string representing this relationship.
+     */
+    fun toHebrew(gender: Boolean): String {
+        return when (this) {
+            MARRIAGE -> if (gender) HebrewText.A_HUSBAND else HebrewText.A_WIFE
+            FATHER -> HebrewText.FATHER
+            MOTHER -> HebrewText.MOTHER
+            SON -> HebrewText.SON
+            DAUGHTER -> HebrewText.DAUGHTER
+            GRANDMOTHER -> HebrewText.GRANDMOTHER
+            GRANDFATHER -> HebrewText.GRANDFATHER
+            GRANDSON -> HebrewText.GRANDSON
+            GRANDDAUGHTER -> HebrewText.GRANDDAUGHTER
+            COUSINS -> if (gender) HebrewText.MALE_COUSIN else HebrewText.FEMALE_COUSIN
+            SIBLINGS -> if (gender) HebrewText.BROTHER else HebrewText.SISTER
+            HALF_SIBLINGS -> if (gender) HebrewText.HALF_BROTHER else HebrewText.HALF_SISTER
+            GREAT_GRANDMOTHER -> HebrewText.GREAT_GRANDMOTHER
+            GREAT_GRANDFATHER -> HebrewText.GREAT_GRANDFATHER
+            GREAT_GRANDSON -> HebrewText.GREAT_GRANDSON
+            GREAT_GRANDDAUGHTER -> HebrewText.GREAT_GRANDDAUGHTER
+            UNCLE -> HebrewText.UNCLE
+            AUNT -> HebrewText.AUNT
+            NEPHEW -> HebrewText.NEPHEW
+            NIECE -> HebrewText.NIECE
+        }
+    }
+
+
 }

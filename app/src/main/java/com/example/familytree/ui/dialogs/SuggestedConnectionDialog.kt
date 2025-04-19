@@ -59,15 +59,15 @@ fun SuggestConnectionDialog(
         }
     }
 
-    DialogWithTwoButtons(
+    DialogWithButtons(
         title = title,
         text = "",
-        onClickForLeft = {
+        onLeftButtonClick = {
             DatabaseManager.addConnectionToBothMembersInLocalMap(memberOne, memberTwo, relation)
             onDismiss()
         },
-        textForLeft = HebrewText.YES,
-        onClickForRight = userRejection,
-        textForRight = HebrewText.NO
+        textForLeftButton = HebrewText.YES,
+        onRightButtonClick = userRejection,
+        textForRightButton = HebrewText.NO
     )
 }

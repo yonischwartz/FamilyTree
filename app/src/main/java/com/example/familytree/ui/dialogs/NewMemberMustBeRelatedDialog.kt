@@ -18,13 +18,14 @@ fun NewMemberMustBeRelatedDialog(
     val title: String = HebrewText.ADDING_NEW_MEMBER
     val text: String = HebrewText.NEW_FAMILY_MEMBERS_MUST_BE_RELATED_TO_AN_EXISTING_MEMBER
 
-    DialogWithTwoButtons(
+    DialogWithButtons(
         title = title,
         text = text,
-        onClickForLeft = onConfirm,
-        textForLeft = HebrewText.NEXT,
-        onClickForRight = onDismiss,
-        textForRight = HebrewText.CANCEL
+        onLeftButtonClick = onConfirm,
+        textForLeftButton = HebrewText.NEXT,
+        onRightButtonClick = onDismiss,
+        textForRightButton = HebrewText.CANCEL,
+        onDismiss = onDismiss
     )
 }
 

@@ -12,6 +12,7 @@ import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.FullConnection
 import com.example.familytree.data.MemberType
 import com.example.familytree.data.Relations
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.firestore.QuerySnapshot
@@ -33,6 +34,9 @@ object DatabaseManager {
     // Firebase Firestore instance
     private val firebase by lazy { Firebase.firestore }
 
+    // Firebase Authentication instance
+    private val auth = FirebaseAuth.getInstance()
+
     // Firebase Storage instance
     private val storage = Firebase.storage
 
@@ -46,7 +50,35 @@ object DatabaseManager {
 
     // functions
 
-    // TODO: the image of the graph does not display on offline mode
+    /**
+     * Attempts to sign in the user using Firebase Authentication with the provided email and password.
+     *
+     * @param email The user's email address.
+     * @param password The user's password.
+     * @param onResult Callback that returns true if sign-in was successful, false otherwise.
+     */
+    fun signIn(email: String, password: String, onResult: (Boolean) -> Unit) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                onResult(task.isSuccessful)
+            }
+    }
+
+    /**
+     * Checks if there is a currently signed-in Firebase user.
+     *
+     * @return True if a user is signed in, false otherwise.
+     */
+    fun isUserSignedIn(): Boolean {
+        return auth.currentUser != null
+    }
+
+    /**
+     * Signs out the currently signed-in user from Firebase Authentication.
+     */
+    fun signOut() {
+        auth.signOut()
+    }
 
     /**
      * Downloads the family tree image from Firebase Storage and saves it locally.
@@ -248,6 +280,17 @@ object DatabaseManager {
         memberMap.addMember(member)
 
         return true
+    }
+
+    /**
+     * Updates an existing family member in the local MemberMap.
+     *
+     * @param idOfMemberToBeUpdated The ID of the family member to be updated.
+     * @param updatedMember The updated `FamilyMember` object.
+     */
+    fun updateMember(idOfMemberToBeUpdated: String, updatedMember: FamilyMember) {
+        // Update member in local map
+        memberMap.updateMember(idOfMemberToBeUpdated, updatedMember)
     }
 
     /**

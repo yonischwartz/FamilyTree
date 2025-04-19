@@ -1,21 +1,27 @@
 package com.example.familytree.ui.dialogs
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.familytree.data.MemberType
 import com.example.familytree.ui.HebrewText
-import com.example.familytree.ui.DialogButton
-import com.example.familytree.ui.DialogTitle
-import com.example.familytree.ui.WideBlueButton
+import com.example.familytree.ui.ButtonForPage
 
+/**
+ * Displays a dialog that allows the user to choose a member type
+ * (Yeshiva or Non-Yeshiva family member).
+ *
+ * @param onMemberTypeSelected Callback invoked with the selected [MemberType]
+ *                             when the user chooses an option.
+ * @param showPreviousButton Whether to show the "Previous" button (default is true).
+ * @param onPrevious Callback invoked when the "Previous" button is clicked.
+ * @param onDismiss Callback invoked when the dialog is dismissed.
+ */
 @Composable
 fun ChooseMemberTypeDialog(
     onMemberTypeSelected: (MemberType) -> Unit,
@@ -23,26 +29,15 @@ fun ChooseMemberTypeDialog(
     onPrevious: () -> Unit = {},
     onDismiss: () -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { DialogTitle(HebrewText.CHOOSE_FAMILY_MEMBER_TYPE) },
-        text = {
+    DialogWithButtons(
+        title = HebrewText.CHOOSE_FAMILY_MEMBER_TYPE,
+        onRightButtonClick = onPrevious,
+        textForRightButton = HebrewText.PREVIOUS,
+        enabledForRightButton = showPreviousButton,
+        onDismiss = onDismiss,
+        contentOfDialog = {
             Column {
                 MemberTypeSelection(onMemberTypeSelected = onMemberTypeSelected)
-            }
-        },
-        confirmButton = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
-            ) {
-                if (showPreviousButton) {
-
-                    DialogButton(
-                        text = HebrewText.PREVIOUS,
-                        onClick = onPrevious
-                    )
-                }
             }
         }
     )
@@ -56,15 +51,21 @@ fun ChooseMemberTypeDialog(
 @Composable
 private fun MemberTypeSelection(onMemberTypeSelected: (MemberType) -> Unit) {
 
-    WideBlueButton(
+    ButtonForPage(
         text = HebrewText.YESHIVA_FAMILY_MEMBER,
-        onClick = { onMemberTypeSelected(MemberType.Yeshiva) }
+        onClick = { onMemberTypeSelected(MemberType.Yeshiva) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
     )
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    WideBlueButton(
+    ButtonForPage(
         text = HebrewText.NON_YESHIVA_FAMILY_MEMBER,
-        onClick = { onMemberTypeSelected(MemberType.NonYeshiva) }
+        onClick = { onMemberTypeSelected(MemberType.NonYeshiva) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
     )
 }

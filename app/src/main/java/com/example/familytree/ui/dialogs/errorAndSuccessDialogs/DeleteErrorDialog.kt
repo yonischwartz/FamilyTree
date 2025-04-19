@@ -2,7 +2,7 @@ package com.example.familytree.ui.dialogs.errorAndSuccessDialogs
 
 import androidx.compose.runtime.Composable
 import com.example.familytree.ui.HebrewText
-import com.example.familytree.ui.dialogs.DialogWithOneButton
+import com.example.familytree.ui.dialogs.DialogWithButtons
 
 /**
  * Displays an error dialog when attempting to delete a family member that would break the family tree structure.
@@ -16,9 +16,9 @@ fun DeleteErrorDialog(
     val text: String = HebrewText.REMOVING_THIS_MEMBER_BRAKES_THE_TREE
     val title: String = HebrewText.ERROR_REMOVING_MEMBER
 
-    DialogWithOneButton(
+    DialogWithButtons(
         title = title,
         text = text,
-        onClick = onDismiss
+        onLeftButtonClick = onDismiss
     )
 }

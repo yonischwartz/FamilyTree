@@ -33,6 +33,8 @@ object HebrewText {
     const val NO = "לא"
     const val SEARCH = "חפש"
     const val REMOVE_MEMBER = "הסר מועמד"
+    const val SAVE = "שמור"
+    const val EDIT = "ערוך"
     const val REMOVE = "הסר"
     const val NEXT = "המשך"
     const val PREVIOUS = "הקודם"
@@ -74,6 +76,8 @@ object HebrewText {
     const val HALF_SISTER_OF = "חצי אחות של"
 
     // Relations
+    const val A_WIFE = "אישה"
+    const val A_HUSBAND = "בעל"
     const val WIFE = "אשתו"
     const val SECOND_WIFE = "אשתו השנייה"
     const val THIRD_WIFE = "אשתו השלישית"
@@ -96,6 +100,14 @@ object HebrewText {
     const val GRANDFATHER = "סבא"
     const val GRANDSON = "נכד"
     const val GRANDDAUGHTER = "נכדה"
+    const val GREAT_GRANDMOTHER = "סבתא רבתא"
+    const val GREAT_GRANDFATHER = "סבא רבא"
+    const val GREAT_GRANDSON = "נין"
+    const val GREAT_GRANDDAUGHTER = "נינה"
+    const val UNCLE = "דוד"
+    const val AUNT = "דודה"
+    const val NEPHEW = "אחיין"
+    const val NIECE = "אחיינית"
 
     // FamilyMember details
     const val FIRST_NAME = "שם פרטי"
@@ -115,6 +127,14 @@ object HebrewText {
     const val AS = "כ"
     const val AND = "ו"
 
+
+    const val FAMILY_CONNECTIONS = "קשרי משפחה"
+    const val EMAIL = "מייל"
+    const val WRONG_PASSWORD = "סיסמא שגויה"
+    const val WRONG_MAIL_OR_PASSWORD = "מייל או סיסמא שגויים"
+    const val PASSWORD = "סיסמא"
+    const val ENTER_ADMIN_PASSWORD = "הזן סיסמא לכניסה למצב מנהל"
+    const val EDIT_MEMBER = "ערוך בן משפחה"
     const val HE_IS_NOT_FROM_THE_YESHIVA = "אינו בוגר הישיבה"
     const val SHE_IS_NOT_FROM_THE_YESHIVA = "אינה מן הישיבה"
     const val NAME = "שם"
@@ -159,7 +179,7 @@ object HebrewText {
     const val HE = "הוא"
     const val SHE = "היא"
     const val CHOOSE_FAMILY_MEMBER_TYPE = "בחר סוג בן משפחה"
-    const val FAMILY_MEMBER_TYPE = "סוג בן משפחה"
+    const val MEMBER_TYPE = "סוג בן משפחה"
     const val YESHIVA_FAMILY_MEMBER = "בן משפחה מהישיבה"
     const val NON_YESHIVA_FAMILY_MEMBER = "בן משפחה שאינו מהישיבה"
     const val ADD_FAMILY_MEMBER = "הוסף בן משפחה"

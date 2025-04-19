@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,11 +18,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.HebrewText
 import com.example.familytree.ui.MembersSearchBar
+import com.example.familytree.ui.buttonColor
 
 /**
  * Composable function to display a dialog for selecting a family member to relate to.
@@ -72,13 +75,13 @@ fun ChooseMemberToRelateToDialog(
     // The condition for enabling the NEXT button
     val didUserChooseMember = checkedMemberId != null
 
-    DialogWithTwoButtons(
+    DialogWithButtons(
         title = HebrewText.CHOOSE_FAMILY_MEMBER,
-        onClickForLeft = getOptionalMembersToConnectTo,
-        textForLeft = HebrewText.NEXT,
+        onLeftButtonClick = getOptionalMembersToConnectTo,
+        textForLeftButton = HebrewText.NEXT,
         enabledForLeftButton = didUserChooseMember,
-        onClickForRight = onClickRightButton,
-        textForRight = rightButtonText,
+        onRightButtonClick = onClickRightButton,
+        textForRightButton = rightButtonText,
         onDismiss = onDismiss,
         contentOfDialog = {
             Column {
@@ -102,7 +105,11 @@ fun ChooseMemberToRelateToDialog(
                                 checked = checkedMemberId == member.getId(),
                                 onCheckedChange = { isChecked ->
                                     checkedMemberId = if (isChecked) member.getId() else null
-                                }
+                                },
+                                colors = CheckboxDefaults.colors(
+                                    checkedColor = buttonColor,
+                                    checkmarkColor = Color.White
+                                )
                             )
                             Text(text = member.getFullName(), modifier = Modifier.padding(start = 8.dp))
                         }
@@ -114,6 +121,10 @@ fun ChooseMemberToRelateToDialog(
 
     // Display detail dialog when a member is selected
     selectedMember?.let { member ->
-        InfoOnMemberDialog(member = member, onDismiss = { selectedMember = null })
+
+        InfoOnMemberDialog(
+            member = member,
+            onDismiss = { selectedMember = null },
+        )
     }
 }

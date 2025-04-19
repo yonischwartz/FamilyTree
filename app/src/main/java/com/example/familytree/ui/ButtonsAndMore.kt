@@ -10,18 +10,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -31,8 +27,6 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,12 +48,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInWindow
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -69,29 +59,49 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.ui.window.Popup
 import com.example.familytree.R
 import com.example.familytree.data.FamilyMember
-import com.example.familytree.data.dataManagement.DatabaseManager
-import com.example.familytree.ui.dialogs.InfoOnMemberDialog
 import java.io.File
 import android.net.Uri
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.offset
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.TextFieldDefaults
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+import com.example.familytree.data.Connection
+import com.example.familytree.data.MemberType
+import com.example.familytree.data.Relations
+import com.example.familytree.data.Relations.Companion.relationPriority
+import com.example.familytree.data.dataManagement.DatabaseManager
 
 /**
  * A constant color value representing a beige background color.
  */
-val backgroundColor = Color(0xFFF5F5DC) // Beige
+val ScreenBackgroundColor = Color(0xFFF5F5DC) // Beige
+
+/**
+ * A constant color value representing the button color used throughout the app.
+ */
+val buttonColor = Color(0xFF00668B) // Custom Blue
+
+/**
+ * A constant color value representing the background color used in dialogs.
+ */
+val DialogBackgroundColor = Color(0xFFF2FBFF) // Very light blue
 
 /**
  * Returns the default text style used in the app.
@@ -125,12 +135,19 @@ fun YbmLogo() {
  * A customized text composable that displays text with certain style.
  *
  * @param text The string to be displayed.
+ * @param centered Whether the text should be centered horizontally.
  */
 @Composable
-fun CustomizedText(text: String) {
+fun CustomizedText(
+    text: String,
+    modifier: Modifier = Modifier,
+    centered: Boolean = false
+) {
     Text(
         text = text,
-        style = appTextStyle()
+        style = appTextStyle(),
+        modifier = if (centered) modifier.fillMaxWidth() else modifier,
+        textAlign = if (centered) TextAlign.Center else TextAlign.Start
     )
 }
 
@@ -160,6 +177,94 @@ fun CustomizedTitleText(title: String, text: String) {
     }
 }
 
+/**
+ * Displays a section listing family connections in a vertical layout.
+ *
+ * Each line consists of a Hebrew-labeled relationship (underlined and followed by a colon)
+ * and the corresponding member's full name. The names are clickable, allowing users to
+ * navigate to the selected member's information dialog.
+ *
+ * The list is sorted based on a predefined logical order (spouse, children, parents, etc.)
+ * defined in [Relations.relationPriority].
+ *
+ * @param connections A list of [Connection] objects representing relationships for a specific family member.
+ * @param onMemberClick A callback triggered when the user clicks a member's name.
+ *                      This is typically used to display the clicked member's info in a new or updated dialog.
+ */
+@Composable
+fun DisplayConnectionsForMembersInfoDialog(
+    connections: List<Connection>,
+    onMemberClick: (FamilyMember) -> Unit
+) {
+    val sortedConnections = connections.sortedWith(
+        compareBy { Relations.relationPriority[it.relationship] ?: Int.MAX_VALUE }
+    )
+
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(
+            text = "${HebrewText.FAMILY_CONNECTIONS}:",
+            style = appTextStyle().copy(fontSize = 20.sp, fontWeight = FontWeight.SemiBold),
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        sortedConnections.forEach { connection ->
+            val member = DatabaseManager.getMemberById(connection.memberId)!!
+            val relationInHebrew = connection.relationship.toHebrew(member.getGender())
+            val memberName = member.getFullName()
+
+            Row(modifier = Modifier.padding(start = 32.dp)) {
+                Text(
+                    text = "$relationInHebrew:",
+                    style = appTextStyle().copy(
+                        textDecoration = TextDecoration.Underline,
+                    ),
+                    modifier = Modifier.alignByBaseline()
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = memberName,
+                    style = appTextStyle().copy(
+                        color = buttonColor
+                    ),
+                    modifier = Modifier
+                        .alignByBaseline()
+                        .clickable { onMemberClick(member) }
+                )
+            }
+        }
+    }
+}
+
+
+/**
+ * A customized text composable that displays a relation and a name on the same line.
+ * The relation is underlined and followed by a colon, the name follows.
+ *
+ * @param relation The underlined relation string (e.g. "Father").
+ * @param name The name string (e.g. "Rabbi Levi").
+ */
+@Composable
+fun DisplayRelationAndName(relation: String, name: String) {
+    Row {
+        Text(
+            text = "$relation:",
+            style = appTextStyle().copy(
+                textDecoration = TextDecoration.Underline
+            ),
+            modifier = Modifier.alignByBaseline()
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            text = name,
+            style = appTextStyle(),
+            modifier = Modifier.alignByBaseline()
+        )
+    }
+}
 
 /**
  * A customized text composable that displays a name with a fixed width.
@@ -193,10 +298,10 @@ fun PageHeadLine(headline: String) {
         text = headline,
         style = appTextStyle(),
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .fillMaxWidth(),
         fontSize = 24.sp,
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Center,
+        fontWeight = FontWeight.Bold
     )
 }
 
@@ -229,16 +334,26 @@ fun RightSubTitle(
 }
 
 /**
- * A Composable function that represents an home screen button.
+ * A Composable function that represents a page button.
  *
  * @param onClick A lambda function to handle the action when the button is clicked.
  * @param text A text to display on the button.
  */
 @Composable
-fun WideBlueButton(onClick: () -> Unit, text: String) {
+fun ButtonForPage(
+    onClick: () -> Unit,
+    text: String,
+    modifier: Modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)
+) {
     Button(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        onClick = onClick
+        modifier = modifier,
+        onClick = onClick,
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = buttonColor
+        )
     ) {
         Text(
             text = text,
@@ -253,57 +368,50 @@ fun WideBlueButton(onClick: () -> Unit, text: String) {
  * @param text The text to display on the button.
  * @param onClick The action to perform when the button is clicked.
  * @param enabled Whether the button is enabled or disabled (default is true).
+ * @param modifier The modifier to apply to the button (default is Modifier).
  */
 @Composable
 fun DialogButton(
     text: String,
     onClick: () -> Unit,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    modifier: Modifier = Modifier
 ) {
-    Button(onClick = onClick, enabled = enabled) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = modifier,
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = buttonColor
+        )
+    ) {
         Text(text)
     }
 }
 
+
 /**
  * A composable function that displays a centered title within a dialog.
  *
- * @param title The text to be displayed as the title.
+ * @param text The text to be displayed as the title.
  */
 @Composable
-fun DialogTitle(title: String) {
+fun DialogTitle(
+    text: String,
+    modifier: Modifier = Modifier.fillMaxWidth()
+) {
     Box(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = title,
-            style = MaterialTheme.typography.headlineSmall
+            text = text,
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center
         )
     }
-}
-
-/**
- * A reusable wide text input field for free-text entry.
- *
- * @param text The label describing the text field.
- * @param modifier Modifier to text field.
- * @param value The current text value entered by the user.
- * @param onValueChange Callback triggered when the text value changes.
- */
-@Composable
-fun TextField(
-    text: String,
-    modifier: Modifier = Modifier.fillMaxWidth(),
-    value: String,
-    onValueChange: (String) -> Unit
-) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(text) },
-        modifier = modifier
-    )
 }
 
 /**
@@ -355,6 +463,36 @@ fun BooleanSelection(
 }
 
 /**
+ * A checkbox input row with a label next to it (checkbox appears after the text).
+ *
+ * @param label The label shown next to the checkbox.
+ * @param checked Whether the checkbox is currently checked.
+ * @param onCheckedChange Callback invoked when the checkbox is toggled.
+ */
+@Composable
+fun BooleanCheckboxInput(
+    label: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(text = label)
+        Checkbox(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = CheckboxDefaults.colors(
+                checkedColor = buttonColor,
+                uncheckedColor = buttonColor,
+                checkmarkColor = Color.White
+            )
+        )
+    }
+}
+
+/**
  * A lightweight inline dropdown menu for use inside text lines.
  *
  * This composable allows embedding a clickable dropdown selector within a line of text,
@@ -363,14 +501,14 @@ fun BooleanSelection(
  * @param options A list of strings to display as dropdown options.
  * @param selectedOption The currently selected option to display. If null, a placeholder will be shown.
  * @param onOptionSelected Callback invoked when the user selects an option from the dropdown.
- * @param textStyle Optional styling for the displayed text. Defaults to [LocalTextStyle] with primary color.
+ * @param textStyle Optional styling for the displayed text. Defaults to black.
  */
 @Composable
 fun InlineDropdown(
     options: List<String>,
     selectedOption: String?,
     onOptionSelected: (String?) -> Unit,
-    textStyle: TextStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.primary)
+    textStyle: TextStyle = LocalTextStyle.current.copy(color = Color.Black) // 🖤 selected text color
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selected by remember { mutableStateOf(selectedOption) }
@@ -380,10 +518,10 @@ fun InlineDropdown(
             text = selected ?: HebrewText.CHOOSE,
             modifier = Modifier
                 .clickable { expanded = true }
-                .padding(horizontal = 4.dp)
+                .background(DialogBackgroundColor, shape = RoundedCornerShape(4.dp))
                 .border(
                     width = 1.dp,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = buttonColor,
                     shape = RoundedCornerShape(4.dp)
                 )
                 .padding(horizontal = 6.dp, vertical = 2.dp),
@@ -393,20 +531,97 @@ fun InlineDropdown(
 
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.background(DialogBackgroundColor)
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(option) },
+                    text = {
+                        Text(
+                            text = option,
+                            color = Color.Black
+                        )
+                    },
                     onClick = {
                         selected = option
                         onOptionSelected(option)
                         expanded = false
-                    }
+                    },
+                    modifier = Modifier.background(DialogBackgroundColor)
                 )
             }
         }
     }
+}
+
+/**
+ * A reusable styled text field used for editing member details.
+ *
+ * This composable wraps an [OutlinedTextField] with consistent styling used across the app,
+ * including a white background and custom outline color.
+ *
+ * @param text The label to display above the text field.
+ * @param value The current value of the text field.
+ * @param onValueChange Callback invoked when the user changes the input text.
+ */
+@Composable
+fun TextFieldForMemberDetails(
+    text: String,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(text) },
+        singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = buttonColor,
+            unfocusedBorderColor = buttonColor,
+            disabledBorderColor = buttonColor,
+            focusedLabelColor = buttonColor,
+            unfocusedLabelColor = buttonColor,
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+            disabledContainerColor = Color.White,
+            cursorColor = buttonColor
+        )
+    )
+}
+
+/**
+ * A customized styled text field for editing member details.
+ *
+ * This composable is used for member detail inputs, applying a white background,
+ * custom blue outline, label color, and cursor color.
+ *
+ * @param label The label to display above the text field.
+ * @param value The current value of the text field.
+ * @param onValueChange Callback invoked when the user changes the text.
+ */
+@Composable
+fun CustomizedTextFieldForEditingMembersDetails(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = buttonColor,
+            unfocusedBorderColor = buttonColor,
+            disabledBorderColor = buttonColor,
+            focusedLabelColor = buttonColor,
+            unfocusedLabelColor = buttonColor,
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+            disabledContainerColor = Color.White,
+            cursorColor = buttonColor
+        )
+    )
 }
 
 /**
@@ -434,7 +649,7 @@ fun TextFieldWithDropdownMenu(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
-        TextField(
+        OutlinedTextField(
             value = selected ?: "",
             onValueChange = {},
             label = { Text(label) },
@@ -448,8 +663,20 @@ fun TextFieldWithDropdownMenu(
             modifier = modifier
                 .menuAnchor()
                 .clickable { expanded = true },
-            singleLine = false
+            singleLine = false,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = buttonColor,
+                unfocusedBorderColor = buttonColor,
+                disabledBorderColor = buttonColor,
+                focusedLabelColor = buttonColor,
+                unfocusedLabelColor = buttonColor,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
+                cursorColor = buttonColor
+            )
         )
+
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
@@ -461,18 +688,69 @@ fun TextFieldWithDropdownMenu(
                             text = option,
                             modifier = Modifier.fillMaxWidth(),
                             overflow = TextOverflow.Ellipsis,
-                            style = LocalTextStyle.current.copy(textDirection = TextDirection.Rtl)
+                            style = LocalTextStyle.current.copy(
+                                textDirection = TextDirection.Rtl,
+                                color = Color.Black
+                            )
                         )
                     },
                     onClick = {
                         selected = option
                         onOptionSelected(option)
                         expanded = false
-                    }
+                    },
+                    modifier = Modifier.background(DialogBackgroundColor)
                 )
             }
         }
     }
+}
+
+/**
+ * Provides a dropdown menu for selecting the machzor value.
+ * The user can pick from a predefined set of options, and the selected option will be passed to the callback.
+ *
+ * @param machzor The currently selected machzor as a string.
+ * @param onMachzorChange Callback to update the machzor selection. The selected machzor will be passed as a string.
+ */
+@Composable
+fun MachzorInput(
+    machzor: Int?,
+    onMachzorChange: (Int?) -> Unit
+) {
+    TextFieldWithDropdownMenu(
+        label = HebrewText.MACHZOR,
+        options = allMachzorim,
+        selectedOption = intToMachzor[machzor],
+        onOptionSelected = { selectedOption ->
+            val selectedMachzor = machzorToInt[selectedOption] ?: 0
+            onMachzorChange(selectedMachzor)
+        }
+    )
+}
+
+/**
+ * Dropdown input that allows the user to select a [MemberType] from the enum values.
+ *
+ * @param selectedType The currently selected member type.
+ * @param onMemberTypeChange Callback invoked when the selected member type changes.
+ */
+@Composable
+fun MemberTypeInput(
+    selectedType: MemberType,
+    onMemberTypeChange: (MemberType) -> Unit
+) {
+    val allTypes = MemberType.entries
+    val selectedText = selectedType.name
+
+    TextFieldWithDropdownMenu(
+        label = HebrewText.MEMBER_TYPE,
+        options = allTypes.map { it.name },
+        selectedOption = selectedText,
+        onOptionSelected = { name ->
+            allTypes.find { it.name == name }?.let { onMemberTypeChange(it) }
+        }
+    )
 }
 
 /**
@@ -516,46 +794,79 @@ fun TwoConfirmButtons(
 
 /**
  * A composable function that displays a top app bar with a centered title.
- * Optionally displays a back arrow icon in the top right corner if [onClickBack] is provided.
+ * Optionally displays a back arrow icon in the top right corner if [onClickBack] is provided,
+ * and a save icon in the top left corner if [showSaveIcon] is true, with a save label underneath.
  *
  * @param text The title text to display in the top bar.
  * @param onClickBack Optional click handler for the back arrow icon.
+ * @param showSaveIcon Whether to show the save icon.
+ * @param onSave Click handler for the save icon.
  */
 @Composable
 fun FamilyTreeTopBar(
     text: String,
-    onClickBack: (() -> Unit)? = null
+    onClickBack: (() -> Unit)? = null,
+    showSaveIcon: Boolean = false,
+    onSave: () -> Unit = {}
 ) {
-    // Force RTL layout direction for this composable
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
-                .background(MaterialTheme.colorScheme.primary)
+                .background(buttonColor)
         ) {
-            // Centered title text
+            // Centered title
             Text(
                 text = text,
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = Color.White,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center)
             )
 
-            // Optional back arrow icon (always on the right in RTL layout)
+            // Back icon
             onClickBack?.let {
                 IconButton(
                     onClick = it,
                     modifier = Modifier
-                        .align(Alignment.TopStart) // Always on the right side for RTL
-                        .padding(start = 8.dp) // Adds padding from the left edge in RTL
+                        .align(Alignment.TopStart)
+                        .padding(start = 8.dp)
                 ) {
-                    // Always points left (correct for RTL)
                     Icon(
                         imageVector = Icons.Filled.ArrowForward,
                         contentDescription = "Back",
-                        tint = MaterialTheme.colorScheme.onPrimary
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+
+            // Save icon + "שמור"
+            if (showSaveIcon) {
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 4.dp, end = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    IconButton(
+                        onClick = onSave,
+                        modifier = Modifier.size(36.dp) // smaller hit box
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Save,
+                            contentDescription = "Save",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    Text(
+                        text = HebrewText.SAVE,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White,
+                        fontSize = 10.sp,
+                        lineHeight = 10.sp
                     )
                 }
             }
@@ -573,11 +884,12 @@ fun FamilyTreeTopBar(
 @Composable
 fun MembersSearchBar(
     members: List<FamilyMember>,
-    onSearchResults: (List<FamilyMember>) -> Unit
+    onSearchResults: (List<FamilyMember>) -> Unit,
+    modifier: Modifier = Modifier.padding(16.dp)
 ) {
     var searchText by remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+    Column(modifier = modifier) {
         OutlinedTextField(
             value = searchText,
             onValueChange = {
@@ -611,112 +923,18 @@ fun MembersSearchBar(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 2.dp)
-        )
-    }
-}
-
-/**
- * A search bar composable that allows users to search for family members by name and display their information.
- * It provides a dropdown menu with search results and shows a detailed information dialog when a member is selected.
- */
-@RequiresApi(Build.VERSION_CODES.N)
-@Composable
-fun MembersSearchBar_2() {
-    var searchQuery by remember { mutableStateOf("") }
-    var searchResults by remember { mutableStateOf<List<FamilyMember>>(emptyList()) }
-    var chosenMemberToShowIsInfo by remember { mutableStateOf<FamilyMember?>(null) }
-    var isDropdownExpanded by remember { mutableStateOf(false) }
-    val searchBarPosition = remember { mutableStateOf(Offset.Zero) }
-    val searchBarHeight = with(LocalDensity.current) { 56.dp.toPx() } // Approximate TextField height
-
-    Box(modifier = Modifier.fillMaxWidth()) {
-        // The search bar
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { query ->
-                searchQuery = query
-                searchResults = if (query.isEmpty()) {
-                    emptyList()
-                } else {
-                    DatabaseManager.searchForMemberInLocalMap(query)
-                }
-                isDropdownExpanded = searchResults.isNotEmpty()
-            },
-            label = { CustomizedText(HebrewText.SEARCH_BY_NAME) },
-            textStyle = appTextStyle().copy(
-                textAlign = TextAlign.Right,
-                textDirection = TextDirection.Rtl
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .onGloballyPositioned { coordinates ->
-                    searchBarPosition.value = coordinates.positionInWindow()
-                }
-        )
-
-        // Floating dropdown menu under the search bar
-        if (isDropdownExpanded) {
-            Popup(
-                alignment = Alignment.TopStart,
-                offset = IntOffset(
-                    x = searchBarPosition.value.x.toInt(),
-                    y = (searchBarPosition.value.y + searchBarHeight - with(LocalDensity.current) { 64.dp.toPx() }).toInt()
-                )
-            ) {
-                Card(
-                    elevation = CardDefaults.cardElevation(8.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .heightIn(max = 400.dp) // Limit max height
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .background(Color.White)
-                            .padding(8.dp)
-                    ) {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            items(searchResults) { member ->
-                                DropdownMenuItem(
-                                    text = { Text(text = member.getFullName()) },
-                                    onClick = {
-                                        chosenMemberToShowIsInfo = member
-                                        isDropdownExpanded = false
-                                    }
-                                )
-                            }
-                        }
-
-                        // Close button in the bottom-right corner
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.BottomEnd
-                        ) {
-                            Button(
-                                onClick = { isDropdownExpanded = false },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
-                                contentPadding = PaddingValues(4.dp),
-                                modifier = Modifier.padding(8.dp)
-                            ) {
-                                Text(HebrewText.CLOSE, fontSize = 12.sp, color = Color.White)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Display the member information dialog
-    chosenMemberToShowIsInfo?.let { selectedMember ->
-        InfoOnMemberDialog(
-            member = selectedMember,
-            onDismiss = { chosenMemberToShowIsInfo = null }
+                .padding(horizontal = 2.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = buttonColor,
+                unfocusedBorderColor = buttonColor,
+                disabledBorderColor = buttonColor,
+                focusedLabelColor = buttonColor,
+                unfocusedLabelColor = buttonColor,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
+                cursorColor = buttonColor
+            )
         )
     }
 }
@@ -732,7 +950,7 @@ fun BigRoundButton(onClick: () -> Unit, text: String) {
     Button(
         onClick = onClick,
         shape = CircleShape,
-        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+        colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
         modifier = Modifier
             .size(150.dp)
     ) {
@@ -788,8 +1006,60 @@ fun ArrowButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
             contentScale = ContentScale.Fit,
             modifier = Modifier
                 .clickable(onClick = onClick)
-                .size(60.dp)
+                .size(80.dp)
         )
+    }
+}
+
+/**
+ * A button that, when clicked, triggers the [onClick] action.
+ * The button displays the text "מצא קשר" (from [HebrewText.FIND_CONNECTION])
+ * on the right side in a single row, and a magnifying glass icon on the left side.
+ *
+ * @param modifier Modifier to apply to the button.
+ * @param onClick Callback invoked when the button is clicked.
+ */
+@Composable
+fun FindConnectionButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .height(50.dp)
+            .width(120.dp),
+        shape = RoundedCornerShape(8.dp),
+        contentPadding = PaddingValues(4.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            // Text "מצא קשר" on the right of the button in a single row
+            Text(
+                text = HebrewText.FIND_CONNECTION,
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.White,
+                fontSize = 15.sp,
+                modifier = Modifier
+                    .weight(1.2f)
+                    .padding(start = 4.dp)
+            )
+
+            // Magnifying glass on the left of the button
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search",
+                tint = Color.White,
+                modifier = Modifier
+                    .weight(0.8f)
+                    .size(30.dp)
+                    .align(Alignment.CenterVertically)
+            )
+        }
     }
 }
 
@@ -826,11 +1096,15 @@ fun JewishWomanButton(onClick: () -> Unit) {
 /**
  * A composable that displays a clickable rectangle representing a family member.
  *
+ * If the rectangle is selected, it appears in light green; otherwise, it is gray.
+ * A small info icon appears in the top-right corner and is independently clickable.
+ *
  * @param member The family member to display.
- * @param isSelected Whether the rectangle is currently selected.
- * @param length The length of the rectangle (height).
+ * @param isSelected Whether the rectangle is currently selected (affects background color).
+ * @param length The height of the rectangle.
  * @param width The width of the rectangle.
- * @param onClick Action to perform when the rectangle is clicked.
+ * @param onClick Action to perform when the rectangle itself is clicked.
+ * @param onExclamationClick Action to perform when the info icon is clicked (default is no-op).
  */
 @Composable
 fun FamilyMemberCube(
@@ -838,23 +1112,58 @@ fun FamilyMemberCube(
     isSelected: Boolean,
     length: Dp,
     width: Dp,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onExclamationClick: () -> Unit = {}
 ) {
     val lightGreen = Color(0xFF90EE90)
     val color = if (isSelected) lightGreen else Color.Gray
 
+    val nameParts = member.getFullName().split(" ", limit = 2)
+    val firstLine = nameParts.getOrNull(0) ?: ""
+    val restOfName = nameParts.getOrNull(1) ?: ""
+
     Box(
         modifier = Modifier
             .size(width, length)
-            .clip(RoundedCornerShape(8.dp)) // Rounded edges
+            .clip(RoundedCornerShape(8.dp))
             .background(color)
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
+            .clickable { onClick() }
     ) {
-        androidx.compose.material.Text(
-            text = member.getFullName(),
-            textAlign = TextAlign.Center,
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(4.dp),
+            verticalArrangement = Arrangement.spacedBy(0.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = firstLine,
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = "Info Icon",
+                    tint = Color.Black,
+                    modifier = Modifier
+                        .size(16.dp)
+                        .clickable { onExclamationClick() }
+                )
+            }
+
+            if (restOfName.isNotEmpty()) {
+                Text(
+                    text = restOfName,
+                    maxLines = 2,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
     }
 }
 
@@ -888,53 +1197,54 @@ fun CenteredLoadingIndicator(modifier: Modifier = Modifier) {
 fun ZoomableFamilyTreeImage(imageFile: File) {
     var imageView by remember { mutableStateOf<SubsamplingScaleImageView?>(null) }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        AndroidView(
-            modifier = Modifier.fillMaxSize(),
-            factory = { context ->
-                SubsamplingScaleImageView(context).apply {
-                    setImage(ImageSource.uri(Uri.fromFile(imageFile)))
-                    setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP)
-                    setPanLimit(SubsamplingScaleImageView.PAN_LIMIT_INSIDE)
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            AndroidView(
+                modifier = Modifier.fillMaxSize(),
+                factory = { context ->
+                    SubsamplingScaleImageView(context).apply {
+                        setImage(ImageSource.uri(Uri.fromFile(imageFile)))
+                        setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP)
+                        setPanLimit(SubsamplingScaleImageView.PAN_LIMIT_INSIDE)
 
-                    setOnImageEventListener(object : SubsamplingScaleImageView.OnImageEventListener {
-                        override fun onReady() {
-                            val targetScale = height.toFloat() / sHeight
-                            setScaleAndCenter(targetScale, PointF(sWidth / 2f, sHeight / 2f))
-                            minScale = targetScale * 0.8f
-                            maxScale = targetScale * 5f
-                        }
+                        setOnImageEventListener(object : SubsamplingScaleImageView.OnImageEventListener {
+                            override fun onReady() {
+                                val targetScale = height.toFloat() / sHeight
+                                setScaleAndCenter(targetScale, PointF(sWidth / 2f, sHeight / 2f))
+                                minScale = targetScale * 0.8f
+                                maxScale = targetScale * 5f
+                            }
 
-                        override fun onImageLoaded() {}
-                        override fun onImageLoadError(e: Exception) {}
-                        override fun onPreviewLoadError(e: Exception) {}
-                        override fun onTileLoadError(e: Exception) {}
-                        override fun onPreviewReleased() {}
-                    })
+                            override fun onImageLoaded() {}
+                            override fun onImageLoadError(e: Exception) {}
+                            override fun onPreviewLoadError(e: Exception) {}
+                            override fun onTileLoadError(e: Exception) {}
+                            override fun onPreviewReleased() {}
+                        })
 
-                    imageView = this
+                        imageView = this
+                    }
                 }
-            }
-        )
+            )
 
-        // Place each button in its corner with padding
-        ScrollToStartButton(
-            onClick = { imageView?.scrollToStart() },
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 12.dp, top = 12.dp)
-                .offset(y = (-16).dp)
-        )
+            ScrollToStartButton(
+                onClick = { imageView?.scrollToStart() },
+                modifier = Modifier
+                    .align(Alignment.TopStart) // Always top-left due to Ltr
+                    .padding(start = 12.dp, top = 12.dp)
+                    .offset(y = (-16).dp)
+            )
 
-        ScrollToEndButton(
-            onClick = { imageView?.scrollToEnd() },
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(end = 12.dp, top = 12.dp)
-                .offset(y = (-16).dp)
-        )
-
+            ScrollToEndButton(
+                onClick = { imageView?.scrollToEnd() },
+                modifier = Modifier
+                    .align(Alignment.TopEnd) // Always top-right due to Ltr
+                    .padding(end = 12.dp, top = 12.dp)
+                    .offset(y = (-16).dp)
+            )
+        }
     }
+
 }
 
 /**

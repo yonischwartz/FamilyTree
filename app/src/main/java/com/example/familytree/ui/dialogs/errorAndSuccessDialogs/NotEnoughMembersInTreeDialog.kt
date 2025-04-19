@@ -2,7 +2,7 @@ package com.example.familytree.ui.dialogs.errorAndSuccessDialogs
 
 import androidx.compose.runtime.Composable
 import com.example.familytree.ui.HebrewText
-import com.example.familytree.ui.dialogs.DialogWithOneButton
+import com.example.familytree.ui.dialogs.DialogWithButtons
 
 
 /**
@@ -12,9 +12,9 @@ import com.example.familytree.ui.dialogs.DialogWithOneButton
  */
 @Composable
 fun NotEnoughMembersInTreeDialog(onDismiss: () -> Unit) {
-    DialogWithOneButton(
+    DialogWithButtons(
         title = HebrewText.NOT_ENOUGH_MEMBERS_IN_TREE,
         text = HebrewText.IN_ORDER_TO_FIND_CONNECTION_BETWEEN_MEMBERS_TREE_MUST_HAVE_AT_LEAST_TWO_MEMBERS,
-        onClick = onDismiss,
+        onLeftButtonClick = onDismiss,
     )
 }

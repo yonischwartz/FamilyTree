@@ -13,13 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.MemberType
+import com.example.familytree.ui.BooleanCheckboxInput
 import com.example.familytree.ui.BooleanSelection
-import com.example.familytree.ui.TextFieldWithDropdownMenu
-import com.example.familytree.ui.TextField
 import com.example.familytree.ui.HebrewText
-import com.example.familytree.ui.allMachzorim
-import com.example.familytree.ui.intToMachzor
-import com.example.familytree.ui.machzorToInt
+import com.example.familytree.ui.MachzorInput
+import com.example.familytree.ui.TextFieldForMemberDetails
 
 /**
  * A composable function that displays a dialog to collect details for creating a new family member.
@@ -74,19 +72,19 @@ fun AskUserForMemberDetailsDialog(
     val canMemberBeCreated = firstName.isNotEmpty() && lastName.isNotEmpty() &&
             (selectedMemberType == MemberType.NonYeshiva || machzor != null)
 
-    DialogWithTwoButtons(
+    DialogWithButtons(
         title = headLine,
-        onClickForLeft = createMember,
-        textForLeft = HebrewText.OK,
+        onLeftButtonClick = createMember,
+        textForLeftButton = HebrewText.OK,
         enabledForLeftButton = canMemberBeCreated,
-        onClickForRight = onPrevious,
-        textForRight = HebrewText.PREVIOUS,
+        onRightButtonClick = onPrevious,
+        textForRightButton = HebrewText.PREVIOUS,
         onDismiss = onDismiss,
         contentOfDialog = {
             Column(modifier = Modifier.padding(16.dp)) {
 
                 // Input field for first name
-                TextField(
+                TextFieldForMemberDetails(
                     text = HebrewText.FIRST_NAME,
                     value = firstName,
                     onValueChange = { firstName = it }
@@ -95,7 +93,7 @@ fun AskUserForMemberDetailsDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Input field for last name
-                TextField(
+                TextFieldForMemberDetails(
                     text = HebrewText.LAST_NAME,
                     value = lastName,
                     onValueChange = { lastName = it }
@@ -129,48 +127,24 @@ fun AskUserForMemberDetailsDialog(
 
                 // Only a male member can be a rabbi
                 if (gender) {
-                    BooleanSelection(
+                    BooleanCheckboxInput(
                         label = HebrewText.IS_THIS_FAMILY_MEMBER_A_RABBI,
-                        selected = isRabbi,
-                        onChange = { isRabbi = it }
+                        checked = isRabbi,
+                        onCheckedChange = { isRabbi = it }
                     )
                 }
 
                 // If the member is a rabbi and a Yeshiva member, ask if they are a Yeshiva rabbi
                 if (isRabbi && selectedMemberType == MemberType.Yeshiva) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    BooleanSelection(
+                    BooleanCheckboxInput(
                         label = HebrewText.IS_THIS_RABBI_A_YESHIVA_RABBI,
-                        selected = isYeshivaRabbi,
-                        onChange = { isYeshivaRabbi = it }
+                        checked = isYeshivaRabbi,
+                        onCheckedChange = { isYeshivaRabbi = it }
                     )
                 }
             }
-        },
-    )
-}
-
-// Private functions
-
-/**
- * Provides a dropdown menu for selecting the machzor value.
- * The user can pick from a predefined set of options, and the selected option will be passed to the callback.
- *
- * @param machzor The currently selected machzor as a string.
- * @param onMachzorChange Callback to update the machzor selection. The selected machzor will be passed as a string.
- */
-@Composable
-private fun MachzorInput(
-    machzor: Int?,
-    onMachzorChange: (Int?) -> Unit
-) {
-    TextFieldWithDropdownMenu(
-        label = HebrewText.MACHZOR,
-        options = allMachzorim,
-        selectedOption = intToMachzor[machzor],
-        onOptionSelected = { selectedOption ->
-            val selectedMachzor = machzorToInt[selectedOption] ?: 0
-            onMachzorChange(selectedMachzor)
         }
     )
 }
+

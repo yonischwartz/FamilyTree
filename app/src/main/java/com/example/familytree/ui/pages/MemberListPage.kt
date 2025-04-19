@@ -30,6 +30,7 @@ import com.example.familytree.ui.HebrewText
 import com.example.familytree.ui.MembersSearchBar
 import com.example.familytree.ui.PageHeadLine
 import com.example.familytree.ui.RightSubTitle
+import com.example.familytree.ui.dialogs.FamilyMemberInfoDialogHost
 import com.example.familytree.ui.dialogs.InfoOnMemberDialog
 import com.example.familytree.ui.intToMachzor
 

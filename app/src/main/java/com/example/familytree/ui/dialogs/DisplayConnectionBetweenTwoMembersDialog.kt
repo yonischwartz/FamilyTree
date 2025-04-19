@@ -1,21 +1,29 @@
 package com.example.familytree.ui.dialogs
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.Relations
 import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.data.dataManagement.DatabaseManager.getRelationBetweenMemberAndOneOfHisConnections
+import com.example.familytree.ui.CustomizedText
 import com.example.familytree.ui.HebrewText
 
 /**
  * Displays a dialog showing the shortest connection path between two yeshiva members.
  *
- * @param memberOne The first `FamilyMember` whose connections are being explored.
- * @param memberTwo The second `FamilyMember` to whom the connection is displayed.
+ * @param memberOne The first FamilyMember whose connections are being explored.
+ * @param memberTwo The second FamilyMember to whom the connection is displayed.
  * @param onDismiss A lambda function to handle the dialog dismissal action.
  */
 @Composable
@@ -24,13 +32,10 @@ fun DisplayConnectionBetweenTwoMembersDialog(
     memberTwo: FamilyMember,
     onDismiss: () -> Unit = {}
 ) {
-
     var firstMember by remember { mutableStateOf(memberOne) }
     var secondMember by remember { mutableStateOf(memberTwo) }
 
-    val path =
-        DatabaseManager.getShortestPathBetweenTwoMembers(firstMember, secondMember)
-
+    val path = DatabaseManager.getShortestPathBetweenTwoMembers(firstMember, secondMember)
     val pathAsString = getPathAsString(path)
 
     val title: String = HebrewText.THE_CONNECTION_BETWEEN +
@@ -38,19 +43,29 @@ fun DisplayConnectionBetweenTwoMembersDialog(
             HebrewText.TO +
             secondMember.getFullName()
 
-    DialogWithTwoButtons(
+    DialogWithButtons(
         title = title,
-        text = pathAsString,
-        onClickForLeft = onDismiss,
-        textForLeft = HebrewText.OK,
-        onClickForRight = {
-            val temp = firstMember; firstMember = secondMember; secondMember = temp
+        onLeftButtonClick = onDismiss,
+        textForLeftButton = HebrewText.OK,
+        onRightButtonClick = {
+            val temp = firstMember
+            firstMember = secondMember
+            secondMember = temp
         },
-        textForRight = HebrewText.SHOW_REVERSE_CONNECTION,
-        isOnDismissTheRightButton = false
+        textForRightButton = HebrewText.SHOW_REVERSE_CONNECTION,
+        onDismiss = onDismiss,
+        contentOfDialog = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(8.dp)
+            ) {
+                CustomizedText(text = pathAsString)
+            }
+        }
     )
 }
-
 /**
  * Constructs a descriptive string representing the path between family members.
  *

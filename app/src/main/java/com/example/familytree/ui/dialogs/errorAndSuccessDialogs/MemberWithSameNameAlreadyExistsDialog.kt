@@ -2,6 +2,7 @@ package com.example.familytree.ui.dialogs.errorAndSuccessDialogs
 
 import androidx.compose.runtime.Composable
 import com.example.familytree.ui.HebrewText
+import com.example.familytree.ui.dialogs.DialogWithButtons
 import com.example.familytree.ui.dialogs.DialogWithTwoButtons
 
 /**
@@ -18,12 +19,13 @@ fun MemberWithSameNameAlreadyExistsDialog(
     val title: String = HebrewText.MEMBER_ALREADY_EXISTS
     val text: String = HebrewText.DO_YOU_WANT_TO_ADD_ANYWAY
 
-    DialogWithTwoButtons(
+    DialogWithButtons(
         title = title,
         text = text,
-        onClickForLeft = onApprove,
-        textForLeft = HebrewText.YES,
-        onClickForRight = onDismiss,
-        textForRight = HebrewText.NO
+        onLeftButtonClick = onApprove,
+        textForLeftButton = HebrewText.YES,
+        onRightButtonClick = onDismiss,
+        textForRightButton = HebrewText.NO,
+        onDismiss = onDismiss
     )
 }

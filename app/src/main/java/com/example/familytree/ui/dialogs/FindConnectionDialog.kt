@@ -32,13 +32,13 @@ fun ChooseTwoMembersToFindTheirConnectionDialog(
     val title: String =
         HebrewText.CHOOSE_TWO_MEMBERS_WHOM_YOU_WOULD_LIKE_TO_FIND_THEIR_CONNECTION
 
-    DialogWithTwoButtons(
+    DialogWithButtons(
         title = title,
-        onClickForLeft = { onFindConnection(selectedMembers[0], selectedMembers[1]) },
-        textForLeft = HebrewText.FIND_CONNECTION,
+        onLeftButtonClick = { onFindConnection(selectedMembers[0], selectedMembers[1]) },
+        textForLeftButton = HebrewText.FIND_CONNECTION,
         enabledForLeftButton = selectedMembers.size == 2,
-        onClickForRight = onDismiss,
-        textForRight = HebrewText.CANCEL,
+        onRightButtonClick = onDismiss,
+        textForRightButton = HebrewText.CANCEL,
         contentOfDialog = {
             BoxWithConstraints {
                 val containerWidth = maxWidth

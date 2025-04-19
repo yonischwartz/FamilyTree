@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.Relations
 import com.example.familytree.ui.HebrewText
-import com.example.familytree.ui.dialogs.DialogWithOneButton
+import com.example.familytree.ui.dialogs.DialogWithButtons
 
 /**
  * Displays an error dialog when attempting to add a family connection that already exists.
@@ -26,9 +26,9 @@ fun MoreThanOneConnectionErrorDialog(
                         HebrewText.EXISTS_ALREADY_FAMILY_RELATION_OF_TYPE +
                         "${relation.name.lowercase()}."
 
-    DialogWithOneButton(
+    DialogWithButtons(
         title = HebrewText.ERROR_ADDING_MEMBER,
         text = text,
-        onClick = onDismiss
+        onLeftButtonClick = onDismiss
     )
 }

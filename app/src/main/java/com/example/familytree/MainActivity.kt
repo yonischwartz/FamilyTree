@@ -21,6 +21,9 @@ import com.example.familytree.ui.FamilyTreeViewModel
 import com.example.familytree.ui.pages.AdminPage
 import com.example.familytree.ui.pages.FamilyTreeGraphPage
 import com.example.familytree.ui.pages.MemberListPage
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+
 
 
 class MainActivity : ComponentActivity() {
@@ -53,11 +56,21 @@ class MainActivity : ComponentActivity() {
                                 composable("familyTreeGraphPage") {
                                     FamilyTreeGraphPage(navController = navController, viewModel)
                                 }
-                                composable("adminPage") {
-                                    AdminPage(navController = navController)
+                                composable(
+                                    route = "adminPage?isRealAdmin={isRealAdmin}",
+                                    arguments = listOf(
+                                        navArgument("isRealAdmin") {
+                                            type = NavType.BoolType
+                                            defaultValue = false
+                                        }
+                                    )
+                                ) { backStackEntry ->
+                                    val isRealAdmin = backStackEntry.arguments?.getBoolean("isRealAdmin") ?: false
+                                    AdminPage(navController = navController, isRealAdmin = isRealAdmin)
                                 }
                             }
                         }
+
                     }
                 }
             }

@@ -1,4 +1,4 @@
-package com.example.familytree.ui.theme.dialogs
+package com.example.familytree.ui.dialogs
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -19,7 +19,6 @@ import com.example.familytree.data.exceptions.UnsafeDeleteException
 import com.example.familytree.ui.DialogButton
 import com.example.familytree.ui.HebrewText
 import com.example.familytree.ui.MembersSearchBar
-import com.example.familytree.ui.dialogs.InfoOnMemberDialog
 import com.example.familytree.ui.dialogs.errorAndSuccessDialogs.DeleteErrorDialog
 
 
@@ -107,6 +106,9 @@ fun MemberListDialog(
 
     // Display details dialog of member
     selectedMember?.let { member ->
-        InfoOnMemberDialog(member = member, onDismiss = { selectedMember = null })
+        InfoOnMemberDialog(
+            member = member,
+            onDismiss = { selectedMember = null },
+        )
     }
 }

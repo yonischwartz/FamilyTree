@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.Relations
 import com.example.familytree.ui.HebrewText
-import com.example.familytree.ui.dialogs.DialogWithOneButton
+import com.example.familytree.ui.dialogs.DialogWithButtons
 
 /**
  * Displays an error dialog when a gender conflict arises while adding a new member to the family tree.
@@ -31,9 +31,9 @@ fun GenderErrorDialog(
                         "${existingMember.getFullName()}, " +
                         "${HebrewText.BECAUSE}${pronouns} ${genderDescription}."
 
-    DialogWithOneButton(
+    DialogWithButtons(
         title = HebrewText.ERROR_ADDING_MEMBER,
         text = text,
-        onClick = onDismiss
+        onLeftButtonClick = onDismiss
     )
 }
