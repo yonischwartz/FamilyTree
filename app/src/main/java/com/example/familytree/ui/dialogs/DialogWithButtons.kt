@@ -21,6 +21,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.familytree.ui.CustomizedText
@@ -137,6 +138,7 @@ fun DialogWithButtons(
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = "Close",
+                tint = Color.Black,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .clickable { dismissAction() }

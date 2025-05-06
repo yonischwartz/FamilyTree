@@ -19,12 +19,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.familytree.data.FamilyMember
+import com.example.familytree.data.PositionedMember
 import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.CenteredLoadingIndicator
 import com.example.familytree.ui.FamilyTreeTopBar
 import com.example.familytree.ui.FamilyTreeViewModel
 import com.example.familytree.ui.HebrewText
 import com.example.familytree.ui.ZoomableFamilyTreeImage
+import com.example.familytree.ui.graphicTreeDisplay.FamilyTreeGraphicDisplay
 import java.io.File
 
 
@@ -35,22 +38,22 @@ fun FamilyTreeGraphPage(navController: NavController, viewModel: FamilyTreeViewM
     var isBackButtonEnabled by remember { mutableStateOf(true) }
 
 
-//    var downloadProgress by remember { mutableIntStateOf(0) }
-//
-//
-//    var localImageFile by remember { mutableStateOf<File?>(null) }
-//
-//    // Start downloading image once
-//    LaunchedEffect(Unit) {
-//        DatabaseManager.downloadFamilyTreeImageWithProgress(
-//            onProgress = { progress ->
-//                downloadProgress = progress
-//            },
-//            onFinished = { file ->
-//                localImageFile = file
-//            }
-//        )
-//    }
+
+    val members = DatabaseManager.getAllMembers()
+    val rootId = members.firstOrNull()?.getId() ?: return // choose appropriate root member
+
+    // Layout the family tree
+    val positionedMembers = remember(members) {
+        layoutFamilyTree(
+            members = members,
+            rootId = rootId,
+            horizontalSpacing = 300f,
+            verticalSpacing = 200f
+        )
+    }
+
+//    // Display the family tree graphically
+//    FamilyTreeGraphicDisplay(positionedMembers)
 
     // Get the image file from ViewModel
     val localImageFile = viewModel.imageFile.value
@@ -76,12 +79,57 @@ fun FamilyTreeGraphPage(navController: NavController, viewModel: FamilyTreeViewM
             else -> {
 
                 CenteredLoadingIndicator()
-
-//                Text(
-//                    text = "טוען תמונה... $downloadProgress%",
-//                    modifier = Modifier.padding(16.dp)
-//                )
             }
         }
     }
+}
+
+
+/**
+ * Lays out the family tree members in 2D space using a breadth-first traversal.
+ *
+ * This function assigns an (x, y) position to each family member based on their
+ * distance from a root member and their order in traversal. The spacing between
+ * nodes can be configured via [horizontalSpacing] and [verticalSpacing].
+ *
+ * @param members The list of all [FamilyMember] objects in the tree.
+ * @param rootId The ID of the root member (e.g., the top ancestor).
+ * @param horizontalSpacing The horizontal distance between nodes in the same level.
+ * @param verticalSpacing The vertical distance between generations.
+ * @return A list of [PositionedMember] representing the graphical layout.
+ */
+fun layoutFamilyTree(
+    members: List<FamilyMember>,
+    rootId: String,
+    horizontalSpacing: Float = 300f,
+    verticalSpacing: Float = 200f
+): List<PositionedMember> {
+    val memberMap = members.associateBy { it.getId() }
+    val result = mutableListOf<PositionedMember>()
+    val visited = mutableSetOf<String>()
+    val queue = ArrayDeque<Triple<String, Int, Int>>() // (id, depth, positionIndex)
+
+    queue.add(Triple(rootId, 0, 0))
+
+    while (queue.isNotEmpty()) {
+        val (id, depth, posIndex) = queue.removeFirst()
+        if (id in visited) continue
+        visited.add(id)
+
+        val member = memberMap[id] ?: continue
+        val x = posIndex * horizontalSpacing
+        val y = depth * verticalSpacing
+        result.add(PositionedMember(member, x, y))
+
+        var childIndex = 0
+        for (conn in member.getConnections()) {
+            val targetId = conn.memberId
+            if (targetId !in visited) {
+                queue.add(Triple(targetId, depth + 1, posIndex + childIndex))
+                childIndex++
+            }
+        }
+    }
+
+    return result
 }

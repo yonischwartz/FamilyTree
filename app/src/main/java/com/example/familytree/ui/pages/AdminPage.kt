@@ -32,6 +32,7 @@ import com.example.familytree.ui.PageHeadLine
 import com.example.familytree.ui.RightSubTitle
 import com.example.familytree.ui.allMachzorim
 import com.example.familytree.ui.ScreenBackgroundColor
+import com.example.familytree.ui.appTextStyleLargeBlack
 import com.example.familytree.ui.dialogs.InfoOnMemberDialog
 import com.example.familytree.ui.intToMachzor
 import com.example.familytree.ui.machzorToInt
@@ -167,7 +168,7 @@ fun AdminPage(navController: NavController, isRealAdmin: Boolean) {
                                                 clickedMemberOnList = member
                                                 displayMembersInfo = true
                                             },
-                                        style = MaterialTheme.typography.bodyLarge
+                                        style = appTextStyleLargeBlack()
                                     )
                                 }
                             }

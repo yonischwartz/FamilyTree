@@ -24,6 +24,8 @@ import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.HebrewText
 import com.example.familytree.ui.MembersSearchBar
+import com.example.familytree.ui.appTextStyleBlack
+import com.example.familytree.ui.appTextStyleLargeBlack
 import com.example.familytree.ui.buttonColor
 
 /**
@@ -108,10 +110,15 @@ fun ChooseMemberToRelateToDialog(
                                 },
                                 colors = CheckboxDefaults.colors(
                                     checkedColor = buttonColor,
+                                    uncheckedColor = Color.Black,
                                     checkmarkColor = Color.White
                                 )
                             )
-                            Text(text = member.getFullName(), modifier = Modifier.padding(start = 8.dp))
+                            Text(
+                                text = member.getFullName(),
+                                style = appTextStyleLargeBlack(),
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
                         }
                     }
                 }

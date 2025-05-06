@@ -38,7 +38,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -68,7 +67,6 @@ import com.example.familytree.data.FamilyMember
 import java.io.File
 import android.net.Uri
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
@@ -79,13 +77,11 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.TextFieldDefaults
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.example.familytree.data.Connection
 import com.example.familytree.data.MemberType
 import com.example.familytree.data.Relations
-import com.example.familytree.data.Relations.Companion.relationPriority
 import com.example.familytree.data.dataManagement.DatabaseManager
 
 /**
@@ -107,8 +103,7 @@ val DialogBackgroundColor = Color(0xFFF2FBFF) // Very light blue
  * Returns the default text style used in the app.
  *
  * This function provides a consistent typography style for text elements
- * by using `MaterialTheme.typography.bodyMedium`. It ensures that the text
- * follows the app's theme settings.
+ * using `MaterialTheme.typography.bodyMedium`.
  *
  * @return A [TextStyle] representing the app's default text appearance.
  */
@@ -116,6 +111,150 @@ val DialogBackgroundColor = Color(0xFFF2FBFF) // Very light blue
 fun appTextStyle(): TextStyle {
     return MaterialTheme.typography.bodyMedium
 }
+
+/**
+ * Returns the default text style with black text color.
+ *
+ * This function builds on [appTextStyle] and overrides the text color to black,
+ * providing a consistent dark text appearance for use on light backgrounds.
+ *
+ * @return A [TextStyle] based on [appTextStyle] with black color.
+ */
+@Composable
+fun appTextStyleBlack(): TextStyle {
+    return appTextStyle().copy(color = Color.Black)
+}
+
+/**
+ * Returns the default text style with white text color.
+ *
+ * This function builds on [appTextStyle] and overrides the text color to white,
+ * providing a consistent light text appearance for use on dark backgrounds.
+ *
+ * @return A [TextStyle] based on [appTextStyle] with white color.
+ */
+@Composable
+fun appTextStyleWhite(): TextStyle {
+    return appTextStyle().copy(color = Color.White)
+}
+
+/**
+ * Returns the default bold text style used in the app.
+ *
+ * This function provides a consistent bold typography style for text elements
+ * using `MaterialTheme.typography.bodyMedium` with `FontWeight.Bold`.
+ *
+ * @return A [TextStyle] representing the app's bold default text appearance.
+ */
+@Composable
+fun appTextStyleBold(): TextStyle {
+    return appTextStyle().copy(fontWeight = FontWeight.Bold)
+}
+
+/**
+ * Returns the default bold text style with black color.
+ *
+ * This function builds on [appTextStyleBold] and overrides the text color to black,
+ * suitable for bold dark text on light backgrounds.
+ *
+ * @return A [TextStyle] based on [appTextStyleBold] with black color.
+ */
+@Composable
+fun appTextStyleBoldBlack(): TextStyle {
+    return appTextStyleBold().copy(color = Color.Black)
+}
+
+/**
+ * Returns the default bold text style with white color.
+ *
+ * This function builds on [appTextStyleBold] and overrides the text color to white,
+ * suitable for bold light text on dark backgrounds.
+ *
+ * @return A [TextStyle] based on [appTextStyleBold] with white color.
+ */
+@Composable
+fun appTextStyleBoldWhite(): TextStyle {
+    return appTextStyleBold().copy(color = Color.White)
+}
+
+/**
+ * Returns the large text style used in the app.
+ *
+ * This function provides a consistent typography style for larger text elements
+ * using `MaterialTheme.typography.bodyLarge`.
+ *
+ * @return A [TextStyle] representing the app's large text appearance.
+ */
+@Composable
+fun appTextStyleLarge(): TextStyle {
+    return MaterialTheme.typography.bodyLarge
+}
+
+/**
+ * Returns the large text style with black text color.
+ *
+ * This function builds on [appTextStyleLarge] and overrides the text color to black,
+ * suitable for prominent text on light backgrounds.
+ *
+ * @return A [TextStyle] based on [appTextStyleLarge] with black color.
+ */
+@Composable
+fun appTextStyleLargeBlack(): TextStyle {
+    return appTextStyleLarge().copy(color = Color.Black)
+}
+
+/**
+ * Returns the large text style with white text color.
+ *
+ * This function builds on [appTextStyleLarge] and overrides the text color to white,
+ * suitable for prominent text on dark backgrounds.
+ *
+ * @return A [TextStyle] based on [appTextStyleLarge] with white color.
+ */
+@Composable
+fun appTextStyleLargeWhite(): TextStyle {
+    return appTextStyleLarge().copy(color = Color.White)
+}
+
+/**
+ * Returns the small headline text style used in the app.
+ *
+ * This function provides a consistent headline style using `MaterialTheme.typography.headlineSmall`,
+ * typically for section titles or highlighted text.
+ *
+ * @return A [TextStyle] representing the app's small headline text appearance.
+ */
+@Composable
+fun appHeadlineStyle(): TextStyle {
+    return MaterialTheme.typography.headlineSmall
+}
+
+/**
+ * Returns the small headline text style with black text color.
+ *
+ * This function builds on [appHeadlineStyle] and overrides the text color to black,
+ * for use on light backgrounds.
+ *
+ * @return A [TextStyle] based on [appHeadlineStyle] with black color.
+ */
+@Composable
+fun appHeadlineStyleBlack(): TextStyle {
+    return appHeadlineStyle().copy(color = Color.Black)
+}
+
+/**
+ * Returns the small headline text style with white text color.
+ *
+ * This function builds on [appHeadlineStyle] and overrides the text color to white,
+ * for use on dark backgrounds.
+ *
+ * @return A [TextStyle] based on [appHeadlineStyle] with white color.
+ */
+@Composable
+fun appHeadlineStyleWhite(): TextStyle {
+    return appHeadlineStyle().copy(color = Color.White)
+}
+
 
 /**
  * A Composable function that displays the YBM logo image.
@@ -145,7 +284,7 @@ fun CustomizedText(
 ) {
     Text(
         text = text,
-        style = appTextStyle(),
+        style = appTextStyleBlack(),
         modifier = if (centered) modifier.fillMaxWidth() else modifier,
         textAlign = if (centered) TextAlign.Center else TextAlign.Start
     )
@@ -163,7 +302,7 @@ fun CustomizedTitleText(title: String, text: String) {
     Row {
         Text(
             text = "$title:",
-            style = appTextStyle().copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
+            style = appTextStyleBlack().copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
             modifier = Modifier.alignByBaseline()
         )
 
@@ -171,7 +310,7 @@ fun CustomizedTitleText(title: String, text: String) {
 
         Text(
             text = text,
-            style = appTextStyle(),
+            style = appTextStyleBlack(),
             modifier = Modifier.alignByBaseline()
         )
     }
@@ -203,7 +342,7 @@ fun DisplayConnectionsForMembersInfoDialog(
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(
             text = "${HebrewText.FAMILY_CONNECTIONS}:",
-            style = appTextStyle().copy(fontSize = 20.sp, fontWeight = FontWeight.SemiBold),
+            style = appTextStyleBlack().copy(fontSize = 20.sp, fontWeight = FontWeight.SemiBold),
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
@@ -215,7 +354,7 @@ fun DisplayConnectionsForMembersInfoDialog(
             Row(modifier = Modifier.padding(start = 32.dp)) {
                 Text(
                     text = "$relationInHebrew:",
-                    style = appTextStyle().copy(
+                    style = appTextStyleBlack().copy(
                         textDecoration = TextDecoration.Underline,
                     ),
                     modifier = Modifier.alignByBaseline()
@@ -225,7 +364,7 @@ fun DisplayConnectionsForMembersInfoDialog(
 
                 Text(
                     text = memberName,
-                    style = appTextStyle().copy(
+                    style = appTextStyleBlack().copy(
                         color = buttonColor
                     ),
                     modifier = Modifier
@@ -236,7 +375,6 @@ fun DisplayConnectionsForMembersInfoDialog(
         }
     }
 }
-
 
 /**
  * A customized text composable that displays a relation and a name on the same line.
@@ -250,7 +388,7 @@ fun DisplayRelationAndName(relation: String, name: String) {
     Row {
         Text(
             text = "$relation:",
-            style = appTextStyle().copy(
+            style = appTextStyleBlack().copy(
                 textDecoration = TextDecoration.Underline
             ),
             modifier = Modifier.alignByBaseline()
@@ -260,7 +398,7 @@ fun DisplayRelationAndName(relation: String, name: String) {
 
         Text(
             text = name,
-            style = appTextStyle(),
+            style = appTextStyleBlack(),
             modifier = Modifier.alignByBaseline()
         )
     }
@@ -296,7 +434,7 @@ fun CustomizedTextHomeScreenTwoLinesDisplay(text: String) {
 fun PageHeadLine(headline: String) {
     Text(
         text = headline,
-        style = appTextStyle(),
+        style = appTextStyleBlack(),
         modifier = Modifier
             .fillMaxWidth(),
         fontSize = 24.sp,
@@ -323,7 +461,7 @@ fun RightSubTitle(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.titleMedium.copy(
+            style = appTextStyleBlack().copy(
                 textDecoration = TextDecoration.Underline
             ),
             fontSize = 20.sp,
@@ -357,7 +495,7 @@ fun ButtonForPage(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center)
+            style = appTextStyleLargeWhite().copy(textAlign = TextAlign.Center)
         )
     }
 }
@@ -383,10 +521,16 @@ fun DialogButton(
         modifier = modifier,
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = buttonColor
+            containerColor = buttonColor,
+            contentColor = Color.White,
+            disabledContainerColor = Color.LightGray,
+            disabledContentColor = Color.Gray
         )
     ) {
-        Text(text)
+        Text(
+            text = text,
+            style = appTextStyleBold()
+        )
     }
 }
 
@@ -407,7 +551,7 @@ fun DialogTitle(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.headlineSmall,
+            style = appHeadlineStyleBlack(),
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
         )
@@ -479,7 +623,10 @@ fun BooleanCheckboxInput(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(text = label)
+        Text(
+            text = label,
+            style = appTextStyleBlack()
+        )
         Checkbox(
             checked = checked,
             onCheckedChange = onCheckedChange,
@@ -575,6 +722,7 @@ fun TextFieldForMemberDetails(
         onValueChange = onValueChange,
         label = { Text(text) },
         singleLine = true,
+        textStyle = appTextStyleBlack(),
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = buttonColor,
             unfocusedBorderColor = buttonColor,
@@ -610,6 +758,7 @@ fun CustomizedTextFieldForEditingMembersDetails(
         onValueChange = onValueChange,
         label = { Text(label) },
         singleLine = true,
+        textStyle = appTextStyleBlack(),
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = buttonColor,
             unfocusedBorderColor = buttonColor,
@@ -664,6 +813,7 @@ fun TextFieldWithDropdownMenu(
                 .menuAnchor()
                 .clickable { expanded = true },
             singleLine = false,
+            textStyle = appTextStyleBlack(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = buttonColor,
                 unfocusedBorderColor = buttonColor,
@@ -904,7 +1054,7 @@ fun MembersSearchBar(
                 onSearchResults(filteredMembers)
             },
             label = { CustomizedText(HebrewText.SEARCH_BY_NAME) },
-            textStyle = appTextStyle().copy(
+            textStyle = appTextStyleBlack().copy(
                 textAlign = TextAlign.Right,
                 textDirection = TextDirection.Rtl
             ),
@@ -951,15 +1101,15 @@ fun BigRoundButton(onClick: () -> Unit, text: String) {
         onClick = onClick,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
-        modifier = Modifier
-            .size(150.dp)
+        modifier = Modifier.size(150.dp)
     ) {
         Text(
             text = text,
-            color = Color.White,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
+            style = appTextStyleWhite().copy(
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
         )
     }
 }
@@ -1143,7 +1293,7 @@ fun FamilyMemberCube(
                     text = firstLine,
                     modifier = Modifier.weight(1f),
                     maxLines = 1,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = appTextStyleBlack()
                 )
 
                 Icon(
@@ -1160,7 +1310,7 @@ fun FamilyMemberCube(
                 Text(
                     text = restOfName,
                     maxLines = 2,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = appTextStyleBlack()
                 )
             }
         }

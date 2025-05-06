@@ -17,6 +17,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.HebrewText
+import com.example.familytree.ui.appTextStyleBlack
 import com.example.familytree.ui.buttonColor
 
 @Composable
@@ -72,6 +73,7 @@ fun AdminPasswordDialog(
                         },
                         label = { Text(HebrewText.EMAIL) },
                         singleLine = true,
+                        textStyle = appTextStyleBlack(),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = buttonColor,
                             unfocusedBorderColor = buttonColor,
@@ -96,6 +98,7 @@ fun AdminPasswordDialog(
                     isError = error,
                     visualTransformation = PasswordVisualTransformation(),
                     singleLine = true,
+                    textStyle = appTextStyleBlack(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = buttonColor,
                         unfocusedBorderColor = buttonColor,

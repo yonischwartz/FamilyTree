@@ -1645,8 +1645,8 @@ object MemberMap {
                 connection.relationship == Relations.DAUGHTER ||
                 connection.relationship == Relations.GRANDSON ||
                 connection.relationship == Relations.GRANDDAUGHTER ||
-                connection.relationship == Relations.GREAT_GRANDFATHER ||
-                connection.relationship == Relations.GREAT_GRANDMOTHER ||
+                connection.relationship == Relations.GREAT_GRANDSON ||
+                connection.relationship == Relations.GREAT_GRANDDAUGHTER ||
                 connection.relationship == Relations.NIECE ||
                 connection.relationship == Relations.NEPHEW
             ) {
