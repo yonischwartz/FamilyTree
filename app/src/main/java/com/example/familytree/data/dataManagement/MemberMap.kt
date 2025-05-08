@@ -116,11 +116,11 @@ object MemberMap {
     }
 
     /**
-     * Returns the total number of family members in the tree.
+     * Returns the total number of yeshiva family members in the tree.
      * @return The count of FamilyMember objects.
      */
-    internal fun getMemberCount(): Int {
-        return members.size
+    internal fun getYeshivaMemberCount(): Int {
+        return getAllYeshivaMembers().size
     }
 
     /**

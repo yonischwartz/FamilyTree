@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import com.example.familytree.data.dataManagement.DatabaseManager.getYeshivaMemberCount
 import com.example.familytree.ui.BigRoundButton
 import com.example.familytree.ui.CustomizedTextHomeScreenTwoLinesDisplay
 import com.example.familytree.ui.Display
@@ -294,6 +295,13 @@ fun HomeScreenPage(
 
                         // Headline text
                         PageHeadLine(HebrewText.FAMILY_TREE_MEMBERS)
+
+                        // Member counter
+                        val memberCount = getYeshivaMemberCount()
+
+                        val memberCountText = "${HebrewText.TOTAL_AMOUNT_OF_YESHIVA_MEMBERS}: $memberCount"
+
+                        PageHeadLine(memberCountText)
 
                         // Search Bar
                         MembersSearchBar(

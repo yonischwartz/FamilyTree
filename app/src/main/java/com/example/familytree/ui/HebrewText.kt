@@ -128,7 +128,7 @@ object HebrewText {
     const val AS = "כ"
     const val AND = "ו"
 
-
+    const val TOTAL_AMOUNT_OF_YESHIVA_MEMBERS = "סה\"כ בני משפחה מהישיבה"
     const val FAMILY_CONNECTIONS = "קשרי משפחה"
     const val EMAIL = "מייל"
     const val WRONG_PASSWORD = "סיסמא שגויה"
