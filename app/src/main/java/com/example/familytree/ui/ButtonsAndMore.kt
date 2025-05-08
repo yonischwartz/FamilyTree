@@ -444,6 +444,25 @@ fun PageHeadLine(headline: String) {
 }
 
 /**
+ * Displays a prominent page sub headline with centered text and padding.
+ *
+ * @param headline The text to be displayed as the page headline.
+ */
+@Composable
+fun PageSubHeadLine(headline: String) {
+    Text(
+        text = headline,
+        style = appTextStyleBlack(),
+        modifier = Modifier
+            .fillMaxWidth(),
+        fontSize = 16.sp,
+        textAlign = TextAlign.Center,
+        fontWeight = FontWeight.Bold
+    )
+}
+
+
+/**
  * Displays a subtitle aligned to the right with consistent styling and an underline.
  *
  * @param text The text to be displayed as the subtitle.

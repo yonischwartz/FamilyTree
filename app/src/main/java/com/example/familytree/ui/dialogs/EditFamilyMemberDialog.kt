@@ -56,8 +56,8 @@ fun EditFamilyMemberDialog(
         onLeftButtonClick = {
             val updatedMember = FamilyMember(
                 memberType = memberType,
-                firstName = firstName,
-                lastName = lastName,
+                firstName = firstName.trimEnd(),
+                lastName = lastName.trimEnd(),
                 gender = member.getGender(), // immutable
                 machzor = machzor,
                 isRabbi = isRabbi,

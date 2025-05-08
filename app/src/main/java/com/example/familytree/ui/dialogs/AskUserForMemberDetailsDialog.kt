@@ -41,13 +41,14 @@ fun AskUserForMemberDetailsDialog(
     headLine: String,
     selectedMemberType: MemberType?,
     expectedGender: Boolean? = null,
+    suggestedLastName: String? = null,
     onFamilyMemberCreation: (FamilyMember) -> Unit,
     onPrevious: () -> Unit,
     onDismiss: () -> Unit
 ) {
     // State variables to store user input
     var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf(suggestedLastName ?: "") }
     var machzor by remember { mutableStateOf<Int?>(null) }
     var isRabbi by remember { mutableStateOf(false) }
     var gender by remember { mutableStateOf(true) }
@@ -58,8 +59,8 @@ fun AskUserForMemberDetailsDialog(
     createMember = {
         val familyMember = FamilyMember(
             memberType = selectedMemberType!!,
-            firstName = firstName,
-            lastName = lastName,
+            firstName = firstName.trimEnd(),
+            lastName = lastName.trimEnd(),
             gender = gender,
             machzor = machzor,
             isRabbi = isRabbi,

@@ -179,6 +179,12 @@ private fun AddNewMemberAndRelateToExistingMember(
     // Step 4: create a new FamilyMember object representing the new member
     else if (newMember == null) {
 
+        val suggestedLastName = if (relationFromExistingMemberPerspective == Relations.MARRIAGE) {
+            existingMember!!.getLastName()
+        } else {
+            null
+        }
+
         AskUserToCreateNewFamilyMember(
             onMemberCreation = { newMember = it },
             showPreviousButton = true,
@@ -187,6 +193,7 @@ private fun AddNewMemberAndRelateToExistingMember(
             memberToRelateTo = existingMember!!,
             relation = relationFromExistingMemberPerspective,
             expectedGender = expectedGenderOfNewMember,
+            suggestedLastName = suggestedLastName,
             onDismiss = onDismissAndResetState
         )
     }
@@ -301,6 +308,7 @@ private fun AskUserToCreateNewFamilyMember(
     memberToRelateTo: FamilyMember? = null,
     relation: Relations? = null,
     expectedGender: Boolean? = null,
+    suggestedLastName: String? = null,
     onDismiss: () -> Unit
 ) {
 
@@ -366,6 +374,7 @@ private fun AskUserToCreateNewFamilyMember(
             expectedGender = expectedGender,
             selectedMemberType = selectedMemberType,
             onFamilyMemberCreation = { member -> newMember = member },
+            suggestedLastName = suggestedLastName,
             onPrevious = onPreviousForStepTwoModified,
             onDismiss = onDismissAndResetState
         )

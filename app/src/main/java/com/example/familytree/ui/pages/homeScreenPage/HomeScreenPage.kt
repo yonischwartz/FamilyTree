@@ -34,6 +34,7 @@ import com.example.familytree.ui.MembersSearchBar
 import com.example.familytree.ui.PageHeadLine
 import com.example.familytree.ui.ButtonForPage
 import com.example.familytree.ui.FindConnectionButton
+import com.example.familytree.ui.PageSubHeadLine
 import com.example.familytree.ui.QuestionMarkButton
 import com.example.familytree.ui.RightSubTitle
 import com.example.familytree.ui.TextFieldWithDropdownMenu
@@ -301,7 +302,7 @@ fun HomeScreenPage(
 
                         val memberCountText = "${HebrewText.TOTAL_AMOUNT_OF_YESHIVA_MEMBERS}: $memberCount"
 
-                        PageHeadLine(memberCountText)
+                        PageSubHeadLine(memberCountText)
 
                         // Search Bar
                         MembersSearchBar(
