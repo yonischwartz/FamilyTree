@@ -419,7 +419,7 @@ fun CustomizedTextHomeScreenTwoLinesDisplay(text: String) {
 
     Text(
         text = "$firstLine\n$secondLine",
-        style = MaterialTheme.typography.bodyMedium,
+        style = appTextStyleBlack(),
         textAlign = TextAlign.Center,
         modifier = Modifier.width(100.dp)
     )
@@ -529,11 +529,10 @@ fun DialogButton(
     ) {
         Text(
             text = text,
-            style = appTextStyleBold()
+            style = appTextStyle()
         )
     }
 }
-
 
 /**
  * A composable function that displays a centered title within a dialog.
@@ -1439,7 +1438,8 @@ private fun ScrollToStartButton(
     ) {
         Icon(
             imageVector = Icons.Default.KeyboardDoubleArrowLeft,
-            contentDescription = "Scroll to start"
+            contentDescription = "Scroll to start",
+            tint = Color.Black
         )
     }
 }
@@ -1464,7 +1464,8 @@ private fun ScrollToEndButton(
     ) {
         Icon(
             imageVector = Icons.Default.KeyboardDoubleArrowRight,
-            contentDescription = "Scroll to end"
+            contentDescription = "Scroll to end",
+            tint = Color.Black
         )
     }
 }

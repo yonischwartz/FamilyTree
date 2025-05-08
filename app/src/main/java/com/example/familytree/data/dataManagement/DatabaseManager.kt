@@ -323,6 +323,14 @@ object DatabaseManager {
     }
 
     /**
+     * Returns the total number of family members in the tree.
+     * @return The count of FamilyMember objects.
+     */
+    internal fun getMemberCount(): Int {
+        return memberMap.getMemberCount()
+    }
+
+    /**
      * Retrieves a list of all family members who are Yeshiva members.
      *
      * @return A list of [FamilyMember] objects whose [MemberType] is [MemberType.Yeshiva].

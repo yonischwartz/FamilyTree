@@ -189,7 +189,7 @@ fun HomeScreenPage(
                                         }
                                     }
 
-                                    // Arrow button and prev button
+                                    // Arrow button and erase selection button
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
@@ -225,14 +225,14 @@ fun HomeScreenPage(
                                             )
                                         }
 
-                                        // Prev button
+                                        // Erase selection button
                                         ButtonForPage(
                                             onClick = {
-                                                findConnectionButtonClicked = false
+//                                                findConnectionButtonClicked = false
                                                 firstSelectedMember = null
                                                 secondSelectedMember = null
                                             },
-                                            text = HebrewText.PREVIOUS,
+                                            text = HebrewText.ERASE_SELECTION,
                                             modifier = Modifier
                                                 .wrapContentWidth()
                                                 .padding(horizontal = 8.dp)
