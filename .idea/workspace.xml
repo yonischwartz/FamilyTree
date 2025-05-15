@@ -9,14 +9,9 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="when a new member added as marriage connection, last name is default to be the same">
+    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="fixed the black screen on dark mode. removed reset member selection. fixed clicking selected member button to deselect member">
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/ButtonsAndMore.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/ButtonsAndMore.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/HebrewText.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/HebrewText.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/FamilyTreeGraphPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/FamilyTreeGraphPage.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/HomeScreenPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/HomeScreenPage.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -601,7 +596,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746716236540</updated>
     </task>
-    <option name="localTasksCounter" value="48" />
+    <task id="LOCAL-00048" summary="fixed the black screen on dark mode. removed reset member selection. fixed clicking selected member button to deselect member">
+      <option name="closed" value="true" />
+      <created>1747316919675</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1747316919675</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -616,7 +619,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="if a woman is married to a rabbi she becomes automatically a lady rabbi" />
     <MESSAGE value="when a sibling connection is added all mutual connection from both siblings are added to one another" />
     <MESSAGE value="after adding marriage connection app offers successfully to add each others children to one another" />
     <MESSAGE value="I am probably missing something but it seems that all the required suggestion are made when a new connection is added" />
@@ -641,7 +643,8 @@
     <MESSAGE value="another color fix" />
     <MESSAGE value="yeshiva family members counter is added to home screen" />
     <MESSAGE value="when a new member added as marriage connection, last name is default to be the same" />
-    <option name="LAST_COMMIT_MESSAGE" value="when a new member added as marriage connection, last name is default to be the same" />
+    <MESSAGE value="fixed the black screen on dark mode. removed reset member selection. fixed clicking selected member button to deselect member" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed the black screen on dark mode. removed reset member selection. fixed clicking selected member button to deselect member" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>

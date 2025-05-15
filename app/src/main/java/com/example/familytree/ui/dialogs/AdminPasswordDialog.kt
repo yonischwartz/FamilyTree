@@ -37,9 +37,12 @@ fun AdminPasswordDialog(
         textForLeftButton = HebrewText.OK,
         textForRightButton = if (isDemoMode) "realAdmin" else "demoAdmin",
         onRightButtonClick = {
-            isDemoMode = !isDemoMode
-            error = false
-            password = ""
+
+            onDemoPasswordCorrect()
+
+//            isDemoMode = !isDemoMode
+//            error = false
+//            password = ""
         },
         enabledForLeftButton = password.isNotBlank() && (!loading && (isDemoMode || email.isNotBlank())),
         onLeftButtonClick = {
