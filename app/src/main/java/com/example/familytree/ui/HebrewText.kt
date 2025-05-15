@@ -43,6 +43,7 @@ object HebrewText {
     const val OK = "אישור"
     const val FIND_CONNECTION = "מצא קשר"
     const val SHOW_REVERSE_CONNECTION = "הצג את הקשר הפוך"
+    const val GOT_IT = "הבנתי"
     const val ADD_NEW_MEMBER_THAT_IS_RELATED_TO = "הוסף בן משפחה חדש שקשור ל"
     const val ADD_CONNECTION_BETWEEN_EXISTING_MEMBER_AND = "הוסף קשר בין בן משפחה קיים לבין "
     const val FIND_CONNECTION_BETWEEN = "מצא קשר בין"
@@ -128,6 +129,8 @@ object HebrewText {
     const val AS = "כ"
     const val AND = "ו"
 
+
+    const val DEMO_ADMIN_MODE_DESCRIPTION = "מצב זה זהה למצב המנהל הרגיל, פרט לכך ששינויים שתבצע לא יישמרו"
     const val TOTAL_AMOUNT_OF_YESHIVA_MEMBERS = "סה\"כ בני משפחה מהישיבה"
     const val FAMILY_CONNECTIONS = "קשרי משפחה"
     const val EMAIL = "מייל"

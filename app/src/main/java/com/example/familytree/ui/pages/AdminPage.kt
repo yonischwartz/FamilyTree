@@ -33,6 +33,7 @@ import com.example.familytree.ui.RightSubTitle
 import com.example.familytree.ui.allMachzorim
 import com.example.familytree.ui.ScreenBackgroundColor
 import com.example.familytree.ui.appTextStyleLargeBlack
+import com.example.familytree.ui.dialogs.DemoAdminInfoDialog
 import com.example.familytree.ui.dialogs.InfoOnMemberDialog
 import com.example.familytree.ui.intToMachzor
 import com.example.familytree.ui.machzorToInt
@@ -59,6 +60,8 @@ fun AdminPage(navController: NavController, isRealAdmin: Boolean) {
     // State to hold filtered members based on search input
     var filteredMembers by remember { mutableStateOf(members) }
 
+    var wasUserInformedAboutDemoAdminMode by remember { mutableStateOf(isRealAdmin) }
+
     // Filter out members that are yeshiva rabbis with a machzor
     val modifiedMembersToDisplay = filteredMembers.flatMap { member ->
         if (member.getIsYeshivaRabbi() && member.getMachzor() != 0) {
@@ -74,6 +77,15 @@ fun AdminPage(navController: NavController, isRealAdmin: Boolean) {
 
     // Get the current context of the Composable, used for operations requiring a Context (e.g., showing Toasts, accessing resources, etc.)
     val context = LocalContext.current
+
+    // Inform user what is the demo admin mode
+    if (!wasUserInformedAboutDemoAdminMode) {
+        DemoAdminInfoDialog(
+            onDismiss = {
+                wasUserInformedAboutDemoAdminMode = true
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
