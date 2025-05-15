@@ -47,7 +47,7 @@ object HebrewText {
     const val ADD_CONNECTION_BETWEEN_EXISTING_MEMBER_AND = "הוסף קשר בין בן משפחה קיים לבין "
     const val FIND_CONNECTION_BETWEEN = "מצא קשר בין"
     const val AND_ANOTHER_MEMBER = "לבין בן משפחה נוסף"
-    const val ERASE_SELECTION = "אפס בחירה"
+    const val RESET_SELECTION = "אפס בחירה"
 
 
     // Relations as a subjective

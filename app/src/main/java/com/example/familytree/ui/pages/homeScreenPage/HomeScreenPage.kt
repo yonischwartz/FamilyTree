@@ -15,13 +15,11 @@ import com.example.familytree.data.FamilyMember
 import com.example.familytree.data.dataManagement.DatabaseManager
 import com.example.familytree.ui.HebrewText
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.example.familytree.data.dataManagement.DatabaseManager.getYeshivaMemberCount
 import com.example.familytree.ui.BigRoundButton
@@ -37,7 +35,6 @@ import com.example.familytree.ui.FindConnectionButton
 import com.example.familytree.ui.PageSubHeadLine
 import com.example.familytree.ui.QuestionMarkButton
 import com.example.familytree.ui.RightSubTitle
-import com.example.familytree.ui.TextFieldWithDropdownMenu
 import com.example.familytree.ui.allMachzorim
 import com.example.familytree.ui.ScreenBackgroundColor
 import com.example.familytree.ui.dialogs.DisplayConnectionBetweenTwoMembersDialog
@@ -61,7 +58,7 @@ fun HomeScreenPage(
 ) {
 
     // Display options for the members
-    var displayOption by remember { mutableStateOf(Display.CUBES_IN_COLUMN_SORTED) }
+    val displayOption by remember { mutableStateOf(Display.CUBES_IN_COLUMN_SORTED) }
 
     // State to hold the password dialog visibility
     var showPasswordDialog by remember { mutableStateOf(false) }
@@ -88,7 +85,7 @@ fun HomeScreenPage(
         .toSortedMap(compareBy { it ?: Int.MAX_VALUE })
 
     // Boolean to determine if the "Find Connection" button was clicked
-    var findConnectionButtonClicked by remember { mutableStateOf(false) }
+    var findConnectionButtonClicked by remember { mutableStateOf(true) }
 
     // Family members that were selected by the user
     var firstSelectedMember by remember { mutableStateOf<FamilyMember?>(null) }
@@ -166,7 +163,7 @@ fun HomeScreenPage(
 
                                         // If member one isn't selected yet, display a question mark button
                                         if (firstSelectedMember == null) {
-                                            QuestionMarkButton(onClick = { })
+                                            QuestionMarkButton(onClick = {  })
 
                                             // Placeholder for the name display to maintain alignment
                                             Spacer(modifier = Modifier.height(40.dp))
@@ -178,26 +175,26 @@ fun HomeScreenPage(
                                             if (firstSelectedMember!!.getGender()) {
 
                                                 // Display a man's button
-                                                JewishManButton(onClick = { })
+                                                JewishManButton(onClick = { firstSelectedMember = null })
                                             }
 
                                             else {
 
                                                 // Display a woman's button
-                                                JewishWomanButton(onClick = { })
+                                                JewishWomanButton(onClick = { firstSelectedMember = null })
                                             }
 
                                             CustomizedTextHomeScreenTwoLinesDisplay(firstSelectedMember!!.getFullName())
                                         }
                                     }
 
-                                    // Arrow button and erase selection button
+                                    // Find connection button and reset selection button
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
 
-                                        // Spacer to push the findConnection button down
-                                        Spacer(modifier = Modifier.height(30.dp))
+//                                        // Spacer to push the findConnection button down
+//                                        Spacer(modifier = Modifier.height(30.dp))
 
                                         // This box holds the findConnection button
                                         Box(
@@ -206,13 +203,12 @@ fun HomeScreenPage(
                                                 .wrapContentWidth(),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            if (firstSelectedMember != null && secondSelectedMember != null) {
-
-                                                FindConnectionButton(
-                                                    onClick = { showConnectionDialog = true }
-                                                )
-                                            }
+                                            FindConnectionButton(
+                                                onClick = { showConnectionDialog = true },
+                                                enabled = firstSelectedMember != null && secondSelectedMember != null
+                                            )
                                         }
+
 //
 //                                                ArrowButton(
 //                                                    onClick = { showConnectionDialog = true }
@@ -227,18 +223,17 @@ fun HomeScreenPage(
                                             )
                                         }
 
-                                        // Erase selection button
-                                        ButtonForPage(
-                                            onClick = {
-//                                                findConnectionButtonClicked = false
-                                                firstSelectedMember = null
-                                                secondSelectedMember = null
-                                            },
-                                            text = HebrewText.ERASE_SELECTION,
-                                            modifier = Modifier
-                                                .wrapContentWidth()
-                                                .padding(horizontal = 8.dp)
-                                        )
+//                                        // Reset selection button
+//                                        ButtonForPage(
+//                                            onClick = {
+//                                                firstSelectedMember = null
+//                                                secondSelectedMember = null
+//                                            },
+//                                            text = HebrewText.RESET_SELECTION,
+//                                            modifier = Modifier
+//                                                .wrapContentWidth()
+//                                                .padding(horizontal = 8.dp)
+//                                        )
                                     }
 
                                     // Second button
@@ -260,13 +255,13 @@ fun HomeScreenPage(
                                             if (secondSelectedMember!!.getGender()) {
 
                                                 // Display a man's button
-                                                JewishManButton(onClick = { })
+                                                JewishManButton(onClick = { secondSelectedMember = null })
                                             }
 
                                             else {
 
                                                 // Display a woman's button
-                                                JewishWomanButton(onClick = { })
+                                                JewishWomanButton(onClick = { secondSelectedMember = null })
                                             }
 
                                             CustomizedTextHomeScreenTwoLinesDisplay(secondSelectedMember!!.getFullName())

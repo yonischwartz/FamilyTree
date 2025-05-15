@@ -3,6 +3,7 @@ package com.example.familytree.ui.pages
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.familytree.data.FamilyMember
@@ -58,7 +60,11 @@ fun FamilyTreeGraphPage(navController: NavController, viewModel: FamilyTreeViewM
     // Get the image file from ViewModel
     val localImageFile = viewModel.imageFile.value
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White) // Force white background
+    ) {
 
         FamilyTreeTopBar(
             text = HebrewText.FAMILY_TREE,

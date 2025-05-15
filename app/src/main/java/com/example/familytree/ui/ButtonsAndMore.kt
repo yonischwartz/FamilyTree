@@ -1186,12 +1186,15 @@ fun ArrowButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
  *
  * @param modifier Modifier to apply to the button.
  * @param onClick Callback invoked when the button is clicked.
+ * @param enabled Whether the button is enabled or not.
  */
 @Composable
 fun FindConnectionButton(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    enabled: Boolean = true
 ) {
+
     Button(
         onClick = onClick,
         modifier = modifier
@@ -1199,14 +1202,18 @@ fun FindConnectionButton(
             .width(120.dp),
         shape = RoundedCornerShape(8.dp),
         contentPadding = PaddingValues(4.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
+        colors = ButtonDefaults.buttonColors(
+            containerColor = buttonColor,
+            contentColor = Color.White,
+            disabledContainerColor = Color.LightGray,
+            disabledContentColor = Color.Gray
+        ),
+        enabled = enabled
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            // Text "מצא קשר" on the right of the button in a single row
             Text(
                 text = HebrewText.FIND_CONNECTION,
                 style = MaterialTheme.typography.bodySmall,
@@ -1217,7 +1224,6 @@ fun FindConnectionButton(
                     .padding(start = 4.dp)
             )
 
-            // Magnifying glass on the left of the button
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
