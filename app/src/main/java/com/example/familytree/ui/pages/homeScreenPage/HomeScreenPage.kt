@@ -184,7 +184,7 @@ fun HomeScreenPage(
                                                 JewishWomanButton(onClick = { firstSelectedMember = null })
                                             }
 
-                                            CustomizedTextHomeScreenTwoLinesDisplay(firstSelectedMember!!.getFullName())
+                                            CustomizedTextHomeScreenTwoLinesDisplay(firstSelectedMember!!.getFullNameThatFitsTheCube())
                                         }
                                     }
 
@@ -264,7 +264,7 @@ fun HomeScreenPage(
                                                 JewishWomanButton(onClick = { secondSelectedMember = null })
                                             }
 
-                                            CustomizedTextHomeScreenTwoLinesDisplay(secondSelectedMember!!.getFullName())
+                                            CustomizedTextHomeScreenTwoLinesDisplay(secondSelectedMember!!.getFullNameThatFitsTheCube())
                                         }
                                     }
                                 }

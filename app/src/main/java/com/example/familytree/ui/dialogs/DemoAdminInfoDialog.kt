@@ -18,11 +18,10 @@ fun DemoAdminInfoDialog(
     onDismiss: () -> Unit
 ) {
     DialogWithButtons(
-        title = "demoAdmin mode",
+        title = HebrewText.DEMO_ADMIN_MODE,
         text = HebrewText.DEMO_ADMIN_MODE_DESCRIPTION,
-        onRightButtonClick = onDismiss,
-        textForRightButton = HebrewText.GOT_IT,
-        enabledForLeftButton = true,
+        onLeftButtonClick = onDismiss,
+        textForLeftButton = HebrewText.GOT_IT,
         onDismiss = onDismiss
     )
 }

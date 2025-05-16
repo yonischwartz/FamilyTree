@@ -1292,7 +1292,7 @@ fun FamilyMemberCube(
     val lightGreen = Color(0xFF90EE90)
     val color = if (isSelected) lightGreen else Color.Gray
 
-    val nameParts = member.getFullName().split(" ", limit = 2)
+    val nameParts = member.getFullNameThatFitsTheCube().split(" ", limit = 2)
     val firstLine = nameParts.getOrNull(0) ?: ""
     val restOfName = nameParts.getOrNull(1) ?: ""
 

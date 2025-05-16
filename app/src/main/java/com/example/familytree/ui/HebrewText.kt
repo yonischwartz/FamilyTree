@@ -129,7 +129,7 @@ object HebrewText {
     const val AS = "כ"
     const val AND = "ו"
 
-
+    const val DEMO_ADMIN_MODE = "מצב מנהל דמה"
     const val DEMO_ADMIN_MODE_DESCRIPTION = "מצב זה זהה למצב המנהל הרגיל, פרט לכך ששינויים שתבצע לא יישמרו"
     const val TOTAL_AMOUNT_OF_YESHIVA_MEMBERS = "סה\"כ בני משפחה מהישיבה"
     const val FAMILY_CONNECTIONS = "קשרי משפחה"

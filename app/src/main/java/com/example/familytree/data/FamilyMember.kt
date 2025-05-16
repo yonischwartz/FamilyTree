@@ -78,6 +78,40 @@ class FamilyMember(
     }
 
     /**
+     * Returns a full name formatted to better fit limited-width UI elements (like cubes).
+     *
+     * If the full name (including any title like "Rabbi") contains more than four words,
+     * and the `firstName` field includes at least two words, the second word in the first name
+     * will be abbreviated to its initial followed by a dot.
+     *
+     * If the full name is short enough (3 words or fewer), it returns the regular full name.
+     *
+     * @return A possibly shortened full name suitable for compact display.
+     */
+    fun getFullNameThatFitsTheCube(): String {
+        val prefix = when {
+            isRabbi && !gender -> HebrewText.RABBI_WIFE
+            isRabbi -> HebrewText.RABBI
+            else -> ""
+        }
+
+        val fullName = "$prefix$firstName $lastName".trim()
+        val fullNameWords = fullName.split(" ")
+
+        // Only shorten if there are more than 4 words in the full name
+        if (fullNameWords.size >= 4) {
+            val firstNames = firstName.trim().split(" ")
+            if (firstNames.size >= 2) {
+                val shortenedFirstName = "${firstNames[0]} ${firstNames[1].first()}."
+                return "$prefix$shortenedFirstName $lastName".trim()
+            }
+        }
+
+        // Otherwise return the normal full name
+        return fullName
+    }
+
+    /**
      * Retrieves the first name of the family member.
      *
      * @return The first name as a string.

@@ -23,8 +23,6 @@ fun NewMemberMustBeRelatedDialog(
         text = text,
         onLeftButtonClick = onConfirm,
         textForLeftButton = HebrewText.NEXT,
-        onRightButtonClick = onDismiss,
-        textForRightButton = HebrewText.CANCEL,
         onDismiss = onDismiss
     )
 }
