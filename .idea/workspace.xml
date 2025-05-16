@@ -9,11 +9,11 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="handled too long name for cube">
+    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="fixed rtl dialog">
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/DemoAdminInfoDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/DemoAdminInfoDialog.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/AdminPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/AdminPage.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/InfoOnMemberDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/InfoOnMemberDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/HomeScreenPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/HomeScreenPage.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -221,14 +221,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1735635002551</updated>
-    </task>
-    <task id="LOCAL-00003" summary="added image to home screen, fixed all sorts of things. need to handle adding new yeshiva family member">
-      <option name="closed" value="true" />
-      <created>1736195112135</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1736195112135</updated>
     </task>
     <task id="LOCAL-00004" summary="MachzorInput works">
       <option name="closed" value="true" />
@@ -614,7 +606,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747376742344</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="fixed rtl dialog">
+      <option name="closed" value="true" />
+      <created>1747377825953</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1747377825953</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -629,7 +629,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="It seems like there are previous buttons where ever there should be" />
     <MESSAGE value="when deleting a member the function insures the removal is valid, and doesn't break the tree" />
     <MESSAGE value="when user adds a new member with a name that exists already, he is asked if he meant to that family member" />
     <MESSAGE value="I want to change the dialog functions so they don't get existingMembers as a value. Commiting for case i regret" />
@@ -654,7 +653,8 @@
     <MESSAGE value="demoAdmin mode now doesn't require any password" />
     <MESSAGE value="added a dialog info to inform user what is demoAdmin mode" />
     <MESSAGE value="handled too long name for cube" />
-    <option name="LAST_COMMIT_MESSAGE" value="handled too long name for cube" />
+    <MESSAGE value="fixed rtl dialog" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed rtl dialog" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>
@@ -674,12 +674,12 @@
       <map>
         <entry key="com.example.familytree">
           <value>
-            <CheckInfo lastCheckTimestamp="1745096130810" />
+            <CheckInfo lastCheckTimestamp="1747377531065" />
           </value>
         </entry>
         <entry key="com.example.familytree.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1745096130807" />
+            <CheckInfo lastCheckTimestamp="1747377531055" />
           </value>
         </entry>
       </map>

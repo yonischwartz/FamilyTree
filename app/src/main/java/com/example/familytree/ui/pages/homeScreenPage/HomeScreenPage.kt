@@ -19,6 +19,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.example.familytree.data.dataManagement.DatabaseManager.getYeshivaMemberCount
@@ -317,47 +320,75 @@ fun HomeScreenPage(
                                 val availableWidth = maxWidth - totalHorizontalPadding - totalSpacing
                                 val cubeWidth = availableWidth / cubesInRow
                                 val cubeHeight = 70.dp
+                                val showNonYeshiva = remember { mutableStateOf(false) }
 
                                 LazyColumn(
                                     modifier = Modifier.fillMaxSize(),
                                     contentPadding = PaddingValues(vertical = 16.dp),
                                     verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
+
                                     groupedMembers.forEach { (group, members) ->
+                                        // Track collapsed state for non-yeshiva group
+                                        val isNonYeshivaGroup = group == null
                                         val subTitle: String = when {
-                                            group == null -> HebrewText.NON_YESHIVA_FAMILY_MEMBERS
+                                            isNonYeshivaGroup -> HebrewText.NON_YESHIVA_FAMILY_MEMBERS
                                             group == 0 -> HebrewText.RABBIS_AND_STAFF
                                             else -> "${HebrewText.MACHZOR} ${intToMachzor[group]}"
                                         }
 
                                         item {
-                                            RightSubTitle(
-                                                text = subTitle,
-                                                modifier = Modifier.padding(horizontal = 16.dp)
-                                            )
+                                            if (isNonYeshivaGroup) {
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(horizontal = 16.dp)
+                                                        .clickable { showNonYeshiva.value = !showNonYeshiva.value },
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.SpaceBetween
+                                                ) {
+                                                    RightSubTitle(
+                                                        text = subTitle,
+                                                        modifier = Modifier.weight(1f)
+                                                    )
+                                                    Icon(
+                                                        imageVector = if (showNonYeshiva.value) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                                        contentDescription = "Toggle section",
+                                                        modifier = Modifier.size(20.dp)
+                                                    )
+                                                }
+                                            } else {
+                                                RightSubTitle(
+                                                    text = subTitle,
+                                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                                )
+                                            }
+
                                         }
 
-                                        val rows = members.sortedBy { it.getFullName() }.chunked(cubesInRow)
+                                        if (!isNonYeshivaGroup || showNonYeshiva.value) {
+                                            val rows = members.sortedBy { it.getFullName() }.chunked(cubesInRow)
 
-                                        items(rows.size) { rowIndex ->
-                                            val rowMembers = rows[rowIndex]
+                                            items(rows.size) { rowIndex ->
+                                                val rowMembers = rows[rowIndex]
 
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(horizontal = 16.dp),
-                                                horizontalArrangement = Arrangement.spacedBy(spacingBetweenCubes)
-                                            ) {
-                                                rowMembers.forEach { member ->
-                                                    val isSelected = member == firstSelectedMember || member == secondSelectedMember
-                                                    FamilyMemberCube(
-                                                        member = member,
-                                                        isSelected = isSelected,
-                                                        length = cubeHeight,
-                                                        width = cubeWidth,
-                                                        onClick = { onClickCube(member) },
-                                                        onExclamationClick = { memberToShowHisInfoDialog = member }
-                                                    )
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(horizontal = 16.dp),
+                                                    horizontalArrangement = Arrangement.spacedBy(spacingBetweenCubes)
+                                                ) {
+                                                    rowMembers.forEach { member ->
+                                                        val isSelected = member == firstSelectedMember || member == secondSelectedMember
+                                                        FamilyMemberCube(
+                                                            member = member,
+                                                            isSelected = isSelected,
+                                                            length = cubeHeight,
+                                                            width = cubeWidth,
+                                                            onClick = { onClickCube(member) },
+                                                            onExclamationClick = { memberToShowHisInfoDialog = member }
+                                                        )
+                                                    }
                                                 }
                                             }
                                         }

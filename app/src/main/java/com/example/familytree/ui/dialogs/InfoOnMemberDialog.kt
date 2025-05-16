@@ -123,9 +123,9 @@ fun InfoOnMemberDialog(
     // Edit family member dialog
     if (showEditDialog) {
         EditFamilyMemberDialog(
-            member = member,
+            member = memberToDisplay,
             onConfirm = { updatedMember ->
-                DatabaseManager.updateMember(member.getId(), updatedMember)
+                DatabaseManager.updateMember(memberToDisplay.getId(), updatedMember)
                 onMemberEdit(updatedMember)
                 memberToDisplay = updatedMember
                 showEditDialog = false
