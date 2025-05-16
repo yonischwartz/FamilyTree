@@ -39,6 +39,7 @@ import com.example.familytree.ui.intToMachzor
 import com.example.familytree.ui.machzorToInt
 import com.example.familytree.ui.dialogs.MemberListDialog
 
+
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun AdminPage(navController: NavController, isRealAdmin: Boolean) {
@@ -80,6 +81,7 @@ fun AdminPage(navController: NavController, isRealAdmin: Boolean) {
 
     // Inform user what is the demo admin mode
     if (!wasUserInformedAboutDemoAdminMode) {
+
         DemoAdminInfoDialog(
             onDismiss = {
                 wasUserInformedAboutDemoAdminMode = true

@@ -17,6 +17,7 @@ import com.example.familytree.ui.HebrewText
 fun DemoAdminInfoDialog(
     onDismiss: () -> Unit
 ) {
+
     DialogWithButtons(
         title = HebrewText.DEMO_ADMIN_MODE,
         text = HebrewText.DEMO_ADMIN_MODE_DESCRIPTION,

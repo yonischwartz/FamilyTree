@@ -19,9 +19,12 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.familytree.ui.CustomizedText
@@ -60,91 +63,93 @@ fun DialogWithButtons(
     val dismissAction = onDismiss ?: onLeftButtonClick ?: onRightButtonClick ?: {}
 
     Dialog(onDismissRequest = dismissAction) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Surface(
-                shape = RoundedCornerShape(12.dp),
-                tonalElevation = 4.dp,
-                color = DialogBackgroundColor
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
-                BoxWithConstraints {
-                    val maxHeight = this.maxHeight
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    tonalElevation = 4.dp,
+                    color = DialogBackgroundColor
+                ) {
+                    BoxWithConstraints {
+                        val maxHeight = this.maxHeight
 
-                    Column(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                            .heightIn(max = maxHeight * 0.85f),
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column(modifier = Modifier.weight(1f, fill = false)) {
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            DialogTitle(
-                                text = title,
-                                modifier = Modifier.align(Alignment.CenterHorizontally)
-                            )
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            if (contentOfDialog != null) {
-                                Box(modifier = Modifier.fillMaxWidth()) {
-                                    contentOfDialog()
-                                }
-                            } else {
-                                CustomizedText(
-                                    text = text,
-                                    centered = true,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(24.dp))
-                        }
-
-                        Row(
+                        Column(
                             modifier = Modifier
+                                .padding(16.dp)
                                 .fillMaxWidth()
-                                .padding(top = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                                .heightIn(max = maxHeight * 0.85f),
+                            verticalArrangement = Arrangement.SpaceBetween
                         ) {
-                            if (textForRightButton != null && onRightButtonClick != null) {
-                                DialogButton(
-                                    text = textForRightButton,
-                                    onClick = onRightButtonClick,
-                                    enabled = enabledForRightButton
+                            Column(modifier = Modifier.weight(1f, fill = false)) {
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                DialogTitle(
+                                    text = title,
+                                    modifier = Modifier.align(Alignment.CenterHorizontally)
                                 )
-                            } else {
-                                Spacer(modifier = Modifier.width(1.dp))
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                if (contentOfDialog != null) {
+                                    Box(modifier = Modifier.fillMaxWidth()) {
+                                        contentOfDialog()
+                                    }
+                                } else {
+                                    CustomizedText(
+                                        text = text,
+                                        centered = true,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(24.dp))
                             }
 
-                            if (textForLeftButton != null && onLeftButtonClick != null) {
-                                DialogButton(
-                                    text = textForLeftButton,
-                                    onClick = onLeftButtonClick,
-                                    enabled = enabledForLeftButton
-                                )
-                            } else {
-                                Spacer(modifier = Modifier.width(1.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                if (textForRightButton != null && onRightButtonClick != null) {
+                                    DialogButton(
+                                        text = textForRightButton,
+                                        onClick = onRightButtonClick,
+                                        enabled = enabledForRightButton
+                                    )
+                                } else {
+                                    Spacer(modifier = Modifier.width(1.dp))
+                                }
+
+                                if (textForLeftButton != null && onLeftButtonClick != null) {
+                                    DialogButton(
+                                        text = textForLeftButton,
+                                        onClick = onLeftButtonClick,
+                                        enabled = enabledForLeftButton
+                                    )
+                                } else {
+                                    Spacer(modifier = Modifier.width(1.dp))
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Close",
-                tint = Color.Black,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .clickable { dismissAction() }
-                    .padding(8.dp)
-                    .size(24.dp)
-            )
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close",
+                    tint = Color.Black,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .clickable { dismissAction() }
+                        .padding(8.dp)
+                        .size(24.dp)
+                )
+            }
         }
     }
 }
