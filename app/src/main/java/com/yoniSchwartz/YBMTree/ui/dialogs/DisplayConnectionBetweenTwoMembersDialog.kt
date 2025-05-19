@@ -38,10 +38,7 @@ fun DisplayConnectionBetweenTwoMembersDialog(
     val path = DatabaseManager.getShortestPathBetweenTwoMembers(firstMember, secondMember)
     val pathAsString = getPathAsString(path)
 
-    val title: String = HebrewText.THE_CONNECTION_BETWEEN +
-            " ${firstMember.getFullName()} " +
-            HebrewText.TO +
-            secondMember.getFullName()
+    val title = getConnectionTitle(firstMember, secondMember)
 
     DialogWithButtons(
         title = title,
@@ -66,6 +63,7 @@ fun DisplayConnectionBetweenTwoMembersDialog(
         }
     )
 }
+
 /**
  * Constructs a descriptive string representing the path between family members.
  *
@@ -121,4 +119,25 @@ private fun getPathAsString(pathAsList: List<FamilyMember>): String {
     }
 
     return pathAsString
+}
+
+/**
+ * Constructs a title string describing the connection between two family members.
+ *
+ * @param memberOne The first [FamilyMember].
+ * @param memberTwo The second [FamilyMember].
+ * @return A [String] like "הקשר בין {memberOne} ל{memberTwo}" or
+ *         "קשר בין {memberOne} ל{memberTwo}" if memberTwo is a rabbi.
+ */
+fun getConnectionTitle(memberOne: FamilyMember, memberTwo: FamilyMember): String {
+    val memberTwoFullName = if (memberTwo.getIsRabbi()) {
+        memberTwo.getFullName().removePrefix(HebrewText.THE)
+    } else {
+        memberTwo.getFullName()
+    }
+
+    return HebrewText.THE_CONNECTION_BETWEEN +
+            " ${memberOne.getFullName()} " +
+            HebrewText.TO +
+            memberTwoFullName
 }
