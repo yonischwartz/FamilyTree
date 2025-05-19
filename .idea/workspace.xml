@@ -9,11 +9,75 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="fixed rtl dialog">
+    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="members who are not from the yeshiva, aren't displayed by default">
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/InfoOnMemberDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/InfoOnMemberDialog.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/HomeScreenPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/HomeScreenPage.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/google-services.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/example/familytree/ExampleInstrumentedTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/yoniSchwartz/YBMTree/ExampleInstrumentedTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/UniqueQueue.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/UniqueQueue.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/Connection.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/data/Connection.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/FamilyMember.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/data/FamilyMember.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/FullConnection.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/data/FullConnection.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/MemberType.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/data/MemberType.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/PositionedMember.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/data/PositionedMember.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/Relations.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/data/Relations.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/DatabaseManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/data/dataManagement/DatabaseManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/dataManagement/MemberMap.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/data/dataManagement/MemberMap.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/exceptions/InvalidGenderRoleException.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/data/exceptions/InvalidGenderRoleException.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/exceptions/InvalidMoreThanOneConnection.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/data/exceptions/InvalidMoreThanOneConnection.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/exceptions/InvalidRelationshipException.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/data/exceptions/InvalidRelationshipException.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/exceptions/SameSexMarriageException.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/data/exceptions/SameSexMarriageException.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/data/exceptions/UnsafeDeleteException.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/data/exceptions/UnsafeDeleteException.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/ButtonsAndMore.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/ButtonsAndMore.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/Color.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/Color.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/Display.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/Display.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/FamilyTreeViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/FamilyTreeViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/HebrewText.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/HebrewText.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/MachzorMap.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/MachzorMap.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/Theme.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/Theme.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/Type.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/Type.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/AdminPasswordDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/AdminPasswordDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/AskUserForMemberDetailsDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/AskUserForMemberDetailsDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/ChooseMemberToRelateToDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/ChooseMemberToRelateToDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/ChooseMemberTypeDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/ChooseMemberTypeDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/DemoAdminInfoDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/DemoAdminInfoDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/DialogWithButtons.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/DialogWithButtons.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/DialogWithTwoButtons.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/DialogWithTwoButtons.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/DisplayConnectionBetweenTwoMembersDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/DisplayConnectionBetweenTwoMembersDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/EditFamilyMemberDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/EditFamilyMemberDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/FamilyMemberInfoDialogHost.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/FamilyMemberInfoDialogHost.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/FindConnectionDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/FindConnectionDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/HowAreTheyRelatedDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/HowAreTheyRelatedDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/InfoOnMemberDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/InfoOnMemberDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/MemberListDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/MemberListDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/NewMemberMustBeRelatedDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/NewMemberMustBeRelatedDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/SuggestedConnectionDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/SuggestedConnectionDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/errorAndSuccessDialogs/DeleteErrorDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/errorAndSuccessDialogs/DeleteErrorDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/errorAndSuccessDialogs/GenderErrorDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/errorAndSuccessDialogs/GenderErrorDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/errorAndSuccessDialogs/MemberAddedSuccessfullyDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/errorAndSuccessDialogs/MemberAddedSuccessfullyDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/errorAndSuccessDialogs/MemberWithSameNameAlreadyExistsDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/errorAndSuccessDialogs/MemberWithSameNameAlreadyExistsDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/errorAndSuccessDialogs/MoreThanOneConnectionErrorDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/errorAndSuccessDialogs/MoreThanOneConnectionErrorDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/errorAndSuccessDialogs/NoMembersFoundDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/errorAndSuccessDialogs/NoMembersFoundDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/errorAndSuccessDialogs/NotEnoughMembersInTreeDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/errorAndSuccessDialogs/NotEnoughMembersInTreeDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/dialogs/errorAndSuccessDialogs/SameMemberMarriageErrorDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/errorAndSuccessDialogs/SameMemberMarriageErrorDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/graphicTreeDisplay/ConnectionGraphicDisplay.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/graphicTreeDisplay/ConnectionGraphicDisplay.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/graphicTreeDisplay/FamilyTreeGraphicDisplay.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/graphicTreeDisplay/FamilyTreeGraphicDisplay.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/graphicTreeDisplay/MemberGraphicNode.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/graphicTreeDisplay/MemberGraphicNode.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/AdminPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/pages/AdminPage.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/FamilyTreeGraphPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/pages/FamilyTreeGraphPage.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/MemberListPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/pages/MemberListPage.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/SplashScreenPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/pages/SplashScreenPage.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/HomeScreenPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/pages/homeScreenPage/HomeScreenPage.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/functionForButtons/AddFamilyMember.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/pages/homeScreenPage/functionForButtons/AddFamilyMember.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/functionForButtons/ConnectTwoMembers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/pages/homeScreenPage/functionForButtons/ConnectTwoMembers.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/functionForButtons/FindConnectionsBetweenTwoMembers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/pages/homeScreenPage/functionForButtons/FindConnectionsBetweenTwoMembers.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/familytree/ui/pages/homeScreenPage/functionForButtons/SuggestConnections.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/pages/homeScreenPage/functionForButtons/SuggestConnections.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/test/java/com/example/familytree/ExampleUnitTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/test/java/com/yoniSchwartz/YBMTree/ExampleUnitTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,6 +142,11 @@
       </list>
     </option>
   </component>
+  <component name="GenerateSignedApkSettings">
+    <option name="KEY_STORE_PATH" value="C:\Users\yoni schwartz\appKeystore.jks" />
+    <option name="KEY_ALIAS" value="release" />
+    <option name="REMEMBER_PASSWORDS" value="true" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -107,10 +176,13 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;Android App.app.executor&quot;: &quot;Run&quot;,
+    &quot;BundleExportedModule&quot;: &quot;FamilyTree.app&quot;,
+    &quot;ExportBundle.BundlePathForFamilyTree.app&quot;: &quot;C:\\Users\\yoni schwartz\\AndroidStudioProjects\\FamilyTree\\app&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
     &quot;ScreenRecorder.SavePath&quot;: &quot;C:\\Users\\yoni schwartz\\Desktop&quot;,
+    &quot;ScreenshotViewer.SavePath&quot;: &quot;C:/Users/yoni schwartz/Desktop&quot;,
     &quot;ToolWindow.Device Explorer.ShowToolbar&quot;: &quot;false&quot;,
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
@@ -124,6 +196,11 @@
     &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;memory.settings&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;ExportApk.BuildVariants&quot;: [
+      &quot;release&quot;
+    ]
   }
 }</component>
   <component name="RecentsManager">
@@ -221,14 +298,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1735635002551</updated>
-    </task>
-    <task id="LOCAL-00004" summary="MachzorInput works">
-      <option name="closed" value="true" />
-      <created>1736356754883</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1736356754883</updated>
     </task>
     <task id="LOCAL-00005" summary="Confirms user doesn't exist already">
       <option name="closed" value="true" />
@@ -614,7 +683,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747377825953</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="members who are not from the yeshiva, aren't displayed by default">
+      <option name="closed" value="true" />
+      <created>1747379020884</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1747379020884</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -629,7 +706,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="when deleting a member the function insures the removal is valid, and doesn't break the tree" />
     <MESSAGE value="when user adds a new member with a name that exists already, he is asked if he meant to that family member" />
     <MESSAGE value="I want to change the dialog functions so they don't get existingMembers as a value. Commiting for case i regret" />
     <MESSAGE value="find connection button works" />
@@ -654,7 +730,8 @@
     <MESSAGE value="added a dialog info to inform user what is demoAdmin mode" />
     <MESSAGE value="handled too long name for cube" />
     <MESSAGE value="fixed rtl dialog" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed rtl dialog" />
+    <MESSAGE value="members who are not from the yeshiva, aren't displayed by default" />
+    <option name="LAST_COMMIT_MESSAGE" value="members who are not from the yeshiva, aren't displayed by default" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>
@@ -680,6 +757,26 @@
         <entry key="com.example.familytree.test">
           <value>
             <CheckInfo lastCheckTimestamp="1747377531055" />
+          </value>
+        </entry>
+        <entry key="com.yoniSchwartz.YBMTree">
+          <value>
+            <CheckInfo lastCheckTimestamp="1747385514582" />
+          </value>
+        </entry>
+        <entry key="com.yoniSchwartz.YBMTree.test">
+          <value>
+            <CheckInfo lastCheckTimestamp="1747385514581" />
+          </value>
+        </entry>
+        <entry key="com.yoniSchwartz.familytree">
+          <value>
+            <CheckInfo lastCheckTimestamp="1747385345821" />
+          </value>
+        </entry>
+        <entry key="com.yoniSchwartz.familytree.test">
+          <value>
+            <CheckInfo lastCheckTimestamp="1747385345821" />
           </value>
         </entry>
       </map>

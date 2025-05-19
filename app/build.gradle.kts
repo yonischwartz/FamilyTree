@@ -6,14 +6,14 @@ plugins {
 }
 
 android {
-    namespace = "com.example.familytree"
+    namespace = "com.yoniSchwartz.YBMTree"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.familytree"
+        applicationId = "com.yoniSchwartz.YBMTree"
         minSdk = 23
         targetSdk = 34
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
     }
 
