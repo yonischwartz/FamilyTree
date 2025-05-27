@@ -9,11 +9,11 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="added a loading icon to graphic display">
+    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="added arrows to move left and right in the graph image">
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/ButtonsAndMore.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/ButtonsAndMore.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/DialogWithButtons.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/DialogWithButtons.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/DisplayConnectionBetweenTwoMembersDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/DisplayConnectionBetweenTwoMembersDialog.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -234,14 +234,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1735635002551</updated>
-    </task>
-    <task id="LOCAL-00006" summary="doesn't ask for yeshiva member's gender">
-      <option name="closed" value="true" />
-      <created>1736416075776</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1736416075776</updated>
     </task>
     <task id="LOCAL-00007" summary="remove user works">
       <option name="closed" value="true" />
@@ -627,7 +619,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747665124421</updated>
     </task>
-    <option name="localTasksCounter" value="55" />
+    <task id="LOCAL-00055" summary="added arrows to move left and right in the graph image">
+      <option name="closed" value="true" />
+      <created>1748352825186</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1748352825186</updated>
+    </task>
+    <option name="localTasksCounter" value="56" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -642,7 +642,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="I want to change the dialog functions so they don't get existingMembers as a value. Commiting for case i regret" />
     <MESSAGE value="find connection button works" />
     <MESSAGE value="commit before trying to change searchBar" />
     <MESSAGE value="searchBar displays results with no need to click search button" />
@@ -667,7 +666,8 @@
     <MESSAGE value="fixed rtl dialog" />
     <MESSAGE value="members who are not from the yeshiva, aren't displayed by default" />
     <MESSAGE value="added a loading icon to graphic display" />
-    <option name="LAST_COMMIT_MESSAGE" value="added a loading icon to graphic display" />
+    <MESSAGE value="added arrows to move left and right in the graph image" />
+    <option name="LAST_COMMIT_MESSAGE" value="added arrows to move left and right in the graph image" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>

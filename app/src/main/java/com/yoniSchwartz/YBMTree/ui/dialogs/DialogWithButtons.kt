@@ -58,7 +58,8 @@ fun DialogWithButtons(
     onRightButtonClick: (() -> Unit)? = null,
     enabledForRightButton: Boolean = true,
     onDismiss: (() -> Unit)? = null,
-    contentOfDialog: @Composable (() -> Unit)? = null
+    contentOfDialog: @Composable (() -> Unit)? = null,
+    stackButtonsVertically: Boolean = false
 ) {
     val dismissAction = onDismiss ?: onLeftButtonClick ?: onRightButtonClick ?: {}
 
@@ -109,30 +110,59 @@ fun DialogWithButtons(
                                 Spacer(modifier = Modifier.height(24.dp))
                             }
 
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                if (textForRightButton != null && onRightButtonClick != null) {
-                                    DialogButton(
-                                        text = textForRightButton,
-                                        onClick = onRightButtonClick,
-                                        enabled = enabledForRightButton
-                                    )
-                                } else {
-                                    Spacer(modifier = Modifier.width(1.dp))
-                                }
+                            if (!stackButtonsVertically) {
+                                // Horizontal layout: left button on left, right button on right
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 8.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    if (textForRightButton != null && onRightButtonClick != null) {
+                                        DialogButton(
+                                            text = textForRightButton,
+                                            onClick = onRightButtonClick,
+                                            enabled = enabledForRightButton
+                                        )
+                                    } else {
+                                        Spacer(modifier = Modifier.width(1.dp))
+                                    }
 
-                                if (textForLeftButton != null && onLeftButtonClick != null) {
-                                    DialogButton(
-                                        text = textForLeftButton,
-                                        onClick = onLeftButtonClick,
-                                        enabled = enabledForLeftButton
-                                    )
-                                } else {
-                                    Spacer(modifier = Modifier.width(1.dp))
+                                    if (textForLeftButton != null && onLeftButtonClick != null) {
+                                        DialogButton(
+                                            text = textForLeftButton,
+                                            onClick = onLeftButtonClick,
+                                            enabled = enabledForLeftButton
+                                        )
+                                    } else {
+                                        Spacer(modifier = Modifier.width(1.dp))
+                                    }
+                                }
+                            } else {
+                                // Vertical layout: right button on top, left button on bottom
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 8.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    if (textForRightButton != null && onRightButtonClick != null) {
+                                        DialogButton(
+                                            text = textForRightButton,
+                                            onClick = onRightButtonClick,
+                                            enabled = enabledForRightButton,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+
+                                    if (textForLeftButton != null && onLeftButtonClick != null) {
+                                        DialogButton(
+                                            text = textForLeftButton,
+                                            onClick = onLeftButtonClick,
+                                            enabled = enabledForLeftButton,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
                                 }
                             }
                         }

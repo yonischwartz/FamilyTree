@@ -42,8 +42,6 @@ fun DisplayConnectionBetweenTwoMembersDialog(
 
     DialogWithButtons(
         title = title,
-        onLeftButtonClick = onDismiss,
-        textForLeftButton = HebrewText.OK,
         onRightButtonClick = {
             val temp = firstMember
             firstMember = secondMember
@@ -60,7 +58,8 @@ fun DisplayConnectionBetweenTwoMembersDialog(
             ) {
                 CustomizedText(text = pathAsString)
             }
-        }
+        },
+        stackButtonsVertically = true
     )
 }
 
