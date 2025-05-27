@@ -69,6 +69,8 @@ import android.net.Uri
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
 import androidx.compose.material.icons.filled.Save
@@ -83,6 +85,12 @@ import com.yoniSchwartz.YBMTree.data.Connection
 import com.yoniSchwartz.YBMTree.data.MemberType
 import com.yoniSchwartz.YBMTree.data.Relations
 import com.yoniSchwartz.YBMTree.data.dataManagement.DatabaseManager
+
+/**
+ * A constant to determine the amount of scrolling for the family tree graph image.
+ */
+
+private const val SCROLL_AMOUNT = 750f
 
 /**
  * A constant color value representing a beige background color.
@@ -1357,7 +1365,7 @@ fun CenteredLoadingIndicator(modifier: Modifier = Modifier) {
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator()
+        CircularProgressIndicator(color = buttonColor)
     }
 }
 
@@ -1408,21 +1416,61 @@ fun ZoomableFamilyTreeImage(imageFile: File) {
                 CenteredLoadingIndicator()
             }
 
-            ScrollToStartButton(
-                onClick = { imageView?.scrollToStart() },
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(start = 12.dp, top = 12.dp)
-                    .offset(y = (-16).dp)
-            )
+            else {
+                // Left side: Jump to start + scroll left
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(start = 12.dp, top = 12.dp)
+                        .offset(y = (-16).dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    ScrollToStartButton(onClick = { imageView?.scrollToStart() })
+                    ScrollLeftButton(onClick = { imageView?.scrollLeftBy(SCROLL_AMOUNT) })
+                }
 
-            ScrollToEndButton(
-                onClick = { imageView?.scrollToEnd() },
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(end = 12.dp, top = 12.dp)
-                    .offset(y = (-16).dp)
-            )
+                // Right side: Scroll right + jump to end
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(end = 12.dp, top = 12.dp)
+                        .offset(y = (-16).dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    ScrollRightButton(onClick = { imageView?.scrollRightBy(SCROLL_AMOUNT) })
+                    ScrollToEndButton(onClick = { imageView?.scrollToEnd() })
+                }
+
+    //            ScrollToStartButton(
+    //                onClick = { imageView?.scrollToStart() },
+    //                modifier = Modifier
+    //                    .align(Alignment.TopStart)
+    //                    .padding(start = 12.dp, top = 12.dp)
+    //                    .offset(y = (-16).dp)
+    //            )
+    //
+    //            ScrollRightButton(
+    //                onClick = { imageView?.scrollRightBy(SCROLL_AMOUNT) },
+    //                modifier = Modifier
+    //                    .align(Alignment.CenterEnd)
+    //                    .padding(end = 12.dp)
+    //            )
+    //
+    //            ScrollLeftButton(
+    //                onClick = { imageView?.scrollLeftBy(SCROLL_AMOUNT) },
+    //                modifier = Modifier
+    //                    .align(Alignment.CenterStart)
+    //                    .padding(start = 12.dp)
+    //            )
+    //
+    //            ScrollToEndButton(
+    //                onClick = { imageView?.scrollToEnd() },
+    //                modifier = Modifier
+    //                    .align(Alignment.TopEnd)
+    //                    .padding(end = 12.dp, top = 12.dp)
+    //                    .offset(y = (-16).dp)
+    //            )
+            }
         }
     }
 }
@@ -1501,3 +1549,82 @@ private fun ScrollToEndButton(
         )
     }
 }
+
+/**
+ * Scrolls the image a fixed number of pixels to the left.
+ *
+ * @param pixels The number of pixels to scroll left.
+ */
+private fun SubsamplingScaleImageView.scrollLeftBy(pixels: Float) {
+    if (isReady) {
+        val scale = scale
+        val currentCenter = center
+        val newX = ((currentCenter?.x ?: 0f) - pixels).coerceAtLeast(0f)
+        if (currentCenter != null) {
+            setScaleAndCenter(scale, PointF(newX, currentCenter.y))
+        }
+    }
+}
+
+/**
+ * Scrolls the image a fixed number of pixels to the right.
+ *
+ * @param pixels The number of pixels to scroll right.
+ */
+private fun SubsamplingScaleImageView.scrollRightBy(pixels: Float) {
+    if (isReady) {
+        val scale = scale
+        val currentCenter = center
+        val newX = ((currentCenter?.x ?: 0f) + pixels).coerceAtMost(sWidth.toFloat())
+        if (currentCenter != null) {
+            setScaleAndCenter(scale, PointF(newX, currentCenter.y))
+        }
+    }
+}
+
+/**
+ * A Composable function that displays a button for scrolling the image to the left by a fixed amount.
+ *
+ * @param onClick Lambda to be invoked when the button is clicked.
+ * @param modifier Modifier for layout positioning (e.g., alignment and padding).
+ */
+@Composable
+private fun ScrollLeftButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = Icons.Default.KeyboardArrowLeft,
+            contentDescription = "Scroll left",
+            tint = Color.Black
+        )
+    }
+}
+
+/**
+ * A Composable function that displays a button for scrolling the image to the right by a fixed amount.
+ *
+ * @param onClick Lambda to be invoked when the button is clicked.
+ * @param modifier Modifier for layout positioning (e.g., alignment and padding).
+ */
+@Composable
+private fun ScrollRightButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = Icons.Default.KeyboardArrowRight,
+            contentDescription = "Scroll right",
+            tint = Color.Black
+        )
+    }
+}
+
