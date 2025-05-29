@@ -79,6 +79,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.ui.text.AnnotatedString
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.yoniSchwartz.YBMTree.data.Connection
@@ -89,7 +90,6 @@ import com.yoniSchwartz.YBMTree.data.dataManagement.DatabaseManager
 /**
  * A constant to determine the amount of scrolling for the family tree graph image.
  */
-
 private const val SCROLL_AMOUNT = 750f
 
 /**
@@ -279,23 +279,28 @@ fun YbmLogo() {
 }
 
 /**
- * A customized text composable that displays text with certain style.
+ * A customized text composable that displays either plain or annotated text with consistent style.
  *
- * @param text The string to be displayed.
+ * @param text The string or annotated string to be displayed.
+ * @param modifier The [Modifier] to be applied to the text.
  * @param centered Whether the text should be centered horizontally.
  */
 @Composable
 fun CustomizedText(
-    text: String,
+    text: Any, // Can be String or AnnotatedString
     modifier: Modifier = Modifier,
     centered: Boolean = false
 ) {
-    Text(
-        text = text,
-        style = appTextStyleBlack(),
-        modifier = if (centered) modifier.fillMaxWidth() else modifier,
-        textAlign = if (centered) TextAlign.Center else TextAlign.Start
-    )
+    val style = appTextStyleBlack()
+
+    val finalModifier = if (centered) modifier.fillMaxWidth() else modifier
+    val alignment = if (centered) TextAlign.Center else TextAlign.Start
+
+    when (text) {
+        is String -> Text(text = text, style = style, modifier = finalModifier, textAlign = alignment)
+        is AnnotatedString -> Text(text = text, style = style, modifier = finalModifier, textAlign = alignment)
+        else -> error("Unsupported text type: ${text::class}")
+    }
 }
 
 /**

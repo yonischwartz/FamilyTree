@@ -157,6 +157,7 @@ object HebrewText {
     const val CHOOSE = "בחר"
     const val HOW_IS_OTHER_MEMBER_RELATED_TO = "כיצד בן המשפחה הנוסף קשור ל"
     const val RABBIS_OR_STAFF_THAT_DID_NOT_LEARN_IN_YESHIVA = "רבנים או צוות הישיבה שלא למדו בישיבה"
+    const val STAFF = "צוות"
     const val ADDING_NEW_MEMBER = "הוספת בן משפחה חדש"
     const val DO_YOU_WANT_TO_ADD_ANYWAY = "האם תרצה להוסיף בן משפחה זה, בכל זאת?"
     const val MEMBER_ALREADY_EXISTS = "קיים כבר בן משפחה עם שם זה בעץ"

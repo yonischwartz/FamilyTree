@@ -2,22 +2,31 @@ package com.yoniSchwartz.YBMTree.ui.dialogs
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.yoniSchwartz.YBMTree.data.FamilyMember
+import com.yoniSchwartz.YBMTree.data.MemberType
 import com.yoniSchwartz.YBMTree.data.Relations
 import com.yoniSchwartz.YBMTree.data.dataManagement.DatabaseManager
 import com.yoniSchwartz.YBMTree.data.dataManagement.DatabaseManager.getRelationBetweenMemberAndOneOfHisConnections
 import com.yoniSchwartz.YBMTree.ui.CustomizedText
 import com.yoniSchwartz.YBMTree.ui.HebrewText
+import com.yoniSchwartz.YBMTree.ui.intToMachzor
 
 /**
  * Displays a dialog showing the shortest connection path between two yeshiva members.
@@ -36,7 +45,9 @@ fun DisplayConnectionBetweenTwoMembersDialog(
     var secondMember by remember { mutableStateOf(memberTwo) }
 
     val path = DatabaseManager.getShortestPathBetweenTwoMembers(firstMember, secondMember)
-    val pathAsString = getPathAsString(path)
+
+    val pathAsString = getPathAsAnnotatedString(path)
+//    val pathAsString = getPathAsString(path)
 
     val title = getConnectionTitle(firstMember, secondMember)
 
@@ -50,13 +61,26 @@ fun DisplayConnectionBetweenTwoMembersDialog(
         textForRightButton = HebrewText.SHOW_REVERSE_CONNECTION,
         onDismiss = onDismiss,
         contentOfDialog = {
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .verticalScroll(rememberScrollState())
+//                    .padding(8.dp)
+//            ) {
+
+//                CustomizedText(text = pathAsString)
+//          }
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
-                    .padding(8.dp)
+//                    .padding(8.dp)
             ) {
-                CustomizedText(text = pathAsString)
+                CustomizedText(
+                    text = pathAsString,
+                    modifier = Modifier.padding(8.dp)
+                )
             }
         },
         stackButtonsVertically = true
@@ -140,3 +164,60 @@ fun getConnectionTitle(memberOne: FamilyMember, memberTwo: FamilyMember): String
             HebrewText.TO +
             memberTwoFullName
 }
+
+/**
+ * Constructs an annotated string representing the path between family members,
+ * where each yeshiva member's name is displayed in red font.
+ *
+ * The function iterates through the given list of [FamilyMember] objects and
+ * builds an [AnnotatedString] showing each member's full name and their
+ * relationship to the next member. Names of yeshiva members are styled in red.
+ *
+ * @param pathAsList An ordered list of [FamilyMember] objects representing the connection path.
+ * @return An [AnnotatedString] suitable for displaying stylized text in a Compose `Text` element.
+ */
+private fun getPathAsAnnotatedString(pathAsList: List<FamilyMember>): AnnotatedString {
+    return buildAnnotatedString {
+        val listLength = pathAsList.size
+        var currentMemberIndex = 0
+
+        while (currentMemberIndex < listLength) {
+            val member = pathAsList[currentMemberIndex]
+            val isYeshivaMember = member.getMemberType() == MemberType.Yeshiva
+
+            // Style red for yeshiva members, default otherwise
+            withStyle(
+                style = SpanStyle(color = if (isYeshivaMember) Color.Red else Color.Unspecified)
+            ) {
+                // Member full name
+                append(member.getFullName())
+
+                // Add machzor information if the member is a yeshiva member
+                if (isYeshivaMember) {
+                    val machzor = member.getMachzor()
+                    val machzorLabel = if (machzor == 0) {
+                        HebrewText.STAFF
+                    } else {
+                        intToMachzor[machzor] ?: "${HebrewText.MACHZOR} $machzor"
+                    }
+                    append(" ($machzorLabel)")
+                }
+            }
+
+            // Add relationship if not last member
+            if (currentMemberIndex < listLength - 1) {
+                val nextMember = pathAsList[currentMemberIndex + 1]
+                val relation: Relations? = getRelationBetweenMemberAndOneOfHisConnections(nextMember, member)
+                val relationString = relation?.displayAsRelation(member.getGender())
+                val pronouns = if (member.getGender()) HebrewText.HE else HebrewText.SHE
+
+                if (currentMemberIndex == 0) append(" ") else append(" ${HebrewText.THAT}")
+                append("$pronouns $relationString ")
+            }
+
+            currentMemberIndex++
+        }
+    }
+}
+
+
