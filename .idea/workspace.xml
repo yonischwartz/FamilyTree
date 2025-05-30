@@ -9,13 +9,16 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="removed ok button from dialog that displays connection">
+    <list default="true" id="65574e49-0af1-4540-afb4-7d0a82a45558" name="Changes" comment="yeshiva members are marked in red">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/GraphicalConnectionDisplayDialog.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/ButtonsAndMore.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/ButtonsAndMore.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/data/dataManagement/MemberMap.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/data/dataManagement/MemberMap.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/HebrewText.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/HebrewText.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/DialogWithButtons.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/DialogWithButtons.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/DisplayConnectionBetweenTwoMembersDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/dialogs/DisplayConnectionBetweenTwoMembersDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/pages/homeScreenPage/HomeScreenPage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/yoniSchwartz/YBMTree/ui/pages/homeScreenPage/HomeScreenPage.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -236,14 +239,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1735635002551</updated>
-    </task>
-    <task id="LOCAL-00008" summary="remove user works">
-      <option name="closed" value="true" />
-      <created>1736512177734</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1736512177734</updated>
     </task>
     <task id="LOCAL-00009" summary="remove user works">
       <option name="closed" value="true" />
@@ -629,7 +624,15 @@
       <option name="project" value="LOCAL" />
       <updated>1748353646292</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="yeshiva members are marked in red">
+      <option name="closed" value="true" />
+      <created>1748518489953</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1748518489953</updated>
+    </task>
+    <option name="localTasksCounter" value="58" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -644,7 +647,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="commit before trying to change searchBar" />
     <MESSAGE value="searchBar displays results with no need to click search button" />
     <MESSAGE value="auto connection fixed. added uncle, aunt, and great grandparents connection. add admin mode screen" />
     <MESSAGE value="find connection on the home screen works + added an option to add a half_sibling" />
@@ -669,7 +671,8 @@
     <MESSAGE value="added a loading icon to graphic display" />
     <MESSAGE value="added arrows to move left and right in the graph image" />
     <MESSAGE value="removed ok button from dialog that displays connection" />
-    <option name="LAST_COMMIT_MESSAGE" value="removed ok button from dialog that displays connection" />
+    <MESSAGE value="yeshiva members are marked in red" />
+    <option name="LAST_COMMIT_MESSAGE" value="yeshiva members are marked in red" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>

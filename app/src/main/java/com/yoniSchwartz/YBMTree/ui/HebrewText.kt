@@ -44,6 +44,7 @@ object HebrewText {
     const val FIND_CONNECTION = "מצא קשר"
     const val SHOW_REVERSE_CONNECTION = "הצג את הקשר הפוך"
     const val GOT_IT = "הבנתי"
+    const val DISPLAY_CONNECTION_GRAPHICALLY = "הצג את הקשר בצורה גרפית"
     const val ADD_NEW_MEMBER_THAT_IS_RELATED_TO = "הוסף בן משפחה חדש שקשור ל"
     const val ADD_CONNECTION_BETWEEN_EXISTING_MEMBER_AND = "הוסף קשר בין בן משפחה קיים לבין "
     const val FIND_CONNECTION_BETWEEN = "מצא קשר בין"

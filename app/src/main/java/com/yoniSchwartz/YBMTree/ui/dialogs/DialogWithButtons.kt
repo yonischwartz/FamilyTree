@@ -143,8 +143,6 @@ fun DialogWithButtons(
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(top = 8.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     if (textForRightButton != null && onRightButtonClick != null) {
                                         DialogButton(

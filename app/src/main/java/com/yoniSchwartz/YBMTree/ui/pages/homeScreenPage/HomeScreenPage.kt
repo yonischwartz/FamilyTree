@@ -3,6 +3,7 @@ package com.yoniSchwartz.YBMTree.ui.pages.homeScreenPage
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,12 +17,17 @@ import com.yoniSchwartz.YBMTree.data.dataManagement.DatabaseManager
 import com.yoniSchwartz.YBMTree.ui.HebrewText
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.yoniSchwartz.YBMTree.data.dataManagement.DatabaseManager.getYeshivaMemberCount
@@ -131,7 +137,6 @@ fun HomeScreenPage(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-
                     // Top 1/4 of the screen
 
                     Box(

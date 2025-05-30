@@ -44,6 +44,8 @@ fun DisplayConnectionBetweenTwoMembersDialog(
     var firstMember by remember { mutableStateOf(memberOne) }
     var secondMember by remember { mutableStateOf(memberTwo) }
 
+    var displayGraphicConnection by remember { mutableStateOf(false) }
+
     val path = DatabaseManager.getShortestPathBetweenTwoMembers(firstMember, secondMember)
 
     val pathAsString = getPathAsAnnotatedString(path)
@@ -59,23 +61,14 @@ fun DisplayConnectionBetweenTwoMembersDialog(
             secondMember = temp
         },
         textForRightButton = HebrewText.SHOW_REVERSE_CONNECTION,
+//        onLeftButtonClick = {displayGraphicConnection = true},
+//        textForLeftButton = HebrewText.DISPLAY_CONNECTION_GRAPHICALLY,
         onDismiss = onDismiss,
         contentOfDialog = {
-//            Box(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .verticalScroll(rememberScrollState())
-//                    .padding(8.dp)
-//            ) {
-
-//                CustomizedText(text = pathAsString)
-//          }
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
-//                    .padding(8.dp)
             ) {
                 CustomizedText(
                     text = pathAsString,
@@ -85,6 +78,15 @@ fun DisplayConnectionBetweenTwoMembersDialog(
         },
         stackButtonsVertically = true
     )
+
+    if (displayGraphicConnection) {
+        GraphicalConnectionDisplayDialog(
+            title = getConnectionTitle(firstMember, secondMember),
+            memberPath = path,
+            onDismiss = onDismiss,
+            onPreviousClick = { displayGraphicConnection = false }
+        )
+    }
 }
 
 /**
