@@ -1,5 +1,7 @@
 ## 🌳 FamilyTree  
 
+<img src="https://github.com/yonischwartz/FamilyTree/blob/main/screenshots/ybm_familytree_app_icon.png?raw=true" width="100"/>
+
 [<img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" width="150"/>](https://play.google.com/store/apps/details?id=com.yoniSchwartz.YBMTree)
 [<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="40"/>](https://github.com/yonischwartz/FamilyTree)
 
