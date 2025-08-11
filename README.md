@@ -37,12 +37,12 @@ An advanced Android app for dynamically displaying and managing a **family tree*
 
 ## 🛠 Tech Stack
 
-- ![Kotlin](https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg) **Kotlin**
-- ![Android Studio](https://cdn.jsdelivr.net/gh/devicons/devicon/icons/androidstudio/androidstudio-original.svg) **Android Studio**
-- ![Firebase](https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg) **Firebase Firestore**
-- ![Git](https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg) **Git**
-- ![PostgreSQL](https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg) **PostgreSQL**
-- ![MySQL](https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg) **MySQL**
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg" width="30"/> **Kotlin**  
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/androidstudio/androidstudio-original.svg" width="30"/> **Android Studio**  
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg" width="30"/> **Firebase Firestore**  
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" width="30"/> **Git**  
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" width="30"/> **PostgreSQL**  
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" width="30"/> **MySQL**
 
 ---
 
