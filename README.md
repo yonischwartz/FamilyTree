@@ -27,11 +27,11 @@ An advanced Android app for dynamically displaying and managing a **family tree*
 
 | Home Screen | Relationship Display |
 |-------------|----------------------|
-| ![Home Screen](screenshots/home_screen.png) | ![Relationship Display](screenshots/relationship_display.png) |
+| ![Home Screen](https://github.com/yonischwartz/FamilyTree/blob/5b696bc07b7674156eada710f4d8cb88e8b048ef/screenshots/Home%20Screen.jpeg?raw=true) | ![Relationship Display](https://github.com/yonischwartz/FamilyTree/blob/5b696bc07b7674156eada710f4d8cb88e8b048ef/screenshots/Relationship%20Display.jpeg?raw=true) |
 
 | Member Details | Graphical Family Tree |
 |----------------|-----------------------|
-| ![Member Details](screenshots/member_details.png) | ![Graphical Family Tree](screenshots/graphical_family_tree.png) |
+| ![Member Details](https://github.com/yonischwartz/FamilyTree/blob/5b696bc07b7674156eada710f4d8cb88e8b048ef/screenshots/Member%20Details.jpeg?raw=true) | ![Graphical Family Tree](https://github.com/yonischwartz/FamilyTree/blob/5b696bc07b7674156eada710f4d8cb88e8b048ef/screenshots/Graphical%20Family%20Tree.jpeg?raw=true) |
 
 ---
 
