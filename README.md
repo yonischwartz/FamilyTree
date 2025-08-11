@@ -5,9 +5,6 @@
 [<img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" width="150"/>](https://play.google.com/store/apps/details?id=com.yoniSchwartz.YBMTree)
 [<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="40"/>](https://github.com/yonischwartz/FamilyTree)
 
-[<img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" width="150"/>](https://play.google.com/store/apps/details?id=com.yoniSchwartz.YBMTree)
-[<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="40"/>](https://github.com/yonischwartz/FamilyTree)
-
 An advanced Android app for dynamically displaying and managing a **family tree** with:
 - **Firebase Firestore integration** for real-time data storage & sync.
 - **Graph theory algorithms** to compute and visualize relationships.
