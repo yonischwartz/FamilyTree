@@ -23,6 +23,15 @@ An advanced Android app for dynamically displaying and managing a **family tree*
 
 ---
 
+## 🛠 Tech Stack
+
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg" width="30"/> **Kotlin**  
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/androidstudio/androidstudio-original.svg" width="30"/> **Android Studio**  
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg" width="30"/> **Firebase Firestore**  
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" width="30"/> **Git**  
+
+---
+
 ## 📸 Screenshots
 
 | Home Screen | Relationship Display |
@@ -32,12 +41,3 @@ An advanced Android app for dynamically displaying and managing a **family tree*
 | Member Details | Graphical Family Tree |
 |----------------|-----------------------|
 | ![Member Details](https://github.com/yonischwartz/FamilyTree/blob/5b696bc07b7674156eada710f4d8cb88e8b048ef/screenshots/Member%20Details.jpeg?raw=true) | ![Graphical Family Tree](https://github.com/yonischwartz/FamilyTree/blob/5b696bc07b7674156eada710f4d8cb88e8b048ef/screenshots/Graphical%20Family%20Tree.jpeg?raw=true) |
-
----
-
-## 🛠 Tech Stack
-
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg" width="30"/> **Kotlin**  
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/androidstudio/androidstudio-original.svg" width="30"/> **Android Studio**  
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg" width="30"/> **Firebase Firestore**  
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" width="30"/> **Git**  
