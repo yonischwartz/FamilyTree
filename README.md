@@ -25,15 +25,13 @@ An advanced Android app for dynamically displaying and managing a **family tree*
 
 ## 📸 Screenshots
 
-> 📌 **Tip:** This is where you grab attention. Add **2-4 high-quality images** of:
-> - Main tree view with multiple members  
-> - A close-up of a member’s connections  
-> - Example of offline mode  
-> - Any interactive features  
+| Home Screen | Relationship Display |
+|-------------|----------------------|
+| ![Home Screen](screenshots/home_screen.png) | ![Relationship Display](screenshots/relationship_display.png) |
 
-| Family Tree View | Member Details |
-|------------------|----------------|
-| ![Tree View](screenshots/tree_view.png) | ![Member Details](screenshots/member_details.png) |
+| Member Details | Graphical Family Tree |
+|----------------|-----------------------|
+| ![Member Details](screenshots/member_details.png) | ![Graphical Family Tree](screenshots/graphical_family_tree.png) |
 
 ---
 
