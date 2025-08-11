@@ -1,7 +1,7 @@
-# 🌳 FamilyTree_kotlin
+## 🌳 FamilyTree_kotlin  
 
-[![Google Play](https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg)](https://play.google.com/store/apps/details?id=your.package.name)
-[![GitHub](https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg)](https://github.com/yonischwartz/FamilyTree_kotlin)
+[<img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" width="150"/>](https://play.google.com/store/apps/details?id=your.package.name)
+[<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="40"/>](https://github.com/yonischwartz/FamilyTree_kotlin)
 
 An advanced Android app for dynamically displaying and managing a **family tree** with:
 - **Firebase Firestore integration** for real-time data storage & sync.
