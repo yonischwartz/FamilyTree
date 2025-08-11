@@ -1,7 +1,7 @@
-## 🌳 FamilyTree_kotlin  
+## 🌳 FamilyTree  
 
 [<img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" width="150"/>](https://play.google.com/store/apps/details?id=com.yoniSchwartz.YBMTree)
-[<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="40"/>](https://github.com/yonischwartz/FamilyTree_kotlin)
+[<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="40"/>](https://github.com/yonischwartz/FamilyTree)
 
 An advanced Android app for dynamically displaying and managing a **family tree** with:
 - **Firebase Firestore integration** for real-time data storage & sync.
@@ -41,11 +41,3 @@ An advanced Android app for dynamically displaying and managing a **family tree*
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/androidstudio/androidstudio-original.svg" width="30"/> **Android Studio**  
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg" width="30"/> **Firebase Firestore**  
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" width="30"/> **Git**  
-
----
-
-## 📥 Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yonischwartz/FamilyTree_kotlin.git
